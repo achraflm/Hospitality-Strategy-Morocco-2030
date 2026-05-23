@@ -16,6 +16,7 @@ La documentation est structurée comme suit :
    modeling
    results_roi
    streamlit_dashboard
+   simulation
    conclusion
 
 Indices and tables
