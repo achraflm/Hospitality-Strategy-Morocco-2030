@@ -369,7 +369,7 @@
                 <i class="fa-solid var(--primary) fa-chart-line"></i> Vue d'Ensemble & EDA
             </li>
             <li class="menu-item" onclick="switchTab('models')">
-                <i class="fa-solid fa-brain"></i> Modélisation & XAI
+                <i class="fa-solid fa-brain"></i> Modélisation & Perf
             </li>
             <li class="menu-item" onclick="switchTab('forecast')">
                 <i class="fa-solid fa-trophy"></i> Prévisions & FIFA
@@ -491,17 +491,11 @@
                 </div>
             </div>
 
-            <div class="content-grid">
+            <div class="content-grid" style="grid-template-columns: 1fr;">
                 <div class="card">
                     <h3>Importance Globale des Caractéristiques (XGBoost)</h3>
                     <div class="img-container">
                         <img src="/figures/feature_importance_importance_des_caractéristiques_xgboost.png" onerror="handleImageError(this, 'Feature Importance XGBoost')" alt="Feature Importance">
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Explicabilité Locale & Globale (Valeurs SHAP)</h3>
-                    <div class="img-container">
-                        <img src="/figures/shap_summary_plot.png" onerror="handleImageError(this, 'SHAP Values Summary Plot')" alt="SHAP Values">
                     </div>
                 </div>
             </div>

@@ -166,3 +166,18 @@ Pour mesurer les risques, nous modélisons la rentabilité à Marrakech sous tro
 1. **Scénario Pessimiste (-15% de demande, Taux d'occ = 55%)** : Le ROI de Marrakech baisse à **+8,5%** mais reste positif.
 2. **Scénario Central (Prévision modèle, Taux d'occ = 65%)** : ROI de **+12,5%**.
 3. **Scénario Optimiste (+15% de demande, Taux d'occ = 75%)** : Le ROI s'envole à **+16,2%** sur 10 ans.
+
+Impact Inflationniste Historique des Coupes du Monde
+------------------------------------------------------
+En analysant les données historiques d'inflation des pays hôtes des précédentes Coupes du Monde (Brésil 2014, Russie 2018, et Qatar 2022), nous constatons un choc de demande massif sur les services locaux, l'hôtellerie et les transports durant les mois de l'événement, entraînant des pressions inflationnistes temporaires mais significatives :
+
+* **Brésil (2014)** : Durant les mois de juin et juillet 2014 (période du tournoi), l'inflation a grimpé respectivement à **11,4%** et **10,9%**, marquant une hausse brutale par rapport aux taux de 6,3% et 6,5% de l'année précédente.
+* **Russie (2018)** : Durant le tournoi (juin-juillet 2018), l'inflation a atteint des sommets locaux à **7,2%** et **6,8%** (contre ~3,8% l'année précédente).
+* **Qatar (2022)** : L'organisation de la compétition en novembre et décembre 2022 a provoqué un pic d'inflation exceptionnel à **14,2%** et **12,8%** (comparé à 2,5% et 2,4% en 2021).
+
+.. image:: ../figures/world_cup_inflation_impact.png
+   :width: 100%
+   :align: center
+   :alt: Impact Historique de la Coupe du Monde sur l'Inflation des Pays Hôtes
+
+*Implications pour le Maroc 2030* : Ce profil d'inflation historique indique que le Maroc connaîtra probablement des hausses de prix intenses dans le secteur des services et de l'hôtellerie en juin-juillet 2030. Bien que cela augmente l'ADR nominal et les revenus d'exploitation à court terme, cela impactera également les coûts opérationnels directs. Une planification budgétaire rigoureuse est donc recommandée pour les investisseurs hôteliers.

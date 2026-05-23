@@ -214,23 +214,4 @@ def plot_feature_importance(importance_series, title='Feature Importance', save_
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.show()
 
-def plot_shap_summary(shap_values, X_test_trans, feature_names, save_path=None):
-    """
-    Plots a SHAP summary plot.
-    """
-    set_style()
-    try:
-        import shap
-        plt.figure(figsize=(12, 8))
-        shap.summary_plot(shap_values, X_test_trans, feature_names=feature_names, show=False)
-        plt.title('SHAP Value Summary (Feature Impact Explainer)', fontweight='bold', pad=20)
-        plt.tight_layout()
-        
-        # Auto-save default path
-        if save_path is None:
-            save_path = os.path.join(FIGURES_DIR, 'shap_summary_plot.png')
-            
-        plt.savefig(save_path, dpi=150, bbox_inches='tight')
-        plt.show()
-    except Exception as e:
-        print(f"Could not render SHAP plot: {e}")
+

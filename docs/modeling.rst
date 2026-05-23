@@ -47,23 +47,16 @@ Cinq algorithmes de ML ont été évalués avec recherche d'hyperparamètres sur
    :align: center
    :alt: Comparaison des Prédictions ML
 
-Explicabilité (Explainable AI - XAI)
-------------------------------------
-Pour justifier les prédictions auprès des décideurs, deux techniques d'interprétabilité ont été appliquées sur XGBoost :
+Importance des Caractéristiques (Feature Importance)
+----------------------------------------------------
+Pour évaluer la contribution des différentes variables prédictives, nous analysons l'importance globale des caractéristiques extraites du modèle XGBoost :
 
-* **Feature Importance (Importance Globale)** : Identifie que le lag de 12 mois (`Arrivals_lag12`), le volume de nuitées (`Nights`), les recettes touristiques et les indicateurs économiques (`REER`, `Oil_price`) sont les variables les plus décisives.
+* **Importance Globale** : Identifie que le lag de 12 mois (`Arrivals_lag12`), le volume de nuitées (`Nights`), les recettes touristiques et les indicateurs économiques (`REER`, `Oil_price`) sont les variables les plus décisives pour guider les prévisions du modèle.
 
 .. image:: ../figures/feature_importance_importance_des_caractéristiques_xgboost.png
    :width: 80%
    :align: center
    :alt: Importance des Caractéristiques XGBoost
-
-* **Valeurs SHAP (SHAP Values)** : Expliquent l'impact local et le sens de contribution de chaque variable. Par exemple, une valeur de REER élevée pousse la prévision vers le bas (perte de compétitivité), tandis qu'un indicateur de haute saison ou de grand événement sportif (`cdm_event`) a un impact marginal positif important.
-
-.. image:: ../figures/shap_summary_plot.png
-   :width: 80%
-   :align: center
-   :alt: Graphique de Synthèse SHAP
 
 Modélisation par Deep Learning (DL)
 -----------------------------------

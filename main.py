@@ -8,7 +8,7 @@ Ce script exécute l'intégralité du pipeline de Data Science :
 3. Ingénierie des caractéristiques temporelles, cycliques et d'anomalies.
 4. Entraînement et sélection de modèles de Machine Learning et d'un modèle Hybride.
 5. Séquençage et modélisation de Deep Learning (LSTM et Transformer) optimisés par Optuna.
-6. Analyse explicable (XAI) globale et locale via importance de caractéristiques et SHAP.
+6. Analyse par importance des caractéristiques (feature importance).
 7. Projection des prévisions à l'horizon 2030 et évaluation financière (ROI hôtelier).
 8. Génération et sauvegarde de toutes les visualisations clés dans le dossier `figures/`.
 
@@ -80,12 +80,7 @@ def parse_arguments():
         default=12, 
         help="Taille de la fenêtre glissante mensuelle pour les modèles DL (default: 12)"
     )
-    parser.add_argument(
-        "--run_shap", 
-        action="store_true", 
-        default=True, 
-        help="Activer la génération des explications locales SHAP (default: True)"
-    )
+
     parser.add_argument(
         "--quick_run", 
         action="store_true", 
@@ -266,15 +261,6 @@ def run_ml_pipeline(X_train, y_train, X_test, y_test, valid_features, cv_folds, 
             importance = ml.get_feature_importance(xgb_grid.best_estimator_, X_train.columns)
             viz.plot_feature_importance(importance, title="Importance des Caractéristiques (XGBoost)")
             
-            # Graphique 9: SHAP Summary Plot
-            logger.info("Calcul des valeurs SHAP pour interprétation locale/globale (Tracé 9)...")
-            try:
-                shap_values, X_test_trans = ml.calculate_shap_values(xgb_grid.best_estimator_, X_train, X_test)
-                if shap_values is not None:
-                    viz.plot_shap_summary(shap_values, X_test_trans, X_train.columns)
-            except Exception as shap_err:
-                logger.warning(f"Impossible de calculer ou tracer les valeurs SHAP : {shap_err}")
-                
         return predictions, results_df
     except Exception as e:
         logger.error(f"Échec dans la modélisation Machine Learning : {e}", exc_info=True)

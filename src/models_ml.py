@@ -29,7 +29,6 @@ def import_or_install(package_name, import_name=None):
 xgb = import_or_install("xgboost", "xgboost")
 lgb = import_or_install("lightgbm", "lightgbm")
 cat = import_or_install("catboost", "catboost")
-shap = import_or_install("shap", "shap")
 
 def get_pipeline(model):
     """
@@ -165,7 +164,7 @@ class DifferencedModelWrapper:
         y_pred_reconstructed = y_test_prev + y_pred_diff
         return y_pred_reconstructed
 
-# --- ADDED: Explainable AI & Feature Importance ---
+# --- Feature Importance ---
 
 def get_feature_importance(pipeline_model, feature_names):
     """
@@ -184,37 +183,6 @@ def get_feature_importance(pipeline_model, feature_names):
         return pd.Series(index=feature_names, dtype=float)
         
     return pd.Series(importances, index=feature_names).sort_values(ascending=False)
-
-def calculate_shap_values(pipeline_model, X_train, X_test):
-    """
-    Calculates SHAP values for a pipeline model.
-    Transforms data first using pipeline imputation and scaling.
-    """
-    if shap is None:
-        print("SHAP package not available.")
-        return None, None
-        
-    imputer = pipeline_model.named_steps['imputer']
-    scaler = pipeline_model.named_steps['scaler']
-    estimator = pipeline_model.named_steps['model']
-    
-    # Transform inputs
-    X_train_trans = scaler.transform(imputer.transform(X_train))
-    X_test_trans = scaler.transform(imputer.transform(X_test))
-    
-    # Choose explainer based on model type
-    try:
-        if hasattr(estimator, 'feature_importances_'):
-            explainer = shap.TreeExplainer(estimator)
-        else:
-            # Linear model or kernel SVR
-            explainer = shap.Explainer(estimator, X_train_trans)
-            
-        shap_values = explainer(X_test_trans)
-        return shap_values, X_test_trans
-    except Exception as e:
-        print(f"Error calculating SHAP values: {e}")
-        return None, None
 
 # --- ADDED: Hybrid Forecasting ---
 

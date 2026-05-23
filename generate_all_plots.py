@@ -184,30 +184,12 @@ def main():
     viz.plot_predictions_comparison(y_test, predictions, test_dates, title="Comparaison des Modèles ML & Hybride")
     
     # ----------------------------------------------------
-    # PLOT 8 & 9: Feature Importance and SHAP
+    # PLOT 8: Feature Importance
     # ----------------------------------------------------
     if xgb_grid:
         print("Generating Plot 8: XGBoost Feature Importance...")
         importance = ml.get_feature_importance(xgb_grid.best_estimator_, X_train.columns)
         viz.plot_feature_importance(importance, title="Importance des Caractéristiques (XGBoost)")
-        
-        print("Generating Plot 9: SHAP Summary Plot...")
-        try:
-            import shap
-            shap_values, X_test_trans = ml.calculate_shap_values(xgb_grid.best_estimator_, X_train, X_test)
-            if shap_values is not None:
-                viz.plot_shap_summary(shap_values, X_test_trans, X_train.columns)
-        except ImportError:
-            print("SHAP is not installed, installing and attempting SHAP plot...")
-            import subprocess
-            try:
-                subprocess.check_call([sys.executable, "-m", "pip", "install", "shap", "-q"])
-                import shap
-                shap_values, X_test_trans = ml.calculate_shap_values(xgb_grid.best_estimator_, X_train, X_test)
-                if shap_values is not None:
-                    viz.plot_shap_summary(shap_values, X_test_trans, X_train.columns)
-            except Exception as e:
-                print(f"Could not generate SHAP plot: {e}")
                 
     # ----------------------------------------------------
     # PHASE 6: DEEP LEARNING MODELS

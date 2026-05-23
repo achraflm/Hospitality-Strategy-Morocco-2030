@@ -13,5 +13,4 @@ lightgbm>=3.2.0
 catboost>=1.0.0
 sphinx>=5.0.0
 sphinx-rtd-theme>=1.0.0
-shap>=0.40.0
 Flask>=2.0.0
