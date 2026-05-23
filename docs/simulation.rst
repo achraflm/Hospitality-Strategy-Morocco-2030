@@ -6,7 +6,7 @@ simulation financière interactive d'investissements hôteliers sur 10 ans (2026
 Contrairement au pipeline principal (``main.py``), cette application est entièrement
 orientée utilisateur et ne nécessite aucune connaissance en programmation pour être utilisée.
 
-.. figure:: _static/_static/streamlit_roi_simulator.png
+.. figure:: _static/docs/_static/streamlit_roi_simulator.png
    :align: center
    :alt: Capture d'écran de l'application Streamlit de simulation ROI
    :width: 100%
