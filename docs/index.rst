@@ -15,6 +15,7 @@ La documentation est structurée comme suit :
    feature_engineering
    modeling
    results_roi
+   streamlit_dashboard
    conclusion
 
 Indices and tables

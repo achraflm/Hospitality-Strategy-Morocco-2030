@@ -1,0 +1,498 @@
+[
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2025",
+        "value": null,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2024",
+        "value": null,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2023",
+        "value": null,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2022",
+        "value": null,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2021",
+        "value": null,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2020",
+        "value": 2802000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2019",
+        "value": 13109000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2018",
+        "value": 12489000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2017",
+        "value": 11540000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2016",
+        "value": 10677000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2015",
+        "value": 10542000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2014",
+        "value": 10507000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2013",
+        "value": 10349000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2012",
+        "value": 9830000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2011",
+        "value": 9784000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2010",
+        "value": 9752000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2009",
+        "value": 8661000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2008",
+        "value": 8209000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2007",
+        "value": 7701000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2006",
+        "value": 6777000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2005",
+        "value": 6077000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2004",
+        "value": 5732000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2003",
+        "value": 5021000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2002",
+        "value": 4709000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2001",
+        "value": 4596000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2000",
+        "value": 4458000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1999",
+        "value": 4088000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1998",
+        "value": 3267000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1997",
+        "value": 3203000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1996",
+        "value": 2856000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "ST.INT.ARVL",
+            "value": "International tourism, number of arrivals"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1995",
+        "value": 2752000,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    }
+]

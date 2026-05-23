@@ -1,0 +1,498 @@
+[
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2025",
+        "value": null,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2024",
+        "value": 160610994054.734,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2023",
+        "value": 146036093666.762,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2022",
+        "value": 131245312804.483,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2021",
+        "value": 142022058447.231,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2020",
+        "value": 121353645057.144,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2019",
+        "value": 128920266409.458,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2018",
+        "value": 127341147581.818,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2017",
+        "value": 118540573367.844,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2016",
+        "value": 111572947004.917,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2015",
+        "value": 110413823841.592,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2014",
+        "value": 119130841411.664,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2013",
+        "value": 115739287305.08,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2012",
+        "value": 106937392311.129,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2011",
+        "value": 110080631332.375,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2010",
+        "value": 100865329473.44,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2009",
+        "value": 101154952240.881,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2008",
+        "value": 101822906949.063,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2007",
+        "value": 86947913286.728,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2006",
+        "value": 75883823300.8545,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2005",
+        "value": 68852658068.6673,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2004",
+        "value": 66114145451.0067,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2003",
+        "value": 58029363354.2757,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2002",
+        "value": 47077192187.6418,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2001",
+        "value": 43831480207.6444,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "2000",
+        "value": 43017455401.8445,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1999",
+        "value": 46266428648.1433,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1998",
+        "value": 46497608724.9865,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1997",
+        "value": 39147844526.0838,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1996",
+        "value": 43161571527.6353,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    },
+    {
+        "indicator": {
+            "id": "NY.GDP.MKTP.CD",
+            "value": "GDP (current US$)"
+        },
+        "country": {
+            "id": "MA",
+            "value": "Morocco"
+        },
+        "countryiso3code": "MAR",
+        "date": "1995",
+        "value": 39030285468.3841,
+        "unit": "",
+        "obs_status": "",
+        "decimal": 0
+    }
+]

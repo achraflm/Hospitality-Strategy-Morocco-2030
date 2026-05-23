@@ -181,3 +181,19 @@ En analysant les données historiques d'inflation des pays hôtes des précéden
    :alt: Impact Historique de la Coupe du Monde sur l'Inflation des Pays Hôtes
 
 *Implications pour le Maroc 2030* : Ce profil d'inflation historique indique que le Maroc connaîtra probablement des hausses de prix intenses dans le secteur des services et de l'hôtellerie en juin-juillet 2030. Bien que cela augmente l'ADR nominal et les revenus d'exploitation à court terme, cela impactera également les coûts opérationnels directs. Une planification budgétaire rigoureuse est donc recommandée pour les investisseurs hôteliers.
+
+Modèle de Simulation ROI Dynamique piloté par la Prévision
+----------------------------------------------------------
+Pour dépasser les hypothèses de croissance statiques, un modèle de simulation ROI dynamique a été implémenté. Il est directement interconnecté avec les résultats des prévisions touristiques du projet :
+
+1. **Identification des Top 3 Modèles** : Les 3 modèles obtenant le coefficient de détermination :math:`R^2` le plus élevé lors de la phase de test (par exemple, *CatBoost*, *XGBoost* ou *LSTM*) sont automatiquement sélectionnés.
+2. **Couplage de la Demande** : Les prévisions d'arrivées touristiques annuelles modélisées pour chaque année (2026-2035) servent d'indicateur de croissance de la demande touristique nationale.
+3. **Calcul de Taux d'Occupation Dynamique** : Le taux d'occupation de l'hôtel dans la ville choisie est calculé chaque année selon la formule :
+
+   .. math::
+
+      \text{Occ}_t = \min\left(0.95, \text{Occ}_{\text{base}} \times \frac{\text{Arrivées}_t}{\text{Arrivées}_{2025}}\right)
+
+4. **Boost Coupe du Monde 2030** : En 2030, si l'option est activée, un surcroît d'occupation relative de +15% et un boost d'ADR de +40% sont cumulés au taux d'occupation dynamique.
+5. **Indicateurs Comparatifs** : Le simulateur calcule la VAN actualisée (NPV), le Taux de Rentabilité Interne (IRR), le délai de récupération (Payback) et le ROI cumulé sur 10 ans pour les trois modèles, permettant une analyse de sensibilité robuste basée uniquement sur les données.
+

@@ -1,60 +1,40 @@
-# 🇲🇦 Morocco Tourism & Hospitality Strategy 2030 — Pipeline de Prévision & Simulateur ROI
+# 🇲🇦 Morocco Tourism Strategy 2030 — Plateforme IA de Prévision & Simulateur ROI Hôtelier
 
-Ce projet présente un pipeline complet de Data Science et une application web interactive pour la modélisation, la prévision des arrivées touristiques au Maroc à l'horizon 2030 (année de co-organisation de la Coupe du Monde de la FIFA) et l'analyse de rentabilité (ROI) des investissements hôteliers par ville.
+Ce projet présente une solution décisionnelle et de prévision à long terme (jusqu'en 2035) appliquée à l'industrie touristique marocaine dans la perspective de la co-organisation de la **Coupe du Monde de la FIFA 2030**. La plateforme combine des pipelines de Data Science pour prédire la demande d'arrivées et les recettes économiques, ainsi qu'un simulateur de rentabilité hôtelière stochastique (Monte Carlo).
 
 ---
 
 ## 📋 Table des Matières
 1. [Fonctionnalités Clés](#-fonctionnalités-clés)
 2. [Structure du Projet](#-structure-du-projet)
-3. [Installation & Dépendances](#-installation--dépendances)
-4. [Utilisation & Pipelines](#-utilisation--pipelines)
-5. [Détails des Modèles de Prévision](#-détails-des-modèles-de-prévision)
-6. [Interface Web & Simulateur ROI](#-interface-web--simulateur-roi)
-7. [Documentation](#-documentation)
+3. [Architecture de l'Application Web (Détaillée)](#-architecture-de-lapplication-web-détaillée)
+4. [Détails des 3 Modèles Prédictifs Optimaux](#-détails-des-3-modèles-prédictifs-optimaux)
+5. [Moteur de Simulation ROI Hôtelier](#-moteur-de-simulation-roi-hôtelier)
+6. [Moteur de Simulation Stochastique de Monte Carlo](#-moteur-de-simulation-stochastique-de-monte-carlo)
+7. [Installation & Démarrage](#-installation--démarrage)
+8. [Documentation technique (Sphinx)](#-documentation-technique-sphinx)
 
 ---
 
 ## ✨ Fonctionnalités Clés
 
-Le projet est divisé en plusieurs phases clés, de l'ingestion des données jusqu'au déploiement de l'application :
+### 1. Ingestion et Nettoyage de Données
+* **Fusion automatique** du jeu de données macroéconomique marocain (`Morocco_cleaned.csv`) et des arrivées touristiques réelles (`maroc_tourism_2030_all_arrival_sources.csv`).
+* **Imputation des données COVID-19** : Intégration des chiffres réels mensuels de 2020-2021 de la pandémie et activation d'un indicateur booléen `is_covid` pour les modèles.
+* **Reconstruction Historique (1996-2019)** : Application d'un algorithme de **désagrégation temporelle** basé sur la décomposition saisonnière (STL) de la période récente (2022-2026) avec injection d'un bruit gaussien contrôlé.
 
-### 1. Ingestion et Nettoyage de Données Multi-sources
-- **Fusion automatique** de jeux de données macroéconomiques marocains (`Morocco_cleaned.csv`) et des arrivées touristiques réelles.
-- **Gestion des anomalies COVID-19** : Écrasement des valeurs aberrantes des années 2020-2021 par les chiffres officiels de la pandémie et activation d'un indicateur booléen `is_covid` pour les modèles.
+### 2. Ingénierie des Caractéristiques (Feature Engineering)
+* Retards temporels (lags 1, 2, 6, 12).
+* Statistiques glissantes (moyenne et écart-type sur 3, 6, et 12 mois).
+* Taux de croissance annuel (YoY) et encodage cyclique trigonométrique du mois.
+* Indicateurs d'événements spéciaux (Coupe du Monde 2030, crises COVID).
+* Détection d'anomalies non supervisée : Isolation Forest (`anomaly_iforest`), résidus Prophet (`anomaly_prophet`) et Z-Score sur différences (`anomaly_zscore`).
 
-### 2. Reconstruction Historique (1996-2019)
-- En l'absence de données mensuelles détaillées pour les arrivées et les recettes avant 2020, application d'un algorithme de **désagrégation temporelle** basé sur le profil saisonnier de la période récente (2022-2026) avec injection d'un bruit gaussien contrôlé.
-
-### 3. Analyse Exploratoire (EDA) & Analyse Hôtelière
-- **Décomposition STL (saison-tendance)** additive de la série temporelle des arrivées.
-- **Matrice de corrélation** entre variables macroéconomiques (Taux de Change Effectif Réel - REER, prix du pétrole, IDE, taux de pauvreté) et indicateurs touristiques.
-- **Tests de stationnarité** robustes : Dickey-Fuller Augmenté (ADF) et KPSS pour justifier l'application de différenciations.
-- **Analyse d'autocorrélation** : Tracé des fonctions d'autocorrélation (ACF) et d'autocorrélation partielle (PACF) pour calibrer le modèle statistique SARIMAX.
-- **Indicateurs hôteliers locaux** : Profil saisonnier, ADR (Average Daily Rate) moyen et taux d'annulation mensuels.
-- **Benchmark international** : Comparaison du taux d'occupation et des ratios de récupération post-COVID avec des destinations concurrentes (Égypte, Turquie, Espagne, France, Grèce, Émirats Arabes Unis).
-
-### 4. Ingénierie des Caractéristiques (Feature Engineering)
-- Caractéristiques temporelles et saisonnières (mois, année, trimestres).
-- Encodage cyclique trigonométrique (sinus/cosinus) pour capter la périodicité annuelle.
-- Lags temporels et statistiques glissantes (moyenne et écart-type sur 3, 6, et 12 mois) sur les arrivées et recettes.
-- Caractéristiques d'événements spéciaux (Coupe du Monde 2030, périodes de crises).
-
-### 5. Modélisation Prédictive Multi-familles
-- **Baseline Statistique** : Modèle auto-régressif intégré moyenne mobile saisonnier (SARIMAX) ajusté selon les propriétés de la série.
-- **Machine Learning Classique** : Entraînement avec recherche sur grille (`GridSearchCV`) et validation croisée sur séries temporelles (`TimeSeriesSplit`) pour :
-  - Régression Ridge
-  - Support Vector Regression (SVR)
-  - XGBoost Regressor
-  - LightGBM Regressor
-  - CatBoost Regressor
-- **Forecast Hybride** : Modèle d'ensemble combinant de manière pondérée (50% XGBoost, 30% CatBoost, 20% Ridge) les forces des différents modèles.
-- **Deep Learning Séquentiel** :
-  - Optimisation bayésienne d'architecture avec **Optuna** comparant SimpleRNN, GRU, LSTM, Stacked LSTM et CNN-LSTM.
-  - Modèle **Transformer** (mécanisme de Multi-Head Attention couplé à des convolutions 1D temporelles).
-
-### 6. Simulation Financière & ROI Hôtelier (Horizon 2030)
-- Évaluation financière d'un investissement hôtelier de 10 ans par ville (Marrakech, Casablanca, Agadir, Tanger, Rabat, Fès) avec prise en compte de l'impact exceptionnel de la Coupe du Monde de la FIFA 2030 (boost de 15% de l'ADR et hausse du taux d'occupation).
+### 3. Modélisation Prédictive (Top 3 Modèles)
+* Sélection stricte des 3 modèles optimaux après évaluation sur split temporel (Train : 1995-2022 | Test : 2023-2026) :
+  * **SARIMA** : Modèle statistique de référence ($R^2 = 0.7095$, MAPE = $8.88\%$).
+  * **Régression Ridge** : Approche de Machine Learning linéaire régularisée ($R^2 = 0.7826$, MAPE = $8.17\%$).
+  * **LSTM (Deep Learning)** : Réseau récurrent à mémoire long-court terme ($R^2 = 0.9412$, MAPE = $5.80\%$).
 
 ---
 
@@ -63,107 +43,165 @@ Le projet est divisé en plusieurs phases clés, de l'ingestion des données jus
 ```text
 ├── data/                           # Fichiers de données (bruts et finaux)
 │   ├── merged_tourism_data_final.csv
-│   └── separted/                   # Données divisées en ensembles Train/Test
+│   ├── model_performance_metrics.csv # [GÉNÉRÉ] Métriques comparatives des modèles
+│   ├── predictions_2030.csv         # [GÉNÉRÉ] Prévisions d'arrivées 2030
+│   ├── receipts_predictions_2030.csv# [GÉNÉRÉ] Prévisions de recettes 2030
+│   └── separted/                   # Données divisées en Train/Test
 ├── docs/                           # Documentation technique Sphinx (.rst)
-│   ├── eda.rst
-│   └── modeling.rst
-├── figures/                        # Graphiques et visualisations générés par le pipeline
-├── notebooks/                      # Notebooks Jupyter interactifs (Phases 1 à 6)
-│   ├── 01_data_processing_and_eda.ipynb
-│   ├── 02_feature_engineering.ipynb
-│   ├── 03_machine_learning.ipynb
-│   ├── 04_deep_learning.ipynb
-│   ├── 05_statistical_modeling.ipynb
-│   └── 06_predictions_2030.ipynb
-
-
-├── src/                            # Code source modulaire
+├── figures/                        # Graphiques et visualisations générés
+├── notebooks/                      # Notebooks Jupyter de recherche (Phases 1 à 7)
+├── src/                            # Code source modulaire du pipeline principal
 │   ├── cleaning.py                 # Nettoyage et reconstruction historique
-│   ├── config.py                   # Configuration globale des chemins et paramètres
+│   ├── config.py                   # Configuration globale
 │   ├── data_loader.py              # Ingestion des fichiers CSV
-│   ├── evaluation.py               # Calcul et affichage des métriques (RMSE, R², MAE, MAPE)
 │   ├── features.py                 # Génération des descripteurs
-│   ├── models_dl.py                # Définitions des architectures RNN/LSTM/Transformer
-│   ├── models_ml.py                # Entraînement des modèles ML et SARIMAX
-│   └── visualization.py            # Tracés graphiques (Matplotlib / Seaborn)
-├── templates/                      # Fichiers HTML pour l'application Flask
-├── app.py                          # Serveur API Flask et simulateur ROI
-├── main.py                         # Orchestrateur principal exécutant tout le pipeline
-├── generate_all_plots.py           # Script utilitaire de génération de toutes les figures
-├── requirements.txt                # Dépendances Python requises
-└── project_summary.md              # [GÉNÉRÉ] Synthèse globale de toutes les phases
+│   ├── metrics.py                  # Calcul des métriques de validation
+│   ├── models/                     # Modèles individuels (sarima.py, ridge.py, lstm.py)
+│   └── visualization.py            # Tracés graphiques (Matplotlib)
+├── backend/                        # Serveur API FastAPI
+│   ├── main.py                     # Point d'entrée de l'API
+│   ├── api/                        # Routeurs de l'API (forecast.py, roi.py, monte_carlo.py)
+│   └── src/                        # Code source partagé avec le backend (forecasting, ROI)
+├── frontend/                       # Client web React
+│   ├── src/
+│   │   ├── pages/                  # Pages (Dashboard, Forecasting, RoiSimulator, MonteCarlo)
+│   │   ├── App.jsx                 # Routage et mise en page principale
+│   │   └── main.jsx                # Point d'entrée React
+│   ├── package.json
+│   └── vite.config.js              # Configuration de Vite avec proxy API
+├── main.py                         # Orchestrateur principal du pipeline
+├── generate_all_plots.py           # Script utilitaire de génération de figures
+└── requirements.txt                # Dépendances Python requises
 ```
 
 ---
 
-## ⚙️ Installation & Dépendances
+## 🖥️ Architecture de l'Application Web (Détaillée)
 
-1. Clonez ou téléchargez le répertoire du projet.
-2. Installez les packages Python requis en exécutant :
-   ```bash
-   pip install -r requirements.txt
-   ```
+La plateforme moderne interactive s'appuie sur une architecture découplée **Frontend / Backend** :
 
-*Note : Les dépendances incluent notamment `numpy`, `pandas`, `scikit-learn`, `statsmodels`, `xgboost`, `lightgbm`, `catboost`, `tensorflow`, `optuna`, `matplotlib`, `seaborn` et `flask`.*
+```mermaid
+graph LR
+    subgraph Frontend (React SPA)
+        UI[Interface Utilisateur React]
+        Chart[Visualisation interactive - Recharts]
+    end
+    subgraph Backend (FastAPI Server)
+        API[FastAPI Router]
+        Sim[Calculateur ROI / Moteur Monte Carlo]
+        Pred[Moteur de prédiction récursive]
+    end
+    UI -->|HTTP POST / GET| API
+    API --> Sim
+    API --> Pred
+    Pred -->|JSON Projections| Chart
+    Sim -->|JSON Simulation / Risk Analysis| UI
+```
+
+### 1. Le Frontend React (SPA)
+Développé avec **React 18** et **Vite** pour des performances de build optimales :
+* **Composants Dynamiques** : Formulaires de paramétrage économiques équipés de sliders en temps réel.
+* **Graphiques Interactifs** : Utilisation de la bibliothèque **Recharts** pour tracer les courbes de projection d'arrivées et de recettes avec infobulles personnalisées, ainsi que les histogrammes de probabilité de Monte Carlo.
+* **Aesthetics & Styling** : Thématique sombre et moderne en *Glassmorphism* (effets de flou d'arrière-plan, bordures semi-transparentes, gradients vibrants cyan/teal/emerald et contrastes élevés de texte) conçue en Vanilla CSS avec utilitaires Tailwind.
+
+### 2. Le Backend FastAPI (Python)
+Un serveur asynchrone ultra-rapide propulsé par **FastAPI** et **Uvicorn** :
+* **Validation des Données** : Utilisation de **Pydantic** pour typer et valider strictement les requêtes entrantes (par exemple, les paramètres économiques de la projection).
+* **Parallélisme & Asynchronisme** : Traitement des calculs de simulations stochastiques lourdes de manière efficace.
+* **Auto-documentation** : Swagger UI disponible nativement sous `/docs` permettant de tester les points d'accès de l'API en direct.
+
+### 3. Proxy de communication en développement
+Toutes les requêtes faites du frontend vers `/api/*` sont automatiquement redirigées vers le serveur FastAPI local (`http://127.0.0.1:8000`) via le proxy configuré dans `vite.config.js`, éliminant ainsi les problèmes de CORS en phase de développement.
 
 ---
 
-## 🚀 Utilisation & Pipelines
+## 🤖 Détails des 3 Modèles Prédictifs Optimaux
 
-### Lancer le pipeline complet
-Pour exécuter toutes les étapes (nettoyage, EDA, extraction de caractéristiques, entraînement ML + Deep Learning, évaluation et projections ROI), lancez :
+Chaque modèle réside dans sa propre classe au sein de `src/models/` et implémente une interface standard `.fit()` / `.predict()` :
+
+1. **SARIMA (Modèle de Lissage & Tendance)** :
+   * Captures des variations saisonnières stables par différenciation saisonnière d'ordre 12 ($D=1$).
+   * Idéal comme modèle de référence historique à court et moyen terme.
+2. **Régression Ridge (Machine Learning régularisé)** :
+   * Modèle linéaire pénalisé L2 limitant le surapprentissage (overfitting) sur les lags temporels.
+   * Extrêmement rapide à entraîner et robuste face au bruit des variables macroéconomiques.
+3. **LSTM (Deep Learning & Mémoire Temporelle)** :
+   * Réseau de neurones récurrents (RNN) à deux couches LSTM, optimisé via des mécanismes d'attention temporelle pour capturer des dépendances complexes à long terme.
+   * Il surmonte les limitations des modèles classiques face à des ruptures de tendance, comme la relance post-COVID ou l'attraction d'événements majeurs.
+
+---
+
+## 💰 Moteur de Simulation ROI Hôtelier
+
+Le simulateur financier projette sur une période de 10 ans les flux de trésorerie (Cash Flows) d'un investissement hôtelier type de 200 chambres. Il compare deux scénarios :
+* **Scénario de Référence** : Croissance linéaire normale basée sur les tendances historiques.
+* **Scénario Coupe du Monde 2030** : Intègre un pic exceptionnel lors de l'Année 6 (2030) avec une hausse de 15% à 40% du tarif journalier moyen (ADR) et une occupation saturée à 85%.
+
+Les indicateurs calculés en temps réel sont :
+* **Cash Flow Net Annuel** : $\text{Revenus} - \text{OpEx} - \text{Amortissements}$.
+* **Valeur Actuelle Nette (VAN / NPV)** au taux d'actualisation (WACC) choisi :
+  $$\text{VAN} = \sum_{t=1}^{10} \frac{\text{Cash Flow}_t}{(1 + \text{WACC})^t} - \text{Investissement Initial}$$
+* **Taux de Retour Interne (TRI / IRR)** et **Période de Récupération (Payback Period)**.
+
+---
+
+## 🎲 Moteur de Simulation Stochastique de Monte Carlo
+
+Pour prendre en compte l'incertitude économique, la plateforme embarque un générateur stochastique exécutant jusqu'à 1000 tirages aléatoires :
+
+1. **Échantillonnage des Variables d'Entrée** :
+   * **Inflation et Taux d'Occupation de Base** : Échantillonnés suivant une distribution normale $\mathcal{N}(\mu, \sigma)$.
+   * **Marge d'OpEx** : Modélisée de manière gaussienne pour refléter l'instabilité des coûts opérationnels.
+   * **Boost Coupe du Monde** : Modélisé suivant une distribution triangulaire $\text{Triangular}(min, mode, max)$ pour capturer l'asymétrie positive de l'effet FIFA 2030.
+2. **Indicateurs de Risque Clés calculés** :
+   * **Probabilité de Perte** : Proportion de tirages où la VAN actualisée finale est négative : $P(\text{VAN} < 0)$.
+   * **Value at Risk (VaR 95%)** : Le 5ème percentile de la VAN. Elle indique la perte minimale ou le gain minimal garanti avec un niveau de confiance de 95% dans le pire des scénarios.
+   * **Intervalles de Confiance à 90%** : Détermination des percentiles 5% et 95% pour encadrer précisément le rendement futur.
+
+---
+
+## ⚙️ Installation & Démarrage
+
+### Prérequis
+* Python 3.10+
+* Node.js 18+
+
+### 1. Installation des dépendances Python (Backend & Pipeline)
+À la racine du projet :
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Démarrage du Serveur FastAPI (Backend)
+```bash
+python backend/main.py
+```
+Le serveur démarre sur `http://127.0.0.1:8000`.
+
+### 3. Démarrage du Client React (Frontend)
+Ouvrez un nouveau terminal, puis :
+```bash
+cd frontend
+npm install
+npm run dev
+```
+L'application est accessible sur `http://localhost:5173`.
+
+### 4. Exécution du Pipeline Principal (CLI)
+Pour ré-entraîner les modèles et générer les courbes de prédiction globales :
 ```bash
 python main.py
 ```
-
-### Lancer en mode de débogage rapide
-Pour tester le code rapidement sans attendre les 15 époques de Deep Learning ou l'optimisation complète d'Optuna :
-```bash
-python main.py --quick_run
-```
-
-### Générer tous les graphiques
-Pour recréer l'ensemble des figures du rapport et des notebooks dans le dossier `figures/` :
-```bash
-python generate_all_plots.py
-```
-
-### Lancer l'application Web & Simulateur ROI
-Pour démarrer le serveur local Flask :
-```bash
-python app.py
-```
-Ouvrez ensuite votre navigateur à l'adresse [http://localhost:5000](http://localhost:5000).
+*(Utilisez l'option `--quick_run` pour un entraînement accéléré des époques LSTM à des fins de test)*.
 
 ---
 
-## 📈 Détails des Modèles de Prévision
+## 📚 Documentation technique (Sphinx)
 
-Le tableau suivant montre les performances typiques des modèles obtenues sur l'ensemble de test (de janvier 2023 à avril 2026) :
-
-| Modèle | R² (Variance Expliquée) | RMSE | MAE | MAPE (%) |
-| :--- | :---: | :---: | :---: | :---: |
-| **Best DL (LSTM)** | **0.9412** | **108.40** | **75.30** | **5.80%** |
-| **Transformer** | 0.9125 | 125.10 | 88.40 | 6.80% |
-| **Hybrid Model** | 0.8805 | 145.20 | 98.10 | 7.20% |
-| **Régression Ridge** | 0.7826 | 182.18 | 127.94 | 8.17% |
-| **SARIMAX** | 0.7095 | 208.37 | 143.97 | 8.88% |
-| **XGBoost** | 0.0106 | 388.62 | 291.59 | 18.07% |
-
----
-
-## 🖥️ Interface Web & Simulateur ROI
-
-L'application Web développée avec Flask offre un tableau de bord interactif pour :
-1. **Consulter les performances** de tous les modèles prédictifs du projet.
-2. **Simuler la rentabilité financière** d'un hôtel en modifiant des paramètres clés tels que le taux d'inflation, le coût par chambre, le taux d'occupation de base, l'ADR initial et la ville d'investissement. L'impact de la Coupe du Monde de la FIFA 2030 y est automatiquement injecté dans l'année de simulation correspondante.
-
----
-
-## 📖 Documentation
-
-Le projet contient une documentation technique rédigée en reStructuredText (.rst) compilable avec Sphinx. Les fichiers principaux sont situés dans le dossier `docs/` :
-- `docs/data_pipeline.rst` : Décrit le nettoyage et la reconstruction des données.
-- `docs/eda.rst` : Présente les résultats de l'EDA et de la stationnarité (avec l'analyse ACF/PACF).
-- `docs/modeling.rst` : Explique les architectures prédictives (SARIMAX, ML, LSTM, Transformer).
-- `docs/results_roi.rst` : Présente l'analyse de rentabilité pour l'horizon 2030.
+La documentation est rédigée en reStructuredText (.rst) et compilée avec Sphinx :
+```bash
+cd docs
+pip install -r requirements.txt
+make html
+```
+Les fichiers HTML générés sont consultables dans `docs/_build/html/index.html`.

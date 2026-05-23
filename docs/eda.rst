@@ -37,6 +37,18 @@ La stationnarité a été validée scientifiquement à l'aide de trois tests com
 
 *Conclusion* : Compte tenu de la non-stationnarité détectée par les tests ADF et KPSS, une double différenciation (différenciation simple et différenciation saisonnière de lag 12) a été appliquée pour le modèle statistique SARIMAX afin de stabiliser la moyenne et la variance.
 
+Analyse d'Autocorrélation (ACF/PACF)
+------------------------------------
+Pour caractériser la dépendance temporelle de la série et calibrer les ordres du modèle statistique SARIMAX, les fonctions d'autocorrélation (ACF) et d'autocorrélation partielle (PACF) ont été estimées :
+
+* **Série Brute** : L'ACF montre une décroissance lente et sinusoïdale avec des pics significatifs tous les 12 mois, confirmant une forte non-stationnarité en moyenne et une saisonnalité annuelle marquée.
+* **Série Différenciée (d=1, D=1, s=12)** : Après différenciations, la série est stationnarisée. L'analyse des corrélations résiduelles montre des pics significatifs à certains lags, permettant d'identifier une structure auto-régressive d'ordre 2 pour la partie non saisonnière, et un ordre MA saisonnier.
+
+.. image:: ../figures/acf_pacf_arrivees_touristiques.png
+   :width: 100%
+   :align: center
+   :alt: Graphiques ACF et PACF des Arrivées
+
 Corrélations des Variables Macroéconomiques
 -------------------------------------------
 L'analyse de la matrice de corrélation de Pearson révèle l'impact des variables macroéconomiques sur le volume des arrivées :
