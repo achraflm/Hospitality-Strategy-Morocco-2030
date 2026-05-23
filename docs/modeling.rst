@@ -31,7 +31,7 @@ Le pipeline a été optimisé pour n'entraîner et n'évaluer que les 3 meilleur
 2. **Régression Ridge (Machine Learning)** :
    - Modèle de régression linéaire avec régularisation L2 (pénalité de Ridge) sur les lags temporels. Très robuste et rapide.
 
-3. **LSTM (Deep Learning)** :
+3. **RNN (Deep Learning)** :
    - Réseau de neurones récurrents (RNN) de type Long Short-Term Memory, particulièrement adapté pour capturer les tendances non linéaires à long terme et les événements exceptionnels (Coupe du Monde 2030).
 
 Bilan Comparatif des Performances
