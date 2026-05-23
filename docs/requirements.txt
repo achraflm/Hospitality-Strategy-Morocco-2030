@@ -1,0 +1,2 @@
+# Minimal requirements for Read the Docs build
+sphinx-rtd-theme>=1.0.0
