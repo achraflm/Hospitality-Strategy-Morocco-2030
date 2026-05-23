@@ -19,6 +19,28 @@ def set_style():
         'legend.fontsize': 10
     })
 
+def clean_filename(title):
+    """Converts a title to an ASCII-safe filename (no accents, no special chars, no spaces)."""
+    t = title.lower()
+    replacements = {
+        'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+        'à': 'a', 'â': 'a', 'ä': 'a',
+        'î': 'i', 'ï': 'i',
+        'ô': 'o', 'ö': 'o',
+        'û': 'u', 'ü': 'u',
+        'ç': 'c',
+        '&': 'and',
+        "'": '',
+        '(': '',
+        ')': ''
+    }
+    for char, rep in replacements.items():
+        t = t.replace(char, rep)
+    t = t.replace(' ', '_')
+    while '__' in t:
+        t = t.replace('__', '_')
+    return t.strip('_')
+
 def plot_arrivals_evolution(df, title='Evolution of Arrivals over Time', save_path=None):
     """Plots arrivals over time, highlighting the COVID-19 period."""
     set_style()
@@ -89,7 +111,7 @@ def plot_correlation_matrix(df, columns, title='Correlation Matrix', save_path=N
     
     # Auto-save default path
     if save_path is None:
-        clean_title = title.lower().replace(" ", "_").replace("'", "").replace("(", "").replace(")", "")
+        clean_title = clean_filename(title)
         save_path = os.path.join(FIGURES_DIR, f'correlation_matrix_{clean_title}.png')
         
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
@@ -186,7 +208,7 @@ def plot_predictions_comparison(y_true, predictions_dict, dates, title='Model Pr
     
     # Auto-save default path
     if save_path is None:
-        clean_title = title.lower().replace(" ", "_").replace("'", "").replace("(", "").replace(")", "")
+        clean_title = clean_filename(title)
         save_path = os.path.join(FIGURES_DIR, f'predictions_{clean_title}.png')
         
     plt.savefig(save_path, dpi=150, bbox_inches='tight')
@@ -208,7 +230,7 @@ def plot_feature_importance(importance_series, title='Feature Importance', save_
     
     # Auto-save default path
     if save_path is None:
-        clean_title = title.lower().replace(" ", "_").replace("'", "").replace("(", "").replace(")", "")
+        clean_title = clean_filename(title)
         save_path = os.path.join(FIGURES_DIR, f'feature_importance_{clean_title}.png')
         
     plt.savefig(save_path, dpi=150, bbox_inches='tight')

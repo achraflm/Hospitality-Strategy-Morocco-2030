@@ -42,7 +42,7 @@ Cinq algorithmes de ML ont été évalués avec recherche d'hyperparamètres sur
 3. **XGBoost, LightGBM et CatBoost** : Algorithmes d'arbres de décision boostés. XGBoost et CatBoost capturent les relations non linéaires avec succès.
 4. **Forecast Hybride** : Un modèle d'ensemble pondéré combinant 50% XGBoost, 30% CatBoost et 20% Ridge pour maximiser la robustesse en combinant prévisions d'arbres et prévisions linéaires régularisées.
 
-.. image:: ../figures/predictions_comparaison_des_modèles_ml_&_hybride.png
+.. image:: ../figures/predictions_comparaison_des_modeles_ml_and_hybride.png
    :width: 100%
    :align: center
    :alt: Comparaison des Prédictions ML
@@ -53,7 +53,7 @@ Pour évaluer la contribution des différentes variables prédictives, nous anal
 
 * **Importance Globale** : Identifie que le lag de 12 mois (`Arrivals_lag12`), le volume de nuitées (`Nights`), les recettes touristiques et les indicateurs économiques (`REER`, `Oil_price`) sont les variables les plus décisives pour guider les prévisions du modèle.
 
-.. image:: ../figures/feature_importance_importance_des_caractéristiques_xgboost.png
+.. image:: ../figures/feature_importance_importance_des_caracteristiques_xgboost.png
    :width: 80%
    :align: center
    :alt: Importance des Caractéristiques XGBoost
@@ -66,7 +66,7 @@ Pour capter la mémoire séquentielle profonde, nous avons déployé des réseau
 2. **LSTM Retenu** : Un réseau composé de 2 couches LSTM (64 puis 32 unités) suivi d'un Dropout (0.2) et d'une couche Dense. Il obtient les meilleures performances absolues du projet avec un **MAPE de test de 5,8%** sur les arrivées touristiques.
 3. **Modèle Transformer** : Un modèle basé sur des mécanismes d'attention multicouche (`MultiHeadAttention`) et de convolution temporelle (`Conv1D`) est également évalué, confirmant la force des approches basées sur l'attention pour décoder les dépendances à long terme.
 
-.. image:: ../figures/predictions_comparaison_des_modèles_deep_learning.png
+.. image:: ../figures/predictions_comparaison_des_modeles_deep_learning.png
    :width: 100%
    :align: center
    :alt: Comparaison des Prédictions Deep Learning

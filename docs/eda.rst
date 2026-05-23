@@ -41,7 +41,7 @@ Corrélations des Variables Macroéconomiques
 -------------------------------------------
 L'analyse de la matrice de corrélation de Pearson révèle l'impact des variables macroéconomiques sur le volume des arrivées :
 
-.. image:: ../figures/correlation_matrix_matrice_de_corrélation_des_variables_économiques.png
+.. image:: ../figures/correlation_matrix_matrice_de_correlation_des_variables_economiques.png
    :width: 80%
    :align: center
    :alt: Matrice de Corrélation Économique
@@ -70,7 +70,7 @@ Analyses Hôtelières et Benchmark Internationaux
 
 * **Corrélations d'Occupation entre Destinations** : Les dynamiques d'occupation touristique s'avèrent fortement corrélées positivement entre destinations européennes / méditerranéennes (Espagne-France-Grèce), tandis que le Moyen-Orient (EAU) présente un profil déphasé.
 
-.. image:: ../figures/correlation_matrix_corrélations_doccupation_entre_pays.png
+.. image:: ../figures/correlation_matrix_correlations_doccupation_entre_pays.png
    :width: 80%
    :align: center
    :alt: Corrélations d'Occupation
