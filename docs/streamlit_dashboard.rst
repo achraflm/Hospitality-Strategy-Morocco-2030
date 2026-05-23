@@ -1,4 +1,4 @@
-Plateforme Web Interactive Premium (React + FastAPI)
+Plateforme Web Interactive Premium 
 =====================================================
 
 Le projet fournit une application web complète, moderne et premium
@@ -40,31 +40,6 @@ L'application est structurée en deux sous-dossiers à la racine :
 Lancement des Serveurs en Local
 ---------------------------------
 
-1. Démarrer le Serveur API (Backend Python)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Le serveur FastAPI tourne par défaut sur ``http://127.0.0.1:8000``.
-
-.. code-block:: bash
-
-   python backend/main.py
-
-La documentation interactive Swagger (OpenAPI) est accessible à ``http://localhost:8000/docs``.
-
-2. Démarrer le Serveur de Développement Frontend (React + Vite)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Depuis la racine du projet :
-
-.. code-block:: bash
-
-   cd frontend
-   npm run dev
-
-L'application web est accessible dans le navigateur à ``http://localhost:5173``.
-Toutes les requêtes vers ``/api/*`` sont automatiquement redirigées vers le backend
-local via un reverse-proxy configuré dans ``vite.config.js``.
-
 
 Structure des Pages de la Plateforme
 --------------------------------------
@@ -79,7 +54,7 @@ Tableau de Bord (Dashboard)
 Prévisions IA (Forecasting)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Sélection interactive parmi les 3 modèles optimaux (**SARIMA**, **Ridge**, **LSTM**).
+- Sélection interactive parmi les 3 modèles optimaux (**SARIMA**, **Ridge**, **RNN**).
 - Évaluation historique comparative sur l'ensemble de test.
 - Projections futures personnalisables jusqu'en 2035 avec inflation et boost FIFA 2030.
 - Exportation des résultats de prévision au format CSV.
