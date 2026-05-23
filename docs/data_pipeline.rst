@@ -1,5 +1,5 @@
 Pipeline de Traitement des Données
-=================================
+======================================
 
 Architecture Multi-Sources
 ---------------------------

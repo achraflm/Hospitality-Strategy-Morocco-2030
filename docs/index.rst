@@ -1,5 +1,5 @@
 Bienvenue dans la documentation du projet Stratégie Hôtelière Maroc 2030 !
-========================================================================
+==============================================================================
 
 Ce projet présente un pipeline complet de Data Science appliqué à la prévision de la demande touristique au Maroc et à l'évaluation du retour sur investissement (ROI) hôtelier par ville hôte dans le contexte de la Coupe du Monde FIFA 2030.
 

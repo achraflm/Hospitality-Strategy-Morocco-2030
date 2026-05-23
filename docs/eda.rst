@@ -2,7 +2,7 @@ Analyse Exploratoire des Données (EDA)
 ======================================
 
 Évolution Générale de la Série Cible
------------------------------------
+---------------------------------------
 L'analyse de la série temporelle des arrivées mensuelles au Maroc montre trois phases claires :
 
 1. **Croissance Régulière (2013-2019)** : Un dynamisme structurel avec un Taux de Croissance Annuel Moyen (TCAM) de 5,2%.

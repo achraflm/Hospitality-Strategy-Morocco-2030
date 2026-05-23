@@ -2,7 +2,7 @@ Prévisions 2030 & Analyse du ROI Hôtelier
 ==========================================
 
 Prévisions de la Demande Touristique (2025-2030)
------------------------------------------------
+---------------------------------------------------
 En appliquant le modèle LSTM retenu (M3) sur l'horizon 2025-2030, avec l'activation de l'indicateur Coupe du Monde en juin-juillet 2030, nous obtenons les projections d'arrivées touristiques nationales suivantes :
 
 .. list-table:: Prévisions Annuelles des Arrivées (2025-2030)

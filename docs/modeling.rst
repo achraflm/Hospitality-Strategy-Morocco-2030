@@ -21,7 +21,7 @@ Les modèles sont comparés sur la base de quatre métriques de régression stan
 * **$R^2$ (Coefficient de Détermination)** : Indique la proportion de variance expliquée par le modèle.
 
 Modèle Statistique de Référence (SARIMAX)
-----------------------------------------
+--------------------------------------------
 Un modèle SARIMAX a été entraîné en tant que baseline statistique. La structure optimale sélectionnée par optimisation automatique du critère AIC/BIC est :
 
 .. math::
