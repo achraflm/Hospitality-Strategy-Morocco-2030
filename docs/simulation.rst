@@ -55,8 +55,6 @@ L'application expose un selecteur unique qui change completement le mode de simu
        Un graphique **RevPAR annuel** supplementaire est affiche : ``RevPAR = Occ x ADR``.
 
 
-Architecture Interne
----------------------
 
 L'application repose sur un enchaenement modulaire :
 
