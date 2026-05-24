@@ -7,7 +7,8 @@ Pour capturer la dynamique complexe de la demande, le pipeline de données fusio
 
 1. **Données de Flux Touristiques** : 
    * Historique annuel (1995-2020) des arrivées aux frontières et des recettes touristiques issues des plateformes officielles (HCP, Ministère du Tourisme).
-   * Données mensuelles (2010-2025) issues de TradingEconomics servant de série cible principale.
+   * Données mensuelles (2010-2025) issues de TradingEconomics servant de série cible principale pour les arrivées touristiques (``Arrivals``).
+   * Données mensuelles des nuitées (``Nights``) provenant des publications du Ministère du Tourisme (disponibles depuis 2016), servant de seconde cible de prédiction.
    * Données de récentes performances collectées manuellement (14,5 millions en 2023, 17,4 millions en 2024 et 19,8 millions en 2025).
 
 2. **Données Hôtelières Locales** : 
@@ -27,14 +28,15 @@ Le pipeline de nettoyage :
 * Écrase les valeurs aberrantes de cette période avec les données mensuelles réelles répertoriées durant la crise (fermeture totale puis partielle).
 * Initialise un flag binaire `is_covid = 1` pour cette période. Ce flag permet aux modèles d'isoler l'impact négatif et d'éviter que le choc n'altère la prévision de la tendance à long terme.
 
-Reconstruction Mensuelle Historique
------------------------------------
+Reconstruction Mensuelle Historique et Traitement des Cibles
+------------------------------------------------------------
 Puisque les données mensuelles détaillées ne sont pas disponibles avant 2016 (seuls les totaux annuels sont fiables de 1996 à 2015), nous avons conçu un algorithme de reconstruction temporelle :
 
 1. **Extraction de Saisonnalité** : Nous appliquons une décomposition multiplicative via `seasonal_decompose` de la bibliothèque statsmodels sur la période récente et stable (2022-2026) pour extraire le profil saisonnier typique du tourisme au Maroc (12 coefficients mensuels).
 2. **Désagrégation Temporelle** : Les coefficients de saisonnalité sont normalisés (somme = 12) et appliqués sur le niveau moyen mensuel historique (Total Annuel / 12) de chaque année correspondante.
 3. **Ajout de Bruit** : Un bruit gaussien, calibré sur la variance résiduelle de la période récente, est injecté pour rendre les données simulées statistiquement représentatives.
 4. **Reconstruction des Recettes** : La même logique de désagrégation est appliquée aux recettes touristiques annuelles historiques.
+5. **Gestion de la Cible Nuitées** : Contrairement aux arrivées, la série des nuitées (``Nights``) n'est pas reconstruite artificiellement sur le passé lointain. Pour l'entraînement des modèles de prédiction des nuitées, le pipeline filtre les valeurs non nulles (à partir de janvier 2016), ce qui garantit l'utilisation de données réelles non biaisées.
 
 Traitement des Données Hôtelières et Benchmark
 ----------------------------------------------

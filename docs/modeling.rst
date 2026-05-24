@@ -1,46 +1,87 @@
-Modélisation Prédictive
+Modelisation Predictive
 =======================
 
-Protocole d'Évaluation Chronologique
-------------------------------------
-Pour les séries temporelles, un découpage aléatoire est proscrit car il détruirait la structure d'autocorrélation. Nous appliquons un split temporel strict :
+Protocole d'Evaluation Chronologique
+--------------------------------------
+Pour les series temporelles, un decoupage aleatoire est proscrit car il detruirait la structure d'autocorrelation. Nous appliquons un split temporel strict :
 
-* **Train Set** : Données de janvier 1995 à décembre du (test_year - 1).
-* **Test Set** : Données de janvier de test_year à avril 2026 servant uniquement à valider la généralisation des modèles.
-* **Prédiction** : Période de prévision pure allant de mai 2026 à décembre 2030 (incluant la Coupe du Monde).
+* **Train Set** : Donnees de janvier 1995 a decembre 2022.
+* **Test Set** : Donnees de janvier 2023 a avril 2026 servant uniquement a valider la generalisation des modeles.
+* **Prediction** : Periode de prevision pure allant de mai 2026 a decembre 2035 (incluant la Coupe du Monde).
 
-Les hyperparamètres des modèles sont ajustés par recherche ou configurés de manière stable dans leurs modules individuels respectifs du dossier `src/models/`.
+Les hyperparametres des modeles sont ajustes par recherche ou configures de maniere stable dans leurs modules individuels respectifs du dossier ``src/models/``.
 
-Métriques d'Évaluation
-----------------------
-Les modèles sont comparés sur la base de quatre métriques de régression standards :
+Double Cible de Prediction
+----------------------------
+
+Le pipeline predit **deux variables** independamment :
+
+1. **Arrivees touristiques** (``Arrivals``) — entrees de touristes en nombre de voyageurs.
+   Features : ``get_feature_list()`` — 36 variables.
+   Modeles : entraines dans ``notebooks/03_machine_learning.ipynb``.
+   Metriques : ``data/model_performance_metrics_ML.csv``.
+
+2. **Nuitees** (``Nights``) — nombre de nuits passees par les touristes.
+   Features : ``get_nights_feature_list()`` — 49 variables incluant les lags Nights et ``nuitees_per_arrival``.
+   Modeles : entraines dans ``notebooks/08_nuitees_prediction.ipynb``.
+   Metriques : ``data/model_performance_metrics_nuitees.csv``.
+
+Le lien entre les deux cibles est la **Duree Moyenne de Sejour** :
+
+  Nuitees = Arrivees x Duree Moyenne de Sejour
+
+La prediction des Nuitees permet un calcul direct et plus precis du taux d'occupation hotelier :
+
+  Occ(t) = min(0.95, Nuitees_predites(t) / (Chambres x 365))
+
+  RevPAR(t) = Occ(t) x ADR(t)
+
+Metriques d'Evaluation
+-----------------------
+Les modeles sont compares sur la base de quatre metriques de regression standards :
 
 * **MAPE (Mean Absolute Percentage Error)** : Mesure l'erreur relative moyenne en pourcentage (cible : < 10%).
-* **RMSE (Root Mean Squared Error)** : Pénalise lourdement les grandes erreurs de prédiction.
-* **MAE (Mean Absolute Error)** : Écart moyen en valeur absolue.
-* **$R^2$ (Coefficient de Détermination)** : Indique la proportion de variance expliquée par le modèle.
+* **RMSE (Root Mean Squared Error)** : Penalise lourdement les grandes erreurs de prediction.
+* **MAE (Mean Absolute Error)** : Ecart moyen en valeur absolue.
+* **R2 (Coefficient de Determination)** : Indique la proportion de variance expliquee par le modele.
 
-Modèles Prédictifs Retenus (Top 3)
-----------------------------------
+9 Modeles ML Entraines (par cible)
+------------------------------------
 
-Le pipeline a été optimisé pour n'entraîner et n'évaluer que les 3 meilleurs modèles identifiés pour la prévision de la demande touristique au Maroc :
+Les 9 modeles suivants sont entraines sur chaque cible (Arrivees et Nuitees) :
 
-1. **SARIMA (Modèle Statistique)** :
-   - Captures des variations saisonnières stables par différenciation saisonnière d'ordre 12. Idéal comme baseline historique stable.
+1. **Ridge** (R2 = 0.9147 sur Arrivees) — Meilleur modele ML pour les Arrivees.
+2. **Decision Tree** (R2 = 0.6823)
+3. **Random Forest** (R2 = 0.5488)
+4. **Gradient Boosting** (R2 = 0.3645)
+5. **XGBoost** (R2 = 0.2448)
+6. **LightGBM** (R2 = 0.0067)
+7. **Extra Trees** (R2 = -0.0899)
+8. **AdaBoost** (R2 = -0.3417)
+9. **CatBoost** (R2 = -1.2253)
 
-2. **Régression Ridge (Machine Learning)** :
-   - Modèle de régression linéaire avec régularisation L2 (pénalité de Ridge) sur les lags temporels. Très robuste et rapide.
+Top 3 Modeles par Cible
+-------------------------
 
-3. **LSTM (Deep Learning)** :
-   - Réseau de neurones récurrents (RNN) de type Long Short-Term Memory, particulièrement adapté pour capturer les tendances non linéaires à long terme et les événements exceptionnels (Coupe du Monde 2030).
+L'application ``simulation.py`` lit automatiquement les fichiers de metriques pour identifier
+les 3 meilleurs modeles par R2 pour chaque cible :
+
+**Arrivees** (``data/model_performance_metrics.csv`` ou ``model_performance_metrics_ML.csv``) :
+  Ridge > Decision Tree > Random Forest
+
+**Nuitees** (``data/model_performance_metrics_nuitees.csv``) :
+  Genere par ``notebooks/08_nuitees_prediction.ipynb`` — a executer pour peupler ce fichier.
 
 Bilan Comparatif des Performances
-----------------------------------
-Le tableau comparatif contenant les résultats de l'évaluation de ces 3 modèles est automatiquement enregistré dans le fichier CSV :
+------------------------------------
+Le tableau comparatif contenant les resultats de l'evaluation de ces modeles est
+automatiquement enregistre dans les fichiers CSV :
 
 .. code-block:: text
 
-   data/model_performance_metrics.csv
+   data/model_performance_metrics_ML.csv      (Arrivees — 9 modeles ML)
+   data/model_performance_metrics_nuitees.csv (Nuitees — 9 modeles ML)
 
-Ce fichier répertorie pour chaque modèle le $R^2$, le RMSE, le MAE et le MAPE, triés par ordre décroissant de performance.
+Ces fichiers repertorient pour chaque modele le R2, le RMSE, le MAE et le MAPE,
+tries par ordre decroissant de performance.
 

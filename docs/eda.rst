@@ -14,6 +14,10 @@ L'analyse de la série temporelle des arrivées mensuelles au Maroc montre trois
    :align: center
    :alt: Évolution des Arrivées Touristiques au Maroc
 
+Relation entre Arrivées et Nuitées
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L'analyse conjointe des arrivées et des nuitées mensuelles (disponibles à partir de 2016) met en évidence une corrélation linéaire très élevée (> 0,92). Le ratio du nombre de nuitées par arrivée (représentant la durée moyenne de séjour nationale) reste stable autour de **2,2 à 2,4 nuitées par touriste**. Cette relation étroite garantit la cohérence croisée lorsque l'investisseur compare les prévisions basées sur les arrivées avec celles basées directement sur les nuitées dans le simulateur de ROI.
+
 Décomposition Season-Trend (STL)
 --------------------------------
 Une décomposition additive de la série temporelle (tendance + saisonnalité + résidus) permet d'en extraire la dynamique :

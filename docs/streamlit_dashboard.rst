@@ -76,27 +76,31 @@ Tableau de Bord (Dashboard)
 - Graphiques historiques interactifs combinant arrivées et recettes réelles.
 - Référentiel hôtelier par défaut pour 6 villes stratégiques marocaines.
 
-Prévisions IA (Forecasting)
+Previsions IA (Forecasting)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Sélection interactive parmi les 3 modèles optimaux (**SARIMA**, **Ridge**, **LSTM**).
-- Évaluation historique comparative sur l'ensemble de test.
+- Choix de la **cible de prediction** : Arrivees touristiques (``Arrivals``) ou Nuitees (``Nights``).
+- Identification automatique du **Top 3 modeles** par cible, lu depuis le fichier de metriques CSV
+  correspondant (``model_performance_metrics.csv`` ou ``model_performance_metrics_nuitees.csv``).
+- Evaluation historique comparative sur l'ensemble de test (2023-2026).
 - Projections futures personnalisables jusqu'en 2035 avec inflation et boost FIFA 2030.
-- Exportation des résultats de prévision au format CSV.
+- Exportation des resultats de prevision au format CSV.
 
-Simulateur ROI Hôtelier (RoiSimulator)
+Simulateur ROI Hotelier (RoiSimulator)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Paramétrage financier complet par sliders en temps réel (chambres, investissement, ADR,
+- Parametrage financier complet par sliders en temps reel (chambres, investissement, ADR,
   occupation, WACC).
-- Comparaison dynamique entre le scénario de base et le scénario Coupe du Monde 2030.
+- Comparaison dynamique entre le scenario de base et le scenario Coupe du Monde 2030.
+- **Mode Nuitees** : affiche le graphique **RevPAR annuel** (Revenue Per Available Room)
+  calcule directement depuis les nuitees predites : ``Occ = Nuitees / (Chambres x 365)``.
 - Tableau de cash flows financiers sur 10 ans exportable en CSV.
 
 Simulation Monte Carlo (Analyse de Risque)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Voir la section dédiée :ref:`monte_carlo_section` ci-dessous pour la documentation
-complète de la page Monte Carlo.
+Voir la section dediee :ref:`monte_carlo_section` ci-dessous pour la documentation
+complete de la page Monte Carlo.
 
 
 .. _monte_carlo_section:
@@ -271,24 +275,43 @@ La plateforme interactive utilise une architecture web moderne à services déco
 
 2. **Backend (API REST asynchrone)**
 
-   - Construit en Python avec **FastAPI**, assurant une vitesse d'exécution optimale.
-   - Validation stricte des requêtes par type via **Pydantic**.
-   - Moteur mathématique et financier asynchrone pour les projections récursives et
-     le générateur Monte Carlo (``numpy`` + ``HotelROISimulator``).
+   - Construit en Python avec **FastAPI**, assurant une vitesse d'execution optimale.
+   - Validation stricte des requetes par type via **Pydantic**.
+   - Moteur mathematique et financier asynchrone pour les projections recursives et
+     le generateur Monte Carlo (``numpy`` + ``HotelROISimulator``).
 
 .. list-table:: Endpoints de l'API Backend
    :header-rows: 1
    :widths: 10 30 60
 
-   * - Méthode
+   * - Methode
      - Route
      - Description
+   * - GET
+     - ``/api/forecast/models``
+     - Retourne la liste des modeles disponibles (SARIMA, Ridge, LSTM, etc.).
+   * - GET
+     - ``/api/forecast/features``
+     - Retourne la liste des 36 features Arrivees (``get_feature_list()``).
+   * - GET
+     - ``/api/forecast/features/nights``
+     - Retourne la liste des 49 features Nuitees (``get_nights_feature_list()``).
+   * - POST
+     - ``/api/forecast/metrics``
+     - Calcule les metriques (R2, RMSE, MAE, MAPE) des modeles selectionnes sur l'ensemble de test.
    * - POST
      - ``/api/forecast``
-     - Lance une prévision récursive avec le modèle sélectionné (SARIMA / Ridge / LSTM).
+     - Lance une prevision recursive avec le modele selectionne pour la cible choisie
+       (``target_col`` : ``Arrivals`` ou ``Nights``). Retourne les predictions 2026-2035.
    * - GET
      - ``/api/roi/simulate``
-     - Calcule le tableau de cash flows et les indicateurs NPV, IRR, Payback sur 10 ans.
+     - Calcule le tableau de cash flows et les indicateurs NPV, IRR, Payback sur 10 ans
+       (mode Arrivees). Utilise ``simulate_with_forecast()``.
+   * - GET
+     - ``/api/roi/simulate/nights``
+     - Calcule les cash flows avec occupation directe depuis les nuitees predites.
+       Retourne egalement le RevPAR annuel. Utilise ``simulate_with_nuitees_forecast()``.
    * - POST
      - ``/api/monte-carlo/simulate``
-     - Lance N simulations Monte Carlo et retourne le sommaire et l'histogramme du ROI.
+     - Lance N simulations Monte Carlo et retourne le sommaire statistique (VAN esperee,
+       VaR 95%, P(perte), TRI) et l'histogramme du ROI.

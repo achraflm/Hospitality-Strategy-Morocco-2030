@@ -6,6 +6,7 @@ def build_features(df_clean):
     """
     Builds lag features, rolling statistics, seasonal/cyclical variables,
     special temporal/holiday indicators, and unsupervised anomaly detection flags.
+    Also builds Nights (Nuitées) specific features when the column is available.
     """
     df = df_clean.copy()
     
@@ -143,6 +144,33 @@ def build_features(df_clean):
     res_std = residuals.std()
     df['anomaly_prophet'] = (np.abs(residuals) > (2.5 * res_std)).astype(int)
     
+    # 8. NIGHTS (Nuitées) features — second prediction target
+    nights_col = 'Nights'
+    if nights_col in df.columns:
+        # Lags for Nights (1, 2, 6, 12 months)
+        for k in [1, 2, 6, 12]:
+            df[f'nights_lag_{k}'] = df[nights_col].shift(k)
+        
+        # Rolling stats for Nights (shift(1) to avoid leakage)
+        for w in [3, 6, 12]:
+            df[f'nights_roll_mean_{w}'] = (
+                df[nights_col].shift(1).rolling(window=w).mean()
+            )
+            df[f'nights_roll_std_{w}'] = (
+                df[nights_col].shift(1).rolling(window=w).std()
+            )
+        
+        # Growth YoY for Nights
+        df['nights_growth_yoy'] = (
+            (df[nights_col].shift(1) - df[nights_col].shift(13)) /
+            df[nights_col].shift(13).replace(0, np.nan) * 100
+        ).fillna(0)
+        
+        # Average length of stay proxy : Nights / Arrivals (lagged by 1 to avoid leakage)
+        # Key for RevPAR-based ROI computation : a longer stay boosts revenue per arrival
+        safe_arrivals = df[target_col].shift(1).replace(0, np.nan)
+        df['nuitees_per_arrival'] = (df[nights_col].shift(1) / safe_arrivals).fillna(0)
+    
     return df
 
 def get_feature_list():
@@ -160,5 +188,37 @@ def get_feature_list():
         'Oil_price_lag1', 'FDI_lag1', 'Poverty_rate_lag1', 'REER_lag1',
         'Oil_price_lag3', 'FDI_lag3', 'Poverty_rate_lag3', 'REER_lag3',
         'is_covid', 'cdm_event',
+        'anomaly_zscore', 'anomaly_iforest', 'anomaly_prophet'
+    ]
+
+def get_nights_feature_list():
+    """
+    Returns the list of features for predicting Nights (Nuitées / overnight stays).
+
+    Includes Nights-specific lags, rolling statistics, the average length-of-stay
+    ratio (nuitees_per_arrival), and all common temporal / macroeconomic features.
+    """
+    return [
+        # Nights-specific lags and rolling stats
+        'nights_lag_1', 'nights_lag_2', 'nights_lag_12',
+        'nights_roll_mean_3', 'nights_roll_mean_6', 'nights_roll_mean_12',
+        'nights_roll_std_3', 'nights_roll_std_6', 'nights_roll_std_12',
+        'nights_growth_yoy',
+        # Average length of stay (Nights / Arrivals) — key RevPAR driver
+        'nuitees_per_arrival',
+        # Arrivals lags as contextual predictors
+        'lags_1', 'lags_2', 'lags_12',
+        'roll_mean_3', 'roll_mean_12',
+        # Temporal and seasonal
+        'month_sin', 'month_cos', 'quarter', 'year',
+        'saison_1', 'saison_2', 'saison_3',
+        'is_summer', 'is_high_season', 'is_vacances', 'jours_feries_count',
+        'is_ramadan', 'is_special_event',
+        # Macroeconomic (lagged)
+        'Oil_price_lag1', 'FDI_lag1', 'Poverty_rate_lag1', 'REER_lag1',
+        'Oil_price_lag3', 'FDI_lag3', 'Poverty_rate_lag3', 'REER_lag3',
+        # Event flags
+        'is_covid', 'cdm_event',
+        # Anomaly flags
         'anomaly_zscore', 'anomaly_iforest', 'anomaly_prophet'
     ]

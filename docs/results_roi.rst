@@ -182,18 +182,36 @@ En analysant les données historiques d'inflation des pays hôtes des précéden
 
 *Implications pour le Maroc 2030* : Ce profil d'inflation historique indique que le Maroc connaîtra probablement des hausses de prix intenses dans le secteur des services et de l'hôtellerie en juin-juillet 2030. Bien que cela augmente l'ADR nominal et les revenus d'exploitation à court terme, cela impactera également les coûts opérationnels directs. Une planification budgétaire rigoureuse est donc recommandée pour les investisseurs hôteliers.
 
-Modèle de Simulation ROI Dynamique piloté par la Prévision
-----------------------------------------------------------
-Pour dépasser les hypothèses de croissance statiques, un modèle de simulation ROI dynamique a été implémenté. Il est directement interconnecté avec les résultats des prévisions touristiques du projet :
+Modèle de Simulation ROI Dynamique et Dual-Target
+--------------------------------------------------
+Pour dépasser les hypothèses de croissance statiques, un modèle de simulation ROI dynamique a été implémenté à double cible (Arrivées vs Nuitées). Il est directement interconnecté avec les prévisions des modèles de Machine Learning :
 
-1. **Identification des Top 3 Modèles** : Les 3 modèles obtenant le coefficient de détermination :math:`R^2` le plus élevé lors de la phase de test (par exemple, *CatBoost*, *XGBoost* ou *LSTM*) sont automatiquement sélectionnés.
-2. **Couplage de la Demande** : Les prévisions d'arrivées touristiques annuelles modélisées pour chaque année (2026-2035) servent d'indicateur de croissance de la demande touristique nationale.
-3. **Calcul de Taux d'Occupation Dynamique** : Le taux d'occupation de l'hôtel dans la ville choisie est calculé chaque année selon la formule :
+1. **Identification indépendante des Top 3 Modèles** : Les 3 modèles obtenant le coefficient de détermination :math:`R^2` le plus élevé lors de la phase de test sont automatiquement sélectionnés à partir de leurs fichiers de métriques respectifs (``model_performance_metrics_ML.csv`` pour les Arrivées et ``model_performance_metrics_nuitees.csv`` pour les Nuitées).
+
+2. **Calcul de Taux d'Occupation Dynamique** :
+
+   * **Mode Arrivées (Approche relative)** : Le taux d'occupation annuel de l'hôtel suit la croissance relative des arrivées nationales prédites par rapport à l'année de référence 2025 :
+
+     .. math::
+
+        \text{Occ}_t = \min\left(0.95, \text{Occ}_{\text{base}} \times \frac{\text{Arrivées}_t}{\text{Arrivées}_{2025}}\right)
+
+   * **Mode Nuitées (Approche directe)** : Le taux d'occupation annuel est dérivé directement des nuitées nationales annuelles prédites :math:`\hat{N}_t` réparties selon la part de marché historique de la ville cible :
+
+     .. math::
+
+        \text{Occ}_t = \min\left(0.95, \frac{\hat{N}_t \times \text{Part\_Ville}}{\text{Chambres} \times 365}\right)
+
+3. **Analyse de l'Occupation et Calcul de Moyenne** :
+   La modélisation de l'occupation annuelle sur 10 ans permet également d'obtenir un **taux d'occupation moyen** lissé pour l'établissement. Ce taux moyen est capital car il permet d'évaluer la stabilité et la viabilité opérationnelle globale de l'investissement sur le long terme, au-delà du seul pic ponctuel généré par la Coupe du Monde 2030.
+
+4. **Métrique RevPAR** :
+   En mode Nuitées, le simulateur évalue précisément le **Revenue Per Available Room (RevPAR)** annuel, indicateur clé de performance hôtelière :
 
    .. math::
 
-      \text{Occ}_t = \min\left(0.95, \text{Occ}_{\text{base}} \times \frac{\text{Arrivées}_t}{\text{Arrivées}_{2025}}\right)
+      \text{RevPAR}_t = \text{Occ}_t \times \text{ADR}_t
 
-4. **Boost Coupe du Monde 2030** : En 2030, si l'option est activée, un surcroît d'occupation relative de +15% et un boost d'ADR de +40% sont cumulés au taux d'occupation dynamique.
-5. **Indicateurs Comparatifs** : Le simulateur calcule la VAN actualisée (NPV), le Taux de Rentabilité Interne (IRR), le délai de récupération (Payback) et le ROI cumulé sur 10 ans pour les trois modèles, permettant une analyse de sensibilité robuste basée uniquement sur les données.
+5. **Boost Coupe du Monde 2030** : En 2030, si l'option est activée, un surcroît d'occupation relative de +15% et un boost d'ADR de +40% sont appliqués.
 
+6. **Indicateurs Financiers Comparatifs** : Le simulateur calcule la VAN actualisée (NPV), le Taux de Rentabilité Interne (IRR), le délai de récupération (Payback) et le ROI cumulé sur 10 ans pour les trois modèles, permettant une analyse de sensibilité basée uniquement sur les prévisions de données.

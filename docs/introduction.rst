@@ -11,7 +11,7 @@ Objectifs de l'Étude
 --------------------
 Cette étude propose un pipeline complet d'analyse prédictive et financière pour répondre à trois objectifs majeurs :
 
-1. **Prédire la demande touristique nationale** à l'horizon 2030 (arrivées de touristes mensuelles).
+1. **Prédire la demande touristique nationale** à l'horizon 2030 (arrivées de touristes et nuitées mensuelles).
 2. **Quantifier spécifiquement l'effet de la Coupe du Monde FIFA 2030** sur les nuitées et l'occupation hôtelière.
 3. **Évaluer le Retour sur Investissement (ROI) prévisionnel sur 10 ans** d'un complexe hôtelier type de 200 chambres dans six villes marocaines majeures : Marrakech, Casablanca, Agadir, Tanger, Rabat et Fès.
 
@@ -20,7 +20,7 @@ Problématique des Données
 La modélisation prédictive a dû faire face à plusieurs contraintes structurelles majeures :
 
 * **Absence de données officielles complètes** de granularité mensuelle après la période perturbée de la pandémie COVID-19.
-* **Indisponibilité publique de données RevPAR (Revenue Per Available Room)** détaillées et harmonisées par ville.
+* **Indisponibilité publique de données RevPAR (Revenue Per Available Room)** détaillées et harmonisées par ville. Pour surmonter cette contrainte, la plateforme modélise directement les nuitées futures (overnight stays) pour calculer le taux d'occupation dynamique de l'hôtel et en déduire le RevPAR en temps réel.
 * **Absence d'historique de Coupe du Monde** organisée au Maroc, obligeant à utiliser des techniques de transfert par benchmark (Qatar 2022, Russie 2018).
 
 Pour contourner ces limites, le projet a mis en place une architecture de données multi-sources intégrant des variables hôtelières, macroéconomiques et événementielles, associée à des algorithmes avancés de machine learning et deep learning.

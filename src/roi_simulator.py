@@ -213,6 +213,67 @@ class HotelROISimulator:
             
         return pd.DataFrame(records)
 
+    def simulate_with_nuitees_forecast(self, annual_nights_dict, start_year=2026, wc_boost_2030=True):
+        """
+        Simule la performance financière sur 10 ans en utilisant directement les
+        **nuitées annuelles prédites** (overnight stays) pour déduire le taux d'occupation.
+
+        Contrairement à ``simulate_with_forecast`` (basée sur les arrivées + ratio de croissance),
+        cette méthode calcule l'occupation de façon directe et plus précise :
+
+        .. math::
+
+            \\text{Occ}_t = \\min\\left(0.95,\\ \\frac{\\hat{N}_t}{\\text{Chambres} \\times 365}\\right)
+
+        où :math:`\\hat{N}_t` est le nombre de nuitées annuelles prédites.
+
+        Args:
+            annual_nights_dict (dict): Dictionnaire {année: nuitées_annuelles_prédites}.
+            start_year (int): Première année de la simulation (défaut : 2026).
+            wc_boost_2030 (bool): Activer le boost Coupe du Monde FIFA 2030 (défaut : True).
+
+        Returns:
+            pd.DataFrame: Table des cash flows annuels (ADR_USD, Occ, Revenue_USD, GOP_USD,
+                          Nights_Predicted, RevPAR_USD).
+        """
+        years = list(range(start_year, start_year + 10))
+        total_room_nights = self.rooms * 365  # capacité annuelle totale de l'hôtel
+        records = []
+
+        for idx, year in enumerate(years):
+            t = year - start_year
+
+            # ADR indexé sur l'inflation annuelle
+            adr = self.base_adr * ((1 + self.inflation_rate) ** t)
+
+            # Taux d'occupation déduit directement des nuitées prédites
+            predicted_nights = annual_nights_dict.get(year, total_room_nights * self.base_occupancy)
+            occ = min(0.95, predicted_nights / total_room_nights)
+
+            # Boost Coupe du Monde 2030 (ADR uniquement — l'occupation est déjà modélisée)
+            if year == 2030 and wc_boost_2030:
+                adr = adr * (1 + self.wc_adr_boost_pct)
+
+            rev = self.rooms * occ * 365 * adr
+            gop = rev * (1 - self.opex_margin)
+
+            # RevPAR = Revenu par chambre disponible par nuit
+            revpar = occ * adr
+
+            records.append({
+                'Year': year,
+                'Year_Index': idx + 1,
+                'ADR_USD': adr,
+                'Occ': occ,
+                'Nights_Predicted': predicted_nights,
+                'RevPAR_USD': revpar,
+                'Revenue_USD': rev,
+                'GOP_USD': gop
+            })
+
+        return pd.DataFrame(records)
+
+
     def calculate_metrics_for_gop(self, gop_list):
         """
         Calcule les indicateurs financiers sur la base d'une série de cash flows GOP.

@@ -45,7 +45,10 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 print(f"Figures directory path: {FIGURES_DIR}")
 
 # Key parameters
+# Primary prediction target : monthly tourist arrivals
 TARGET_COL = 'Arrivals'
+# Secondary prediction target : monthly overnight stays (nuitées)
+NIGHTS_COL  = 'Nights'
 START_DATE = '1995-01-01'
 END_DATE = '2026-04-01'
 TRAIN_END_DATE = '2022-12-31'

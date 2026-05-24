@@ -1,13 +1,17 @@
 Ingénierie des Caractéristiques (Feature Engineering)
 ======================================================
 
-Le pipeline de feature engineering (``src/features.py``) construit **36 variables
+Le pipeline de feature engineering (``src/features.py``) construit **49 variables
 prédictives** à partir des données brutes nettoyées. Ces variables couvrent la mémoire
-temporelle, la saisonnalité cyclique, les chocs exogènes, les événements calendaires et
-la détection non supervisée d'anomalies.
+temporelle, la saisonnalité cyclique, les chocs exogènes, les événements calendaires,
+la détection non supervisée d'anomalies, et les caractéristiques spécifiques aux
+**Nuitées** (``Nights``) — la seconde cible de prédiction.
 
-Toutes les features sont construites par la fonction ``build_features(df_clean)`` et la
-liste canonique est retournée par ``get_feature_list()``.
+Toutes les features sont construites par ``build_features(df_clean)``. Deux listes
+canoniques sont disponibles :
+
+* ``get_feature_list()`` — 36 features pour prédire les **Arrivées** (``Arrivals``).
+* ``get_nights_feature_list()`` — 49 features pour prédire les **Nuitées** (``Nights``).
 
 
 Tableau Récapitulatif Complet des Features
