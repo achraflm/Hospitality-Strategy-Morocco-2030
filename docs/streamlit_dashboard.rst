@@ -47,12 +47,26 @@ Structure des Pages de la Plateforme
 Tableau de Bord (Dashboard)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: _static/screenshot_2026_05_24_135136.png
+   :align: center
+   :alt: Capture d'écran du Tableau de Bord React
+   :width: 100%
+
+   Page **Tableau de Bord** de la plateforme React, affichant la trajectoire des arrivées touristiques et la vue d'ensemble analytique.
+
 - Métriques de synthèse des flux touristiques et financiers par ville hôte.
 - Graphiques historiques interactifs combinant arrivées et recettes réelles.
 - Référentiel hôtelier par défaut pour 6 villes stratégiques marocaines.
 
 Previsions IA (Forecasting)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: _static/screenshot_2026_05_24_135210.png
+   :align: center
+   :alt: Capture d'écran de la page Prévisions IA React
+   :width: 100%
+
+   Page **Prévisions IA** de la plateforme React, montrant les courbes comparatives sur le split de test et le tableau des métriques de performance.
 
 - Choix de la **cible de prediction** : Arrivees touristiques (``Arrivals``) ou Nuitees (``Nights``).
 - Identification automatique du **Top 3 modeles** par cible, lu depuis le fichier de metriques CSV
@@ -63,6 +77,13 @@ Previsions IA (Forecasting)
 
 Simulateur ROI Hotelier (RoiSimulator)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: _static/screenshot_2026_05_24_135216.png
+   :align: center
+   :alt: Capture d'écran du Simulateur ROI React
+   :width: 100%
+
+   Page **Simulateur ROI** de la plateforme React, permettant le paramétrage financier complet de l'hôtel en temps réel et affichant la feuille de cash flow sur 10 ans.
 
 - Parametrage financier complet par sliders en temps reel (chambres, investissement, ADR,
   occupation, WACC).
@@ -83,7 +104,7 @@ complete de la page Monte Carlo.
 Simulation Monte Carlo — Analyse Probabiliste de Risque
 ---------------------------------------------------------
 
-.. figure:: _static/monte_carlo_webapp.png
+.. figure:: _static/screenshot_2026_05_23_191358.png
    :align: center
    :alt: Capture d'écran de la page Monte Carlo de la web app
    :width: 100%

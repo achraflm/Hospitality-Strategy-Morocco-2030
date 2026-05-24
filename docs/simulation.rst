@@ -1,41 +1,81 @@
-Application Streamlit de Simulation ROI (``simulation.py``)
+Applications Streamlit Interactives
 =============================================================
 
-Le fichier ``simulation.py`` est une application **Streamlit autonome** dediee a la
-simulation financiere interactive d'investissements hoteliers sur 10 ans (2026-2035).
-Contrairement au pipeline principal (``main.py``), cette application est entierement
-orientee utilisateur et ne necessite aucune connaissance en programmation pour etre utilisee.
+Le projet fournit deux applications interactives basées sur **Streamlit** pour permettre aux utilisateurs d'interagir facilement avec le pipeline de données, d'ajuster les modèles prédictifs et d'effectuer des simulations financières autonomes.
+
+.. contents:: Table des Matières
+   :local:
+   :depth: 2
+
+
+1. Dashboard de Modélisation et Prévision (``streamlit_app.py``)
+------------------------------------------------------------------
+
+Le fichier ``streamlit_app.py`` est une application **Streamlit de modélisation et d'exploration** qui permet aux scientifiques des données et aux analystes d'expérimenter en temps réel avec le pipeline de Machine Learning.
+
+.. figure:: _static/screenshot_2026_05_23_190358.png
+   :align: center
+   :alt: Capture d'écran de l'application Streamlit de modélisation
+   :width: 100%
+
+   Interface de l'application de modélisation et prévision (``streamlit_app.py``) montrant le panneau de configuration des features et des modèles.
 
 .. note::
-   Pour lancer l'application, executez depuis la racine du projet :
+   Pour lancer cette application, exécutez depuis la racine du projet :
 
    .. code-block:: bash
 
-      streamlit run simulation.py
+      streamlit run streamlit_app.py
 
-   L'application sera accessible dans votre navigateur a ``http://localhost:8501``.
+   L'application sera accessible dans votre navigateur à l'adresse ``http://localhost:8501``.
 
+Objectif et Fonctionnalités
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Cette application permet de simuler et configurer les paramètres clés de l'entraînement :
+
+1. **Choix du Split Temporel** : L'utilisateur peut déplacer un slider pour définir l'année de début du split de test (par exemple, de 2020 à 2025). Les données antérieures servent à l'entraînement, tandis que les données postérieures valident la généralisation du modèle.
+2. **Sélection des Caractéristiques (Feature Engineering)** : Sélection dynamique des variables explicatives parmi les lags (ex: ``lags_1``, ``lags_12``), les moyennes mobiles (ex: ``roll_mean_3``), les encodages cycliques (``month_sin``, ``month_cos``) et les variables événementielles (``cdm_event``, ``is_covid``).
+3. **Sélection et Entraînement des Modèles** : L'utilisateur choisit les modèles à entraîner en temps réel (comme SARIMA, Ridge, LSTM).
+4. **Nombre d'Époques de Deep Learning** : Configuration du nombre d'époques pour les modèles de Deep Learning (LSTM/RNN).
+5. **Exploration Interactive des Données (EDA)** : Visualisation des séries historiques, de la décomposition saisonnière et de la table source.
+
+.. warning::
+   **Important : Pas de calcul de ROI**.
+   Cette application est uniquement dédiée aux prévisions de séries temporelles (Arrivées ou Nuitées) et à la comparaison des métriques d'évaluation des modèles (R², RMSE, MAE, MAPE). Elle ne contient aucun module de simulation financière ou de calcul de ROI hôtelier. Ces calculs de rentabilité financière sont exclusifs à l'application web React et au simulateur autonome ``simulation.py``.
+
+
+2. Simulateur ROI Hôtelier Autonome (``simulation.py``)
+------------------------------------------------------------------
+
+Le fichier ``simulation.py`` est une application **Streamlit autonome** dédiée à la simulation financière interactive d'investissements hôteliers sur 10 ans (2026-2035). Elle utilise directement les prévisions générées par les modèles prédictifs du projet.
+
+.. note::
+   Pour lancer cette application, exécutez depuis la racine du projet :
+
+   .. code-block:: bash
+
+      streamlit run simulation.py --server.port 8502
+
+   L'application sera accessible dans votre navigateur à l'adresse ``http://localhost:8502``.
 
 Objectif et Positionnement
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Ce simulateur permet aux analystes et decideurs hoteliers de :
+Ce simulateur permet aux analystes et décideurs hôteliers de :
 
-1. **Choisir la cible de prediction** : Arrivees touristiques (``Arrivals``) OU Nuitees (``Nights``).
-2. **Choisir une ville** parmi 6 metropoles marocaines strategiques.
-3. **Parametrer un investissement hotelier** (nombre de chambres, capex, ADR, occupation, WACC).
-4. **Obtenir automatiquement les projections des Top 3 modeles** par cible, identifies automatiquement
-   a partir des fichiers de metriques CSV generes lors de l'entrainement.
-5. **Comparer visuellement** les profils de rentabilite cumulee de chaque modele sur 10 ans.
-6. **Visualiser le RevPAR annuel** (Revenue Per Available Room) en mode Nuitees.
-7. **Recevoir une recommandation d'investissement synthetique** basee sur les indicateurs NPV,
-   IRR, Payback et ROI cumule.
+1. **Choisir la cible de prédiction** : Arrivées touristiques (``Arrivals``) OU Nuitées (``Nights``).
+2. **Choisir une ville** parmi 6 métropoles marocaines stratégiques.
+3. **Paramétrer un investissement hôtelier** (nombre de chambres, capex, ADR, occupation, WACC).
+4. **Obtenir automatiquement les projections des Top 3 modèles** par cible, identifiés automatiquement à partir des fichiers de métriques CSV générés lors de l'entraînement.
+5. **Comparer visuellement** les profils de rentabilité cumulée de chaque modèle sur 10 ans.
+6. **Visualiser le RevPAR annuel** (Revenue Per Available Room) en mode Nuitées.
+7. **Recevoir une recommandation d'investissement synthétique** basée sur les indicateurs NPV, IRR, Payback et ROI cumulé.
 
+Sélecteur de Cible de Prediction
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Selecteur de Cible de Prediction
-----------------------------------
-
-L'application expose un selecteur unique qui change completement le mode de simulation :
+L'application expose un sélecteur unique qui change complètement le mode de simulation :
 
 .. list-table::
    :header-rows: 1
@@ -43,294 +83,68 @@ L'application expose un selecteur unique qui change completement le mode de simu
 
    * - Mode
      - Comportement
-   * - **Arrivees (Arrivals)**
-     - Lit ``data/model_performance_metrics.csv`` pour identifier le Top 3.
-       L'occupation hoteliere est deduite par le ratio de croissance des arrivees par
-       rapport a l'annee de reference 2025 :
-       ``Occ(t) = min(0.95, Occ_base x Arrivees_predites(t) / Arrivees_2025)``
-   * - **Nuitees (Nights)**
-     - Lit ``data/model_performance_metrics_nuitees.csv`` (genere par notebook 08).
-       L'occupation est calculee directement et de facon plus precise :
-       ``Occ(t) = min(0.95, Nuitees_predites(t) / (Chambres x 365))``
-       Un graphique **RevPAR annuel** supplementaire est affiche : ``RevPAR = Occ x ADR``.
+   * - **Arrivées (Arrivals)**
+     - Lit ``data/model_performance_metrics.csv`` pour identifier le Top 3. L'occupation hôtelière est déduite par le taux de croissance des arrivées par rapport à l'année de référence 2025 : ``Occ(t) = min(0.95, Occ_base x Arrivees_predites(t) / Arrivees_2025)``
+   * - **Nuitées (Nights)**
+     - Lit ``data/model_performance_metrics_nuitees.csv``. L'occupation est calculée directement et de façon plus précise : ``Occ(t) = min(0.95, Nuitees_predites(t) / (Chambres x 365))``. Un graphique **RevPAR annuel** supplémentaire est affiché : ``RevPAR = Occ x ADR``.
 
+Paramètres Configurables (Barre Latérale)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-L'application repose sur un enchaenement modulaire :
-
-.. code-block:: text
-
-   simulation.py
-   +-- get_clean_tourism_data()           -- Chargement et nettoyage des donnees (mis en cache)
-   +-- generate_projections()             -- Predictions recursives par modele ET par cible
-   |   +-- SarimaModel                   -- Prevision statistique directe
-   |   +-- RidgeModel / RandomForest...  -- Prevision ML recursive
-   |   +-- LstmModel / RnnModel          -- Prevision Deep Learning recursive
-   +-- HotelROISimulator
-       +-- simulate_with_forecast()       -- Cash flows : arrivees -> ratio croissance -> Occ
-       +-- simulate_with_nuitees_forecast() -- Cash flows : nuitees -> Occ directe -> RevPAR
-       +-- calculate_metrics_for_gop()   -- NPV, IRR, Payback, ROI
-
-
-Chargement et Preparation des Donnees
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   @st.cache_data
-   def get_clean_tourism_data():
-       df = loader.load_and_merge_tourism_data()
-       df = cleaner.integrate_covid_data(df)
-       df = cleaner.reconstruct_historical_arrivals(df)
-       df = cleaner.reconstruct_historical_receipts(df)
-       return df
-
-Le decorateur ``@st.cache_data`` assure que les donnees ne sont chargees et nettoyees
-**qu'une seule fois** par session, meme si l'utilisateur modifie les parametres de la
-barre laterale.
-
-Identification Automatique du Top 3
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-L'application lit automatiquement le fichier de metriques correspondant a la cible choisie
-et selectionne les 3 modeles les mieux classes selon le critere **R2** :
-
-.. code-block:: python
-
-   # Mode Arrivees
-   metrics_path = "data/model_performance_metrics.csv"
-
-   # Mode Nuitees
-   metrics_path = "data/model_performance_metrics_nuitees.csv"
-
-   metrics_df = pd.read_csv(metrics_path)
-   valid_df = valid_df.sort_values(by='R2', ascending=False)
-   top_3_models = valid_df['Mapped_Model'].unique().tolist()[:3]
-
-En l'absence du fichier de metriques Nuitees, un fallback est active sur
-``['Ridge', 'Random Forest', 'XGBoost']``.
-
-
-Paramètres Configurables (Barre Laterale)
-------------------------------------------
-
-Selecteur de Cible
-~~~~~~~~~~~~~~~~~~~~
-
-.. list-table::
-   :header-rows: 1
-   :widths: 25 75
-
-   * - Parametre
-     - Description
-   * - **Variable a predire**
-     - Radio : "Arrivees touristiques (Arrivals)" ou "Nuitees (Nights)".
-       Ce choix modifie les features disponibles, le fichier de metriques lu,
-       la methode de simulation du ROI, et les graphiques affiches.
-
-Parametres Financiers de Base
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. list-table::
-   :header-rows: 1
-   :widths: 30 15 15 40
-
-   * - Parametre
-     - Unite
-     - Defaut (Marrakech)
-     - Description
-   * - **Ville Cible**
-     - --
-     - Marrakech
-     - Choisie parmi 6 villes : Marrakech, Casablanca, Agadir, Tanger, Rabat, Fes.
-   * - **Investissement (CapEx)**
-     - Millions USD
-     - 150 M$
-     - Cout total de construction ou d'acquisition de l'hotel.
-   * - **ADR Initial**
-     - USD / nuit
-     - 250 $
-     - Tarif journalier moyen de depart (Average Daily Rate).
-   * - **Nombre de Chambres**
-     - Unite
-     - 200
-     - Capacite totale de l'hotel.
-   * - **Taux d'Occupation de Base**
-     - %
-     - 65%
-     - Taux d'occupation annuel hors evenements exceptionnels.
-   * - **WACC (Taux d'Actualisation)**
-     - %
-     - 8%
-     - Cout Moyen Pondere du Capital pour le calcul de la VAN.
-   * - **Marge OpEx**
-     - %
-     - 65%
-     - Part des couts operationnels dans le revenu total.
-   * - **Taux d'Inflation Annuel**
-     - %
-     - 2.5%
-     - Applique annuellement a l'ADR.
-
-Parametres Coupe du Monde FIFA 2030
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. list-table::
-   :header-rows: 1
-   :widths: 30 15 55
-
-   * - Parametre
-     - Defaut
-     - Description
-   * - **Activer les impacts 2030**
-     - Active
-     - Applique un boost de +40% sur l'ADR pour l'annee 2030 uniquement (configurable).
-       En mode Arrivees : boost additionnel de +15% sur l'occupation.
-       En mode Nuitees : seul le boost ADR est applique (l'occupation est deja modelisee
-       par les nuitees predites).
-   * - **Boost ADR 2030**
-     - +40%
-     - Augmentation de l'ADR en 2030. Parametre issu de l'analyse sectorielle
-       comparative (Qatar 2022, Russie 2018).
-
-Parametres Modelisation & Features
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. list-table::
-   :header-rows: 1
-   :widths: 30 15 55
-
-   * - Parametre
-     - Defaut
-     - Description
-   * - **Epoques Deep Learning**
-     - 10
-     - Nombre de passes d'entrainement pour LSTM/RNN.
-   * - **Variables d'entree (Features)**
-     - 14-16 selectionnees
-     - En mode Arrivees : sous-ensemble des 36 features (``get_feature_list()``).
-       En mode Nuitees : sous-ensemble des 49 features (``get_nights_feature_list()``),
-       incluant les lags Nights et ``nuitees_per_arrival``.
-
-
-Constantes Pre-calibrees par Ville
-------------------------------------
-
-L'application embarque des constantes financieres pre-calibrees basees sur des etudes
-sectorielles hotelires au Maroc :
-
-.. list-table:: Parametres par defaut par ville
-   :header-rows: 1
-   :widths: 15 10 12 12 51
-
-   * - Ville
-     - CapEx (M$)
-     - ADR ($)
-     - Part Nuitees
-     - Recommandation d'Investissement
-   * - **Marrakech**
-     - 150
-     - 250
-     - 35%
-     - Investir (Prioritaire, forte demande touristique internationale)
-   * - **Casablanca**
-     - 180
-     - 230
-     - 20%
-     - Investir (Tourisme d'affaires premium)
-   * - **Agadir**
-     - 130
-     - 165
-     - 18%
-     - A etudier (Saisonnier balneaire, forte variabilite)
-   * - **Tanger**
-     - 145
-     - 155
-     - 10%
-     - Attendre (En developpement rapide -- Tanger Med)
-   * - **Rabat**
-     - 165
-     - 175
-     - 9%
-     - Attendre (Administratif haut de gamme)
-   * - **Fes**
-     - 120
-     - 135
-     - 8%
-     - Eviter (Besoin d'infrastructures touristiques majeures)
-
+- **Variable à prédire** : Choix entre "Arrivées" et "Nuitées".
+- **Ville Cible** : Choisi parmi 6 villes (Marrakech, Casablanca, Agadir, Tanger, Rabat, Fès).
+- **Investissement (CapEx)** : Coût total de construction ou d'acquisition de l'hôtel (en Millions USD).
+- **ADR Initial** : Tarif journalier moyen de départ (Average Daily Rate).
+- **Nombre de Chambres** : Capacité totale de l'hôtel.
+- **Taux d'Occupation de Base** : Taux d'occupation annuel hors événements exceptionnels.
+- **WACC (Taux d'Actualisation)** : Coût Moyen Pondéré du Capital pour le calcul de la VAN (NPV).
+- **Marge OpEx** : Part des coûts opérationnels dans le revenu total.
+- **Taux d'Inflation Annuel** : Appliqué annuellement à l'ADR.
+- **Boost ADR 2030 (Coupe du Monde)** : Augmentation spécifique de l'ADR en 2030 (+40% par défaut).
 
 Calcul des Cash Flows et Indicateurs
---------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Mode Arrivees (``simulate_with_forecast``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mode Arrivées (``simulate_with_forecast``)
+  Le taux d'occupation suit la croissance relative des arrivées prédites :
 
-Le taux d'occupation suit la croissance relative des arrivees predites :
+  .. math::
 
-  Occ(t) = min(0.95, Occ_base x Arrivees_predites(t) / Arrivees_2025)
+     Occ(t) = \min(0.95, Occ_{base} \times \frac{Arrivées_{predites}(t)}{Arrivées_{2025}})
 
-Mode Nuitees (``simulate_with_nuitees_forecast``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mode Nuitées (``simulate_with_nuitees_forecast``)
+  Le taux d'occupation est déduit directement des nuitées prédites :
 
-Le taux d'occupation est deduit directement des nuitees predites :
+  .. math::
 
-  Occ(t) = min(0.95, Nuitees_predites(t) / (Chambres x 365))
+     Occ(t) = \min(0.95, \frac{Nuitées_{predites}(t)}{Chambres \times 365})
 
-  RevPAR(t) = Occ(t) x ADR(t)
+  .. math::
+
+     RevPAR(t) = Occ(t) \times ADR(t)
 
 Dans les deux modes, la formule de revenus annuels est :
 
-  Revenu(t) = Chambres x Occ(t) x 365 x ADR(t)
+.. math::
 
-  GOP(t) = Revenu(t) x (1 - OpEx_margin)
+   Revenu(t) = Chambres \times Occ(t) \times 365 \times ADR(t)
 
-Les indicateurs financiers calcules sont :
+.. math::
 
-.. list-table::
-   :header-rows: 1
-   :widths: 15 20 65
+   GOP(t) = Revenu(t) \times (1 - OpEx\_margin)
 
-   * - Indicateur
-     - Formule simplifiee
-     - Interpretation
-   * - **NPV** (VAN)
-     - Sum CF(t) / (1+r)^t
-     - Valeur actualisee nette. Une NPV positive indique un projet rentable.
-   * - **IRR** (TRI)
-     - r tel que NPV(r) = 0
-     - Taux de rentabilite interne. Comparer au WACC.
-   * - **Payback**
-     - 1ere annee t ou Sum CF(t) >= 0
-     - Delai de recuperation de l'investissement initial.
-   * - **ROI Cumule**
-     - (Sum GOP - CapEx) / CapEx x 100
-     - Retour sur investissement brut sur 10 ans.
-   * - **RevPAR** (mode Nuitees)
-     - Occ(t) x ADR(t)
-     - Revenue Per Available Room. Indicateur standard de performance hoteliere.
+Les indicateurs financiers calculés sont :
 
+- **NPV (VAN)** : Valeur Actuelle Nette. Somme actualisée des GOP annuels moins le CapEx. Une NPV positive indique un projet rentable.
+- **IRR (TRI)** : Taux de Rentabilité Interne. Taux d'actualisation pour lequel la NPV s'annule.
+- **Payback** : Délai de récupération de l'investissement initial (première année où le cash flow cumulé devient positif).
+- **ROI Cumulé** : Retour sur investissement brut sur 10 ans.
 
 Recommandation d'Expert Automatique
--------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Apres la simulation, l'application genere automatiquement une note d'analyse basee
-sur le ROI maximal observe parmi les 3 modeles :
+Après la simulation, l'application génère automatiquement une note d'analyse basée sur le ROI maximal observé parmi les 3 modèles :
 
-.. list-table::
-   :header-rows: 1
-   :widths: 20 20 60
-
-   * - Seuil ROI
-     - Decision
-     - Signification
-   * - ROI >= 80%
-     - FAVORABLE
-     - L'investissement est fortement recommande.
-   * - 40% <= ROI < 80%
-     - A ETUDIER
-     - Acceptable, mais une analyse de sensibilite complementaire est conseillee.
-   * - ROI < 40%
-     - DEFAVORABLE
-     - Le projet ne justifie pas le niveau de risque dans le contexte actuel.
-
+- **ROI >= 80%** : FAVORABLE (L'investissement est fortement recommandé).
+- **40% <= ROI < 80%** : À ÉTUDIER (Acceptable, mais une analyse de sensibilité complémentaire est conseillée).
+- **ROI < 40%** : DÉFAVORABLE (Le projet ne justifie pas le niveau de risque).

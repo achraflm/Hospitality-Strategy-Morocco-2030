@@ -85,3 +85,30 @@ automatiquement enregistre dans les fichiers CSV :
 Ces fichiers repertorient pour chaque modele le R2, le RMSE, le MAE et le MAPE,
 tries par ordre decroissant de performance.
 
+
+Courbes des Prévisions vs Données Réelles (Ensemble de Test)
+--------------------------------------------------------------
+
+Afin de valider la capacité de généralisation de nos modèles sur des données non vues lors de l'entraînement, nous comparons les prévisions des 3 meilleurs modèles par rapport aux valeurs réelles sur l'ensemble de test (janvier 2023 - avril 2026).
+
+Prévision des Arrivées Touristiques
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: _static/05_arrivals_test_comparison_top3.png
+   :align: center
+   :alt: Courbe de prévision des arrivées (Test Set)
+   :width: 100%
+
+   Comparaison des prévisions des Top 3 modèles (Ridge, Decision Tree, Random Forest) vs Arrivées réelles sur l'ensemble de test (2023-2026). Le modèle Ridge capture fidèlement le profil saisonnier.
+
+Prévision des Nuitées Hôtelières
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: _static/09_nights_test_comparison_top3.png
+   :align: center
+   :alt: Courbe de prévision des nuitées (Test Set)
+   :width: 100%
+
+   Comparaison des prévisions des Top 3 modèles vs Nuitées réelles sur l'ensemble de test (2023-2026).
+
+
