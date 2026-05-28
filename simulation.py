@@ -313,10 +313,10 @@ model_name_mapping = {
 
 if use_nights:
     metrics_path = os.path.join("data", "model_performance_metrics_nuitees.csv")
-    fallback_list = ['Ridge', 'Random Forest', 'XGBoost', 'LightGBM', 'CatBoost']
+    fallback_list = ['Ridge', 'XGBoost', 'LSTM', 'SARIMA', 'Prophet']
 else:
     metrics_path = os.path.join("data", "model_performance_metrics.csv")
-    fallback_list = ['Ridge', 'CatBoost', 'Random Forest', 'XGBoost', 'LightGBM']
+    fallback_list = ['Ridge', 'XGBoost', 'LSTM', 'SARIMA', 'Prophet']
 
 top_3_models = []
 if os.path.exists(metrics_path):

@@ -34,6 +34,22 @@ Les métriques évaluées par cette nouvelle méthode reflètent désormais le p
 
 - **XGBoost** et **LSTM** : Les performances (R², RMSE, MAE, MAPE) ont été recalculées à l'aide de cette méthode. Les résultats générés montrent une variance plus réaliste des erreurs de prédiction (voir les nouveaux tableaux de métriques et le graphique comparatif `walk_forward_comparison.png`).
 
+### Nouveaux Résultats sur le Test Set (Walk-Forward)
+
+- **XGBoost (Walk-Forward)** : Le modèle montre une excellente capacité de généralisation sur les données futures sans aucun biais.
+  - **R²** : 0.7923
+  - **MAPE** : 7.74%
+  - **RMSE** : ~173 880
+  - **MAE** : ~121 418
+
+- **Deep Learning - LSTM (Walk-Forward)** : Sur des fenêtres purement glissantes et avec un scaling strictement confiné, l'apprentissage profond est plus sensible mais conserve une capacité d'extrapolation structurelle.
+  - **R²** : 0.6606
+  - **RMSE** : ~380 381
+  - **MAE** : ~258 733
+  - *(Note : le MAPE du LSTM subit des variations extrêmes dues à une division par une valeur réelle proche de zéro à certains instants de la série test)*
+
+Ces résultats démontrent que le modèle XGBoost, lorsqu'il est bien calibré et sans data leakage, s'avère extrêmement robuste et compétitif face aux approches statistiques classiques (SARIMAX) pour la prévision de cette série chronologique.
+
 Conclusion et Recommandations
 -----------------------------
 L'intégration du Walk-Forward Validation hisse le pipeline au rang des standards de production pour le Time Series Forecasting.

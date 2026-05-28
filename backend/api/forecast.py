@@ -16,7 +16,7 @@ from src.forecasting import forecast_recursive_ml, forecast_recursive_dl
 # Import des modèles
 from src.models.sarima import SarimaModel
 from src.models.ridge import RidgeModel
-from src.models.lstm import LstmModel
+from src.models.lstm import LstmModel\nfrom src.models.xgboost import XgboostModel
 
 router = APIRouter()
 
@@ -38,7 +38,7 @@ class PredictRequest(BaseModel):
 # Endpoints
 @router.get("/models")
 def get_available_models():
-    return ["SARIMA", "Ridge", "LSTM"]
+    return ["Ridge", "XGBoost", "LSTM"]
 
 @router.get("/features")
 def get_available_features():
@@ -80,7 +80,8 @@ def calculate_model_metrics(req: MetricsRequest):
             predictions['SARIMA'] = SarimaModel().fit(y_train).predict(steps=len(y_test))
             
         ml_class_map = {
-            'Ridge': RidgeModel
+            'Ridge': RidgeModel,
+            'XGBoost': XgboostModel
         }
         
         for ml_name in ml_class_map.keys():
@@ -150,7 +151,8 @@ def run_forecasting_projections(req: PredictRequest):
         
         # Projections ML
         ml_class_map = {
-            'Ridge': RidgeModel
+            'Ridge': RidgeModel,
+            'XGBoost': XgboostModel
         }
         
         # Trouver le meilleur modèle ML sélectionné basé sur les métriques existantes

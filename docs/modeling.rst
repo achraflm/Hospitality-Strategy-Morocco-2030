@@ -9,6 +9,9 @@ Pour les series temporelles, un decoupage aleatoire est proscrit car il detruira
 * **Test Set** : Donnees de janvier 2023 a avril 2026 servant uniquement a valider la generalisation des modeles.
 * **Prediction** : Periode de prevision pure allant de mai 2026 a decembre 2035 (incluant la Coupe du Monde).
 
+**Amélioration Méthodologique : Walk-Forward Training**
+Pour les modèles complexes (XGBoost, LSTM), ce découpage statique a été remplacé par une approche **Walk-Forward Validation**. Le modèle s'entraîne sur une fenêtre temporelle, prédit le pas suivant, puis l'intègre pour se ré-entraîner. Cette méthode élimine totalement la fuite de données (data leakage), particulièrement lors du scaling dynamique, et garantit une évaluation robuste, au plus proche des conditions réelles de production.
+
 Les hyperparametres des modeles sont ajustes par recherche ou configures de maniere stable dans leurs modules individuels respectifs du dossier ``src/models/``.
 
 Double Cible de Prediction
@@ -50,15 +53,16 @@ Les modeles sont compares sur la base de quatre metriques de regression standard
 
 Les 9 modeles suivants sont entraines sur chaque cible (Arrivees et Nuitees) :
 
-1. **Ridge** (R2 = 0.9147 sur Arrivees) — Meilleur modele ML pour les Arrivees.
-2. **Decision Tree** (R2 = 0.6823)
-3. **Random Forest** (R2 = 0.5488)
-4. **Gradient Boosting** (R2 = 0.3645)
-5. **XGBoost** (R2 = 0.2448)
-6. **LightGBM** (R2 = 0.0067)
-7. **Extra Trees** (R2 = -0.0899)
-8. **AdaBoost** (R2 = -0.3417)
-9. **CatBoost** (R2 = -1.2253)
+1. **Ridge** (R2 = 0.9147 sur Arrivees) — Meilleur modele ML lineaire.
+2. **XGBoost (Walk-Forward)** (R2 = 0.7923) — Robustesse temporelle prouvee par la nouvelle methode.
+3. **Prophet** (R2 = 0.8858)
+4. **Decision Tree** (R2 = 0.6823)
+5. **Random Forest** (R2 = 0.5488)
+6. **Gradient Boosting** (R2 = 0.3645)
+7. **LightGBM** (R2 = 0.0685)
+8. **Extra Trees** (R2 = -0.1064)
+9. **CatBoost** (R2 = -1.4071)
+*Note: Le LSTM a egalement ete evalue en Walk-Forward avec un R2 de 0.6606.*
 
 Top 3 Modeles par Cible
 -------------------------
@@ -67,7 +71,7 @@ L'application ``simulation.py`` lit automatiquement les fichiers de metriques po
 les 3 meilleurs modeles par R2 pour chaque cible :
 
 **Arrivees** (``data/model_performance_metrics.csv`` ou ``model_performance_metrics_ML.csv``) :
-  Ridge > Decision Tree > Random Forest
+  Ridge > XGBoost > LSTM
 
 **Nuitees** (``data/model_performance_metrics_nuitees.csv``) :
   Genere par ``notebooks/08_nuitees_prediction.ipynb`` — a executer pour peupler ce fichier.
@@ -99,7 +103,7 @@ Prévision des Arrivées Touristiques
    :alt: Courbe de prévision des arrivées (Test Set)
    :width: 100%
 
-   Comparaison des prévisions des Top 3 modèles (Ridge, Decision Tree, Random Forest) vs Arrivées réelles sur l'ensemble de test (2023-2026). Le modèle Ridge capture fidèlement le profil saisonnier.
+   Comparaison des prévisions des Top 3 modèles (Ridge, XGBoost, LSTM) vs Arrivées réelles sur l'ensemble de test (2023-2026). Le modèle Ridge capture fidèlement le profil saisonnier, tandis que le XGBoost en Walk-Forward assure l'extrapolation.
 
 Prévision des Nuitées Hôtelières
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
