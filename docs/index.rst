@@ -14,6 +14,7 @@ La documentation est structurée comme suit :
    eda
    feature_engineering
    modeling
+   amelioration_methodologique
    results_roi
    streamlit_dashboard
    simulation

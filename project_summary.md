@@ -52,7 +52,12 @@ Pour alimenter les modèles de Machine Learning, plus de 15 variables explicativ
 
 ## 🔮 6. Modélisation Prédictive & Comparaison des Performances
 
-Nous avons entraîné et évalué des modèles répartis en trois grandes familles : statistiques, Machine Learning classique, et Deep Learning. L'évaluation a été faite sur un split temporel strict (Train: 1995-2022 | Test: 2023-2026) :
+Nous avons entraîné et évalué des modèles répartis en trois grandes familles : statistiques, Machine Learning classique, et Deep Learning. 
+
+### Amélioration Méthodologique : Walk-Forward Validation
+Pour garantir la robustesse de l'évaluation et éviter toute fuite de données (data leakage) — notamment lors du scaling pour les modèles avancés —, la stratégie de validation a été mise à jour. Les modèles XGBoost et Deep Learning (LSTM) sont désormais évalués selon une méthode **Walk-Forward** (via `TimeSeriesSplit`). L'ajustement du `MinMaxScaler` s'effectue dynamiquement sur chaque fenêtre d'entraînement, préservant ainsi la stricte chronologie des séries temporelles. Le modèle SARIMAX, nativement conçu pour les séries temporelles, conserve sa méthode d'évaluation.
+
+L'évaluation a été faite sur un split temporel strict (Train: 1995-2022 | Test: 2023-2026) :
 
 1. **SARIMAX (Baseline Statistique)** : Le modèle $SARIMAX(2,1,0)(1,0,1)_{12}$ capture les dépendances temporelles avec un MAPE de **8,88%** ($R^2 = 0,7095$). Un second modèle statistique de lissage exponentiel (**Holt-Winters**) a également été évalué à des fins de comparaison. Les deux approches sont détaillées dans le notebook interactif [05_statistical_modeling.ipynb](file:///C:/Users/admin/Downloads/Time%20series%20Projet/notebooks/05_statistical_modeling.ipynb).
 
