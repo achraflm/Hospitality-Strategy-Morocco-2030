@@ -3,7 +3,8 @@ Application Web Interactive de Prévisions Touristiques (Sans ROI)
 ================================================================
 
 Ce tableau de bord se concentre exclusivement sur les prévisions des arrivées
-et des nuitées touristiques, avec une validation Walk-Forward dynamique.
+et des nuitées touristiques, avec une validation différenciée selon les modèles
+(Normale pour le ML classique, Walk-Forward + AutoResearch pour le Deep Learning).
 """
 
 import os
@@ -21,6 +22,7 @@ from src.config import TARGET_COL, NIGHTS_COL
 import src.data_loader as loader
 import src.cleaning as cleaner
 import src.features as feat
+from src.autoresearch import AutoResearchEvaluator
 
 from src.models.sarima import SarimaModel
 from src.models.prophet import ProphetModel
@@ -104,26 +106,23 @@ def forecast_model(model_name, X_train, y_train, df_ml_train, test_dates, select
 st.sidebar.header("🛠️ Configuration des Prévisions")
 
 st.sidebar.info(
-    "🤖 **Nouveau : Mode Autoresearch**\n\n"
-    "Un module d'IA autonome (`autoresearch/`) tourne en arrière-plan (ou la nuit) "
-    "pour optimiser continuellement le code d'entraînement des modèles (hyperparamètres, "
-    "architecture). Ce dashboard affiche les résultats des modèles trouvés par l'IA !"
+    "🤖 **Mode Autoresearch**\n\n"
+    "Le module d'IA autonome analyse automatiquement les modèles de Deep Learning "
+    "(Walk-Forward) pour générer des insights textuels sur leur performance."
 )
-
 
 pred_target = st.sidebar.radio("Cible de Prédiction", ["Arrivées touristiques", "Nuitées hôtelières"])
 use_nights = pred_target.startswith("Nuitées")
 active_target_col = NIGHTS_COL if use_nights else TARGET_COL
 
-st.sidebar.subheader("🤖 Modélisation & Walk-Forward")
+st.sidebar.subheader("🤖 Modélisation")
 available_models = ['Ridge', 'XGBoost', 'LSTM', 'SARIMA', 'Prophet', 'Random Forest', 'Gradient Boosting', 'LightGBM']
 selected_models = st.sidebar.multiselect("Modèles à comparer", available_models, default=['Ridge', 'XGBoost', 'LSTM'])
 
-n_splits = st.sidebar.slider("Nombre de splits Walk-Forward", min_value=2, max_value=10, value=3)
 dl_epochs = st.sidebar.slider("Époques Deep Learning", 1, 50, 10, 5)
 
 st.sidebar.subheader("🔮 Horizon de Projection")
-proj_end_year = st.sidebar.slider("Année de fin de prévision", 2030, 2050, 2040)
+proj_end_year = st.sidebar.slider("Année de fin de prévision", 2028, 2040, 2030)
 
 # Features
 default_features = feat.get_nights_feature_list() if use_nights else feat.get_feature_list()
@@ -131,9 +130,9 @@ selected_features = st.sidebar.multiselect("Variables d'entrée (Features)", def
 
 # ---- MAIN PAGE ----
 st.title("🇲🇦 Morocco Tourism Forecasting Dashboard")
-st.markdown("Ce tableau de bord se concentre sur l'évaluation robuste (Walk-Forward) et la projection à long terme des volumes touristiques du Maroc.")
+st.markdown("Ce tableau de bord permet de tester les modèles normaux et Deep Learning. Les modèles de Deep Learning bénéficient d'un traitement spécial : le **Walk-Forward Training** et l'analyse **AutoResearch**.")
 
-sim_btn = st.button("🚀 Lancer l'Évaluation Walk-Forward & Projections")
+sim_btn = st.button("🚀 Lancer l'Évaluation & Projections")
 
 if sim_btn:
     if not selected_models or not selected_features:
@@ -150,33 +149,74 @@ if sim_btn:
         X = df_history[valid_sel].fillna(df_history[valid_sel].median())
         y = df_history[active_target_col]
         
-        wf_metrics = {m: {'r2': [], 'mae': []} for m in selected_models}
+        wf_metrics = {m: {'r2': 0, 'mae': 0, 'insights': '', 'val_type': ''} for m in selected_models}
         
-        with st.spinner("⏳ Évaluation Walk-Forward en cours sur l'historique..."):
-            tscv = TimeSeriesSplit(n_splits=n_splits)
-            for split_idx, (train_index, test_index) in enumerate(tscv.split(X)):
-                X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-                y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-                df_train_wf = df_history.iloc[train_index]
-                test_dates = df_history.iloc[test_index]['Date']
+        # Initialize AutoResearch Evaluator
+        ar_evaluator = AutoResearchEvaluator(output_dir="notebooks/results/autoresearch_output")
+        target_name_str = "Nuitées" if use_nights else "Arrivées"
+        
+        with st.spinner("⏳ Évaluation des modèles en cours (Standard pour ML, Walk-Forward pour Deep Learning)..."):
+            for model in selected_models:
+                is_dl = model in ['LSTM', 'SimpleRNN']
                 
-                for model in selected_models:
-                    try:
-                        preds = forecast_model(model, X_train, y_train, df_train_wf, test_dates, valid_sel, dl_epochs)
-                        wf_metrics[model]['r2'].append(r2_score(y_test, preds))
-                        wf_metrics[model]['mae'].append(mean_absolute_error(y_test, preds))
-                    except Exception as e:
-                        pass # Ignore failed splits for specific models
+                if is_dl:
+                    # Walk-Forward Training + AutoResearch pour Deep Learning
+                    tscv = TimeSeriesSplit(n_splits=3)
+                    all_y_true = []
+                    all_y_pred = []
+                    
+                    for split_idx, (train_index, test_index) in enumerate(tscv.split(X)):
+                        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+                        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+                        df_train_wf = df_history.iloc[train_index]
+                        test_dates = df_history.iloc[test_index]['Date']
                         
-        st.subheader(f"🧪 Résultats de la Validation Walk-Forward ({n_splits} splits)")
+                        preds = forecast_model(model, X_train, y_train, df_train_wf, test_dates, valid_sel, dl_epochs)
+                        if preds is not None:
+                            all_y_true.extend(y_test)
+                            all_y_pred.extend(preds)
+                            
+                    if all_y_true:
+                        wf_metrics[model]['r2'] = r2_score(all_y_true, all_y_pred)
+                        wf_metrics[model]['mae'] = mean_absolute_error(all_y_true, all_y_pred)
+                        wf_metrics[model]['val_type'] = "Walk-Forward (3 splits)"
+                        
+                        # Apply AutoResearch
+                        res = ar_evaluator.evaluate_model(target_name_str, model, all_y_true, all_y_pred, is_walk_forward=True)
+                        wf_metrics[model]['insights'] = res['Insights']
+                
+                else:
+                    # Traitement Normal (80% Train / 20% Test) pour Modèles ML Classiques
+                    split_idx = int(len(X) * 0.8)
+                    X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
+                    y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
+                    df_train_wf = df_history.iloc[:split_idx]
+                    test_dates = df_history.iloc[split_idx:]['Date']
+                    
+                    preds = forecast_model(model, X_train, y_train, df_train_wf, test_dates, valid_sel, dl_epochs)
+                    if preds is not None:
+                        wf_metrics[model]['r2'] = r2_score(y_test, preds)
+                        wf_metrics[model]['mae'] = mean_absolute_error(y_test, preds)
+                        wf_metrics[model]['val_type'] = "Standard (Train/Test)"
+                        
+                        # Optionnel : Générer un insight basique même pour ML
+                        res = ar_evaluator.evaluate_model(target_name_str, model, y_test, preds, is_walk_forward=False)
+                        wf_metrics[model]['insights'] = res['Insights']
+                        
+        st.subheader("🧪 Résultats d'Évaluation & AutoResearch Insights")
         cols = st.columns(len(selected_models))
         for idx, model in enumerate(selected_models):
             with cols[idx % len(cols)]:
-                avg_r2 = np.mean(wf_metrics[model]['r2']) if wf_metrics[model]['r2'] else 0
-                avg_mae = np.mean(wf_metrics[model]['mae']) if wf_metrics[model]['mae'] else 0
+                m_r2 = wf_metrics[model]['r2']
+                m_mae = wf_metrics[model]['mae']
+                m_val = wf_metrics[model]['val_type']
+                m_ins = wf_metrics[model]['insights']
+                
                 st.markdown(f"<div class='metric-card'><h4>{model}</h4>"
-                            f"<b>R² Moyen:</b> {avg_r2:.3f}<br>"
-                            f"<b>MAE Moyen:</b> {avg_mae:,.0f}</div>", unsafe_allow_html=True)
+                            f"<p style='color: gray; font-size: 0.9em;'>Évaluation: {m_val}</p>"
+                            f"<b>R²:</b> {m_r2:.3f}<br>"
+                            f"<b>MAE:</b> {m_mae:,.0f}<br><hr>"
+                            f"<i>💡 Insights (AutoResearch): {m_ins}</i></div>", unsafe_allow_html=True)
                             
         with st.spinner(f"🔮 Entraînement final et Projections jusqu'en {proj_end_year}..."):
             future_dates = pd.date_range(start='2026-01-01', end=f'{proj_end_year}-12-01', freq='MS')
