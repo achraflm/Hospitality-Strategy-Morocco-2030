@@ -3,38 +3,34 @@
 ## Target: Arrivals
 
 ### Model Rankings
-| Model         | Validation   |        R2 |   MAPE (%) |   SMAPE (%) |
-|:--------------|:-------------|----------:|-----------:|------------:|
-| XGBoost       | Walk-Forward |  0.532258 |    11.8616 |     12.1296 |
-| LSTM + CNN    | Walk-Forward |  0.179879 |    17.2667 |     17.0588 |
-| LSTM 2 Layers | Walk-Forward |  0.163353 |    15.8427 |     16.3635 |
-| LSTM          | Walk-Forward | -0.116424 |    19.3647 |     19.0065 |
-| GRU           | Walk-Forward | -0.11648  |    19.3651 |     19.0088 |
+| Model         | Validation   |       R2 |   MAPE (%) |   SMAPE (%) |
+|:--------------|:-------------|---------:|-----------:|------------:|
+| LSTM + CNN    | Walk-Forward | 0.873345 |    7.69094 |     7.84736 |
+| LSTM          | Walk-Forward | 0.864665 |    8.00539 |     7.95626 |
+| LSTM 2 Layers | Walk-Forward | 0.860161 |    8.43432 |     8.87522 |
+| GRU           | Walk-Forward | 0.784499 |    9.79753 |    11.0674  |
 
 ### AutoResearch Insights
-- **XGBoost (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
-- **LSTM + CNN (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
-- **LSTM 2 Layers (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
-- **LSTM (Walk-Forward)**: Model is worse than baseline average. Temporal degradation or structural break (e.g. COVID) likely broke generalization. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
-- **GRU (Walk-Forward)**: Model is worse than baseline average. Temporal degradation or structural break (e.g. COVID) likely broke generalization. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
+- **LSTM + CNN (Walk-Forward)**: Excellent generalization. The model successfully captures both trend and seasonality without severe overfitting. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
+- **LSTM (Walk-Forward)**: Excellent generalization. The model successfully captures both trend and seasonality without severe overfitting. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
+- **LSTM 2 Layers (Walk-Forward)**: Excellent generalization. The model successfully captures both trend and seasonality without severe overfitting. Systematic bias detected: The model consistently overpredicts or underpredicts. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
+- **GRU (Walk-Forward)**: Excellent generalization. The model successfully captures both trend and seasonality without severe overfitting. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
 
 ---
 ## Target: Nights
 
 ### Model Rankings
-| Model         | Validation   |       R2 |   MAPE (%) |   SMAPE (%) |
-|:--------------|:-------------|---------:|-----------:|------------:|
-| XGBoost       | Walk-Forward | 0.489894 |    12.1079 |     12.254  |
-| LSTM 2 Layers | Walk-Forward | 0.352521 |    14.3773 |     14.4174 |
-| LSTM + CNN    | Walk-Forward | 0.352514 |    14.3776 |     14.4175 |
-| LSTM          | Walk-Forward | 0.352467 |    14.3776 |     14.4178 |
-| GRU           | Walk-Forward | 0.352466 |    14.3777 |     14.4178 |
+| Model         | Validation   |        R2 |   MAPE (%) |   SMAPE (%) |
+|:--------------|:-------------|----------:|-----------:|------------:|
+| LSTM + CNN    | Walk-Forward |  0.491135 |    13.471  |     13.6798 |
+| GRU           | Walk-Forward |  0.435785 |    11.7984 |     12.2131 |
+| LSTM          | Walk-Forward |  0.359299 |    13.3554 |     14.4403 |
+| LSTM 2 Layers | Walk-Forward | -0.118954 |    19.0568 |     22.6001 |
 
 ### AutoResearch Insights
-- **XGBoost (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
-- **LSTM 2 Layers (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
 - **LSTM + CNN (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
-- **LSTM (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
 - **GRU (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
+- **LSTM (Walk-Forward)**: Moderate performance. The model captures some dynamics but struggles with high variance. Residuals are relatively centered, indicating no severe systemic bias. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
+- **LSTM 2 Layers (Walk-Forward)**: Model is worse than baseline average. Temporal degradation or structural break (e.g. COVID) likely broke generalization. Systematic bias detected: The model consistently overpredicts or underpredicts. Walk-Forward evaluation confirms stability across forecasting windows, mitigating data leakage.
 
 ---

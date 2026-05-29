@@ -45,7 +45,10 @@ st.markdown("""
     .metric-card {
         background-color: white; padding: 15px; border-radius: 10px;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-top: 4px solid #0d9488;
-        color: #0f172a;
+        color: #0f172a !important;
+    }
+    .metric-card h4, .metric-card p, .metric-card b, .metric-card i {
+        color: #0f172a !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -155,32 +158,40 @@ if sim_btn:
                 is_dl = model in ['LSTM', 'SimpleRNN']
                 
                 if is_dl:
-                    # Traitement Walk-Forward Incremental pour Keras
-                    split_idx = int(len(X) * 0.8)
-                    from sklearn.preprocessing import StandardScaler
-                    scaler = StandardScaler()
-                    X_scaled = scaler.fit_transform(X)
+                    # Traitement Walk-Forward Incremental pour Keras avec window_size=12
+                    from sklearn.preprocessing import MinMaxScaler
+                    scaler = MinMaxScaler()
+                    data = X.values
+                    scaled = scaler.fit_transform(data)
+                    
+                    window_size = 12
+                    X_seq, y_seq = [], []
+                    for i in range(len(scaled) - window_size):
+                        X_seq.append(scaled[i:i+window_size, :])
+                        y_seq.append(y.values[i+window_size]) # Keep y in original scale to compute correct R2/MAE
+                        
+                    X_seq = np.array(X_seq)
+                    y_seq = np.array(y_seq)
+                    
+                    split_idx = int(len(X_seq) * 0.8)
                     
                     from tensorflow.keras.models import Sequential
                     from tensorflow.keras.layers import LSTM, SimpleRNN, Dense
                     
                     dl_model = Sequential()
                     if model == 'LSTM':
-                        dl_model.add(LSTM(32, activation='relu', input_shape=(1, X_scaled.shape[1])))
+                        dl_model.add(LSTM(121, input_shape=(window_size, X_seq.shape[2])))
                     else:
-                        dl_model.add(SimpleRNN(32, activation='relu', input_shape=(1, X_scaled.shape[1])))
+                        dl_model.add(SimpleRNN(121, input_shape=(window_size, X_seq.shape[2])))
                     dl_model.add(Dense(1))
                     dl_model.compile(optimizer='adam', loss='mse')
                     
                     all_y_true = []
                     all_y_pred = []
                     
-                    X_reshaped = X_scaled.reshape((X_scaled.shape[0], 1, X_scaled.shape[1]))
-                    y_vals = y.values
-                    
-                    for i in range(split_idx, len(X)):
-                        X_train_i, y_train_i = X_reshaped[:i], y_vals[:i]
-                        X_test_i, y_test_i = X_reshaped[i:i+1], y_vals[i:i+1]
+                    for i in range(split_idx, len(X_seq)):
+                        X_train_i, y_train_i = X_seq[:i], y_seq[:i]
+                        X_test_i, y_test_i = X_seq[i:i+1], y_seq[i:i+1]
                         dl_model.fit(X_train_i, y_train_i, epochs=5, batch_size=16, verbose=0)
                         pred = dl_model.predict(X_test_i, verbose=0)
                         all_y_true.append(y_test_i[0])
@@ -189,7 +200,7 @@ if sim_btn:
                     if all_y_true:
                         wf_metrics[model]['r2'] = r2_score(all_y_true, all_y_pred)
                         wf_metrics[model]['mae'] = mean_absolute_error(all_y_true, all_y_pred)
-                        wf_metrics[model]['val_type'] = "Walk-Forward (Incremental)"
+                        wf_metrics[model]['val_type'] = "Walk-Forward (Incremental 12-m)"
                         
                         # Apply AutoResearch
                         res = ar_evaluator.evaluate_model(target_name_str, model, all_y_true, all_y_pred, is_walk_forward=True)
