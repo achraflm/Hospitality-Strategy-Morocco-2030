@@ -25,6 +25,7 @@ from src.models.lstm import LstmModel
 from src.models.gru import GruModel
 from src.models.lstm_deep import LstmDeepModel
 from src.models.lstm_cnn import LstmCnnModel
+from src.models.sarima import SarimaModel
 from src.roi_simulator import HotelROISimulator
 
 from main import forecast_recursive_ml, forecast_recursive_dl
@@ -77,8 +78,8 @@ selected_features = st.sidebar.multiselect(
 st.sidebar.subheader("🤖 Modèles Prédictifs")
 selected_models = st.sidebar.multiselect(
     "Modèles à évaluer", 
-    ["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU"],
-    default=["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU"]
+    ["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU", "SARIMA"],
+    default=["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU", "SARIMA"]
 )
 
 dl_epochs = st.sidebar.number_input("Époques DL", min_value=1, max_value=100, value=5, step=5)
@@ -120,7 +121,8 @@ with tab_train:
             tscv = TimeSeriesSplit(n_splits=n_splits, test_size=1)
             
             ml_class_map = {
-                'XGBoost': XgboostModel
+                'XGBoost': XgboostModel,
+                'SARIMA': SarimaModel
             }
             dl_class_map = {
                 'LSTM': LstmModel,
@@ -208,7 +210,8 @@ with tab_forecast:
                 proj_results = {}
                 
                 ml_class_map = {
-                    'XGBoost': XgboostModel
+                    'XGBoost': XgboostModel,
+                    'SARIMA': SarimaModel
                 }
                 if best_ml_name in ml_class_map:
                     model = ml_class_map[best_ml_name]().fit(X_train_full, y_train_full)
