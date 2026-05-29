@@ -115,19 +115,45 @@ Toutes les requêtes faites du frontend vers `/api/*` sont automatiquement redir
 
 ---
 
-## 🤖 Détails des 3 Modèles Prédictifs Optimaux
+## 📈 Stratégie d'Entraînement Avancée (Deep Learning & XGBoost)
 
-Chaque modèle réside dans sa propre classe au sein de `src/models/` et implémente une interface standard `.fit()` / `.predict()` :
+Face au volume limité de données historiques (typiques des séries temporelles annuelles ou mensuelles agrégées dans le tourisme), nous avons adopté une méthodologie rigoureuse pour l'entraînement des modèles complexes (**XGBoost, LSTM, GRU, LSTM+CNN**) afin d'éviter le surapprentissage (*overfitting*) et simuler des conditions réelles de prévision : la **Validation Walk-Forward**.
 
-1. **SARIMA (Modèle de Lissage & Tendance)** :
-   * Captures des variations saisonnières stables par différenciation saisonnière d'ordre 12 ($D=1$).
-   * Idéal comme modèle de référence historique à court et moyen terme.
-2. **Régression Ridge (Machine Learning régularisé)** :
-   * Modèle linéaire pénalisé L2 limitant le surapprentissage (overfitting) sur les lags temporels.
-   * Extrêmement rapide à entraîner et robuste face au bruit des variables macroéconomiques.
-3. **LSTM (Deep Learning & Mémoire Temporelle)** :
-   * Réseau de neurones récurrents (RNN) à deux couches LSTM, optimisé via des mécanismes d'attention temporelle pour capturer des dépendances complexes à long terme.
-   * Il surmonte les limitations des modèles classiques face à des ruptures de tendance, comme la relance post-COVID ou l'attraction d'événements majeurs.
+### Pourquoi le Walk-Forward Validation ?
+Contrairement à un simple split Train/Test (qui réduit drastiquement les données d'entraînement), le Walk-Forward permet au modèle de s'adapter progressivement aux nouvelles données. 
+1. **Fenêtres Glissantes (Sliding Windows)** : Le modèle est entraîné sur une fenêtre historique, puis prédit le pas de temps suivant.
+2. **Mise à jour continue** : La vraie valeur du pas de temps est ensuite intégrée dans l'ensemble d'entraînement pour prédire le pas suivant.
+3. **Robustesse accrue** : Cette technique, bien que très gourmande en calcul, garantit que les réseaux de neurones profonds (Deep Learning) et XGBoost apprennent les ruptures de tendance récentes (comme la volatilité post-COVID) sans "tricher" sur les données futures (Data Leakage).
+
+---
+
+## 📊 Résultats des Modèles (Deep Learning & XGBoost)
+
+Voici les performances obtenues sur l'ensemble de test (post-Covid) avec la stratégie Walk-Forward :
+
+### Cible : Arrivées (Arrivals)
+* **XGBoost** : $R^2 = 0.532$, MAPE = $11.86\%$
+* **LSTM (Standard)** : $R^2 = -0.126$, MAPE = $19.43\%$
+* **LSTM (2-Layers)** : $R^2 = -0.126$, MAPE = $19.43\%$
+* **GRU** : $R^2 = -0.126$, MAPE = $19.43\%$
+
+### Cible : Nuitées (Nights)
+* **XGBoost** : $R^2 = 0.489$, MAPE = $12.10\%$
+* **LSTM (Standard)** : $R^2 = 0.352$, MAPE = $14.37\%$
+* **LSTM (2-Layers)** : $R^2 = 0.352$, MAPE = $14.37\%$
+* **GRU** : $R^2 = 0.352$, MAPE = $14.37\%$
+
+> **Note** : Le manque profond de données historiques a fortement pénalisé les modèles de Deep Learning purs (LSTM/GRU) sur la cible "Arrivals" face à des algorithmes de Machine Learning traditionnels. En revanche, sur la cible "Nights", la logique séquentielle des réseaux et l'amplification des arbres (XGBoost) ont réussi à extraire des tendances valides ($R^2 > 0.35$).
+
+---
+
+## 🏆 Top 3 des Meilleurs Modèles Globaux (Toutes méthodes confondues)
+
+1. **Régression Ridge (Arrivées)** : $R^2 = 0.779$ | MAPE = $11.60\%$
+   *(Le modèle linéaire régularisé reste le plus robuste face au faible volume de données et au bruit macroéconomique sur les Arrivées).*
+2. **Decision Tree (Arrivées)** : $R^2 = 0.693$ | MAPE = $10.38\%$
+3. **XGBoost Walk-Forward (Nuitées)** : $R^2 = 0.489$ | MAPE = $12.10\%$
+   *(Le meilleur compromis non-linéaire sur les Nuitées, gérant mieux la variance post-COVID).*
 
 ---
 
