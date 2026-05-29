@@ -69,14 +69,20 @@ Les algorithmes classiques et avancés ont été entraînés et évalués sur la
 Malgré la mise en place d'un entraînement *Walk-Forward* rigoureux pour simuler l'adaptation continue aux chocs, les réseaux récurrents purs comme le LSTM ou le GRU ne parviennent pas à offrir d'excellentes performances. La raison principale réside dans le **manque drastique de volume de données historiques**. 
 Les réseaux de neurones profonds nécessitent des dizaines de milliers d'observations pour extraire des *patterns* temporels. Ici (séries annuelles/mensuelles agrégées), le bruit massif lié à la rupture structurelle du COVID-19 écrase le signal. Les modèles plus simples avec forte régularisation (comme **Ridge**) ou les méthodes d'ensembles par arbres (comme **XGBoost**) se montrent beaucoup plus résilients face à la rareté de la donnée.
 
-Top 3 Modèles Globaux
+Top 3 Modèles par Cible
 -------------------------
 
-Les 3 meilleurs modèles finaux retenus pour les simulations sont :
+Les 3 meilleurs modèles finaux retenus pour chaque cible sont :
 
-1. **Régression Ridge (Arrivées)** : R2 = 0.779
-2. **Decision Tree (Arrivées)** : R2 = 0.693
-3. **XGBoost Walk-Forward (Nuitées)** : R2 = 0.489
+**Pour la cible "Arrivées" (Arrivals) :**
+1. **Régression Ridge** : R2 = 0.779
+2. **Decision Tree** : R2 = 0.693
+3. **Linear Regression** : R2 = 0.636
+
+**Pour la cible "Nuitées" (Nights) :**
+1. **XGBoost (Walk-Forward)** : R2 = 0.489
+2. **LSTM (Walk-Forward)** : R2 = 0.352
+3. **GRU (Walk-Forward)** : R2 = 0.352
 
 Bilan Comparatif des Performances
 ------------------------------------

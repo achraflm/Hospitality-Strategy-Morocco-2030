@@ -147,13 +147,19 @@ Voici les performances obtenues sur l'ensemble de test (post-Covid) avec la stra
 
 ---
 
-## 🏆 Top 3 des Meilleurs Modèles Globaux (Toutes méthodes confondues)
+## 🏆 Top 3 des Meilleurs Modèles par Cible (Toutes méthodes confondues)
 
-1. **Régression Ridge (Arrivées)** : $R^2 = 0.779$ | MAPE = $11.60\%$
-   *(Le modèle linéaire régularisé reste le plus robuste face au faible volume de données et au bruit macroéconomique sur les Arrivées).*
-2. **Decision Tree (Arrivées)** : $R^2 = 0.693$ | MAPE = $10.38\%$
-3. **XGBoost Walk-Forward (Nuitées)** : $R^2 = 0.489$ | MAPE = $12.10\%$
-   *(Le meilleur compromis non-linéaire sur les Nuitées, gérant mieux la variance post-COVID).*
+### 🥇 Top 3 pour la Cible "Arrivées" (Arrivals)
+1. **Régression Ridge** : $R^2 = 0.779$ | MAPE = $11.60\%$
+   *(Le modèle linéaire régularisé reste le plus robuste face au faible volume de données et au bruit macroéconomique de la pandémie).*
+2. **Decision Tree** : $R^2 = 0.693$ | MAPE = $10.38\%$
+3. **Linear Regression** : $R^2 = 0.636$ | MAPE = $15.34\%$
+
+### 🥇 Top 3 pour la Cible "Nuitées" (Nights)
+1. **XGBoost (Walk-Forward)** : $R^2 = 0.489$ | MAPE = $12.10\%$
+   *(Le meilleur compromis non-linéaire sur les Nuitées, gérant mieux la variance post-COVID grâce à l'entraînement continu).*
+2. **LSTM (Walk-Forward)** : $R^2 = 0.352$ | MAPE = $14.37\%$
+3. **GRU (Walk-Forward)** : $R^2 = 0.352$ | MAPE = $14.37\%$
 
 ---
 
