@@ -86,40 +86,109 @@ Les 3 meilleurs modèles finaux retenus pour chaque cible sont :
 
 Bilan Comparatif des Performances
 ------------------------------------
-Le tableau comparatif contenant les résultats complets est
-automatiquement enregistré dans les fichiers CSV :
 
-.. code-block:: text
+Voici le tableau récapitulatif complet des métriques d'évaluation pour chaque modèle et chaque cible (trié par R² décroissant).
 
-   notebooks/results/ml_results.csv (Modèles ML Classiques)
-   notebooks/results/dl_wf_results.csv (Modèles Walk-Forward : DL et XGBoost)
+.. list-table:: 
+   :widths: 15 25 20 15 15 10
+   :header-rows: 1
 
-Ces fichiers répertorient pour chaque modèle le R2, le RMSE, le MAE et le MAPE.
-
+   * - Cible
+     - Modèle
+     - Type / Validation
+     - R²
+     - RMSE
+     - MAPE
+   * - Arrivals
+     - Ridge
+     - Machine L. (Standard)
+     - 0.779
+     - 181,701
+     - 11.60%
+   * - Arrivals
+     - Decision Tree
+     - Machine L. (Standard)
+     - 0.693
+     - 214,011
+     - 10.38%
+   * - Arrivals
+     - Linear Regression
+     - Machine L. (Standard)
+     - 0.636
+     - 233,200
+     - 15.34%
+   * - Arrivals
+     - XGBoost
+     - XGBoost (Walk-Fwd)
+     - 0.532
+     - 260,973
+     - 11.86%
+   * - Arrivals
+     - LSTM / GRU
+     - Deep L. (Walk-Fwd)
+     - -0.126
+     - 404,925
+     - 19.43%
+   * - Arrivals
+     - ARIMA
+     - Statistique (Standard)
+     - -0.817
+     - 521,241
+     - 23.32%
+   * - Nights
+     - XGBoost
+     - XGBoost (Walk-Fwd)
+     - 0.489
+     - 425,943
+     - 12.10%
+   * - Nights
+     - LSTM / GRU
+     - Deep L. (Walk-Fwd)
+     - 0.352
+     - 479,905
+     - 14.37%
+   * - Nights
+     - SVM (RBF)
+     - Machine L. (Standard)
+     - -1.517
+     - 961,174
+     - 26.86%
+   * - Nights
+     - Decision Tree
+     - Machine L. (Standard)
+     - -2.368
+     - 1,111,772
+     - 35.31%
+   * - Nights
+     - Ridge
+     - Machine L. (Standard)
+     - -4.289
+     - 1,393,210
+     - 39.36%
 
 Courbes des Prévisions vs Données Réelles (Ensemble de Test)
 --------------------------------------------------------------
 
-Afin de valider la capacité de généralisation de nos modèles sur des données non vues lors de l'entraînement, nous comparons les prévisions des 3 meilleurs modèles par rapport aux valeurs réelles sur l'ensemble de test (janvier 2023 - avril 2026).
+Afin de valider la capacité de généralisation de nos modèles sur des données non vues lors de l'entraînement, nous comparons les prévisions des meilleurs modèles par rapport aux valeurs réelles sur l'ensemble de test (post-COVID).
 
-Prévision des Arrivées Touristiques
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Prévision des Arrivées Touristiques (Meilleur Modèle : Ridge)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: _static/05_arrivals_test_comparison_top3.png
+.. figure:: _static/ridge_arrivals_vs_pred.png
    :align: center
-   :alt: Courbe de prévision des arrivées (Test Set)
+   :alt: Courbe de prévision des arrivées (Test Set) par Ridge
    :width: 100%
 
-   Comparaison des prévisions des Top 3 modèles (Ridge, XGBoost, LSTM) vs Arrivées réelles sur l'ensemble de test (2023-2026). Le modèle Ridge capture fidèlement le profil saisonnier, tandis que le XGBoost en Walk-Forward assure l'extrapolation.
+   Comparaison des prévisions du modèle **Ridge** vs Arrivées réelles sur l'ensemble de test (2023-2026). Le modèle capture fidèlement le profil saisonnier et la tendance.
 
-Prévision des Nuitées Hôtelières
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Prévision des Nuitées Hôtelières (Meilleur Modèle : XGBoost Walk-Forward)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: _static/09_nights_test_comparison_top3.png
+.. figure:: _static/xgboost_nights_vs_pred.png
    :align: center
-   :alt: Courbe de prévision des nuitées (Test Set)
+   :alt: Courbe de prévision des nuitées (Test Set) par XGBoost
    :width: 100%
 
-   Comparaison des prévisions des Top 3 modèles vs Nuitées réelles sur l'ensemble de test (2023-2026).
+   Comparaison des prévisions du modèle **XGBoost (entraîné en Walk-Forward)** vs Nuitées réelles sur l'ensemble de test (2023-2026). Le modèle s'adapte à la volatilité structurelle post-COVID.
 
 
