@@ -42,15 +42,10 @@ st.set_page_config(page_title="Morocco Tourism Forecasting", page_icon="🇲🇦
 
 st.markdown("""
 <style>
-    .main { background-color: #f8fafc; }
-    h1, h2, h3 { color: #0f172a; font-family: 'Outfit', sans-serif; font-weight: 700; }
-    div.stButton > button:first-child {
-        background-color: #0d9488; color: white; font-weight: 600;
-        border-radius: 8px; border: none; padding: 12px; width: 100%;
-    }
     .metric-card {
         background-color: white; padding: 15px; border-radius: 10px;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-top: 4px solid #0d9488;
+        color: #0f172a;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -160,26 +155,41 @@ if sim_btn:
                 is_dl = model in ['LSTM', 'SimpleRNN']
                 
                 if is_dl:
-                    # Walk-Forward Training + AutoResearch pour Deep Learning
-                    tscv = TimeSeriesSplit(n_splits=3)
+                    # Traitement Walk-Forward Incremental pour Keras
+                    split_idx = int(len(X) * 0.8)
+                    from sklearn.preprocessing import StandardScaler
+                    scaler = StandardScaler()
+                    X_scaled = scaler.fit_transform(X)
+                    
+                    from tensorflow.keras.models import Sequential
+                    from tensorflow.keras.layers import LSTM, SimpleRNN, Dense
+                    
+                    dl_model = Sequential()
+                    if model == 'LSTM':
+                        dl_model.add(LSTM(32, activation='relu', input_shape=(1, X_scaled.shape[1])))
+                    else:
+                        dl_model.add(SimpleRNN(32, activation='relu', input_shape=(1, X_scaled.shape[1])))
+                    dl_model.add(Dense(1))
+                    dl_model.compile(optimizer='adam', loss='mse')
+                    
                     all_y_true = []
                     all_y_pred = []
                     
-                    for split_idx, (train_index, test_index) in enumerate(tscv.split(X)):
-                        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-                        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-                        df_train_wf = df_history.iloc[train_index]
-                        test_dates = df_history.iloc[test_index]['Date']
+                    X_reshaped = X_scaled.reshape((X_scaled.shape[0], 1, X_scaled.shape[1]))
+                    y_vals = y.values
+                    
+                    for i in range(split_idx, len(X)):
+                        X_train_i, y_train_i = X_reshaped[:i], y_vals[:i]
+                        X_test_i, y_test_i = X_reshaped[i:i+1], y_vals[i:i+1]
+                        dl_model.fit(X_train_i, y_train_i, epochs=5, batch_size=16, verbose=0)
+                        pred = dl_model.predict(X_test_i, verbose=0)
+                        all_y_true.append(y_test_i[0])
+                        all_y_pred.append(pred[0][0])
                         
-                        preds = forecast_model(model, X_train, y_train, df_train_wf, test_dates, valid_sel, dl_epochs)
-                        if preds is not None:
-                            all_y_true.extend(y_test)
-                            all_y_pred.extend(preds)
-                            
                     if all_y_true:
                         wf_metrics[model]['r2'] = r2_score(all_y_true, all_y_pred)
                         wf_metrics[model]['mae'] = mean_absolute_error(all_y_true, all_y_pred)
-                        wf_metrics[model]['val_type'] = "Walk-Forward (3 splits)"
+                        wf_metrics[model]['val_type'] = "Walk-Forward (Incremental)"
                         
                         # Apply AutoResearch
                         res = ar_evaluator.evaluate_model(target_name_str, model, all_y_true, all_y_pred, is_walk_forward=True)

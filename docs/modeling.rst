@@ -451,11 +451,11 @@ L'implémentation d'AutoResearch nous a permis de révéler la véritable perfor
      - 260,973
      - 11.86%
    * - Arrivées
-     - LSTM (Deep Learning)
+     - LSTM + CNN (Deep Learning)
      - **Walk-Forward (AutoResearch)**
-     - -0.126
-     - 404,925
-     - 19.43%
+     - 0.179
+     - 345,567
+     - 17.26%
    * - Arrivées
      - ARIMA (Baseline)
      - Standard (Sans AutoResearch)
@@ -476,7 +476,7 @@ L'implémentation d'AutoResearch nous a permis de révéler la véritable perfor
      - 14.37%
 
 **Conclusion directe issue du rapport d'AutoResearch :**
-Les réseaux de neurones complexes (LSTMs) sur-performent l'ARIMA mais n'arrivent pas à battre XGBoost sur l'évaluation Walk-Forward. La forte variance post-COVID rend l'apprentissage profond instable sur la série des *Arrivées* (R² négatif), alors que XGBoost maintient un MAPE impressionnant de 11.86%.
+Les réseaux de neurones complexes (LSTMs, LSTM+CNN) entraînés avec la méthode incrémentale *Walk-Forward* continue parviennent à obtenir un R² positif (0.179) et sur-performent l'ARIMA, mais n'arrivent pas encore à battre XGBoost. La forte variance post-COVID rend l'apprentissage profond instable sur la série des *Arrivées*, alors que XGBoost maintient un MAPE impressionnant de 11.86%.
 
 Limites et Conclusions
 ~~~~~~~~~~~~~~~~~~~~~~
