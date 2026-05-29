@@ -22,7 +22,7 @@ def forecast_recursive_ml(model, df_historical, future_dates, valid_features, ta
             'FDI': last_fdi,
             'Poverty_rate': last_poverty,
             'REER': last_reer,
-            'is_covid': 0
+            'is_covid': 1 if (date >= pd.to_datetime('2020-03-01') and date <= pd.to_datetime('2021-12-01')) else 0
         }
         
         history_df = pd.concat([history_df, pd.DataFrame([new_row])], ignore_index=True)
@@ -112,7 +112,7 @@ def forecast_recursive_dl(model, df_historical, future_dates, valid_features, ta
             'FDI': last_fdi,
             'Poverty_rate': last_poverty,
             'REER': last_reer,
-            'is_covid': 0
+            'is_covid': 1 if (date >= pd.to_datetime('2020-03-01') and date <= pd.to_datetime('2021-12-01')) else 0
         }
         
         history_df = pd.concat([history_df, pd.DataFrame([new_row])], ignore_index=True)

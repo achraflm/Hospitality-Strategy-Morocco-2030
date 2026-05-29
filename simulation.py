@@ -211,17 +211,19 @@ if sim_btn:
                     split_idx = int(len(X) * 0.8)
                     X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
                     y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
-                    df_train_wf = df_history.iloc[:split_idx]
-                    test_dates = df_history.iloc[split_idx:]['Date']
                     
-                    preds = forecast_model(model, X_train, y_train, df_train_wf, test_dates, valid_sel, dl_epochs)
+                    if model in ml_class_map:
+                        fitted_model = ml_class_map[model]().fit(X_train, y_train)
+                        preds = fitted_model.predict(X_test)
+                        preds = np.clip(preds, 0, None)
+                    
                     if preds is not None:
                         wf_metrics[model]['r2'] = r2_score(y_test, preds)
                         wf_metrics[model]['mae'] = mean_absolute_error(y_test, preds)
                         wf_metrics[model]['val_type'] = "Standard (Train/Test)"
                         
                         # Optionnel : Générer un insight basique même pour ML
-                        res = ar_evaluator.evaluate_model(target_name_str, model, y_test, preds, is_walk_forward=False)
+                        res = ar_evaluator.evaluate_model(target_name_str, model, y_test.values, preds, is_walk_forward=False)
                         wf_metrics[model]['insights'] = res['Insights']
                         
         st.subheader("🧪 Résultats d'Évaluation & AutoResearch Insights")
