@@ -49,31 +49,16 @@ def get_available_features():
 @router.post("/metrics")
 def calculate_model_metrics(req: MetricsRequest):
     try:
-        # 1. Charger et nettoyer les données
-        df = loader.load_and_merge_tourism_data()
-        df = cleaner.integrate_covid_data(df)
-        df = cleaner.reconstruct_historical_arrivals(df)
-        df = cleaner.reconstruct_historical_receipts(df)
+        # 1. Charger les données pré-séparées
+        X_train_sep, X_test_sep, y_train_sep, y_test_sep = loader.get_separated_data(TARGET_COL)
         
-        # 2. Extraire caractéristiques
-        df_featured = feat.build_features(df)
-        df_ml = df_featured.dropna(subset=[TARGET_COL]).copy()
+        # Filtre sur les caractéristiques demandées et imputation
+        actual_features = [f for f in req.selected_features if f in X_train_sep.columns]
+        X_train = X_train_sep[actual_features].fillna(X_train_sep[actual_features].median())
+        X_test = X_test_sep[actual_features].fillna(X_test_sep[actual_features].median())
         
-        # 3. Diviser chronologiquement
-        train_end_date = f"{req.split_year - 1}-12-31"
-        test_start_date = f"{req.split_year}-01-01"
-        
-        train_df = df_ml[df_ml['Date'] <= train_end_date]
-        test_df = df_ml[df_ml['Date'] >= test_start_date]
-        
-        if len(train_df) == 0 or len(test_df) == 0:
-            raise HTTPException(status_code=400, detail="Split invalide. Ajustez l'année de test split.")
-            
-        # Imputation
-        X_train = train_df[req.selected_features].fillna(train_df[req.selected_features].median())
-        y_train = train_df[TARGET_COL]
-        X_test = test_df[req.selected_features].fillna(train_df[req.selected_features].median())
-        y_test = test_df[TARGET_COL]
+        y_train = y_train_sep
+        y_test = y_test_sep
         
         predictions = {}
         
@@ -106,7 +91,7 @@ def calculate_model_metrics(req: MetricsRequest):
         
         # Préparer les tracés de comparaison
         chart_data = []
-        test_dates = df_ml[df_ml['Date'] >= test_start_date]['Date'].dt.strftime('%Y-%m-%d').values[:len(y_test)]
+        test_dates = X_test_sep['Date'].dt.strftime('%Y-%m-%d').values
         
         for idx, date in enumerate(test_dates):
             row = {'Date': date, 'Actual': float(y_test.iloc[idx])}
@@ -124,24 +109,29 @@ def calculate_model_metrics(req: MetricsRequest):
 @router.post("/predict")
 def run_forecasting_projections(req: PredictRequest):
     try:
-        # 1. Charger et nettoyer
-        df = loader.load_and_merge_tourism_data()
-        df = cleaner.integrate_covid_data(df)
-        df = cleaner.reconstruct_historical_arrivals(df)
-        df = cleaner.reconstruct_historical_receipts(df)
+        # 1. Charger les données pré-séparées
+        X_train_sep, X_test_sep, y_train_sep, y_test_sep = loader.get_separated_data(TARGET_COL)
         
-        # 2. Features
-        df_featured = feat.build_features(df)
-        df_ml = df_featured.dropna(subset=[TARGET_COL]).copy()
+        # Concaténer pour obtenir l'historique complet
+        actual_features = [f for f in req.selected_features if f in X_train_sep.columns]
         
-        X_train = df_ml[req.selected_features].fillna(df_ml[req.selected_features].median())
-        y_train = df_ml[TARGET_COL]
+        X_train_full = pd.concat([X_train_sep[actual_features], X_test_sep[actual_features]]).reset_index(drop=True)
+        y_train_full = pd.concat([y_train_sep, y_test_sep]).reset_index(drop=True)
         
+        X_train = X_train_full.fillna(X_train_full.median())
+        y_train = y_train_full
+        
+        df_history = pd.concat([X_train_sep, X_test_sep]).reset_index(drop=True)
+        df_history[TARGET_COL] = y_train_full
         # Date range futur
         future_dates = pd.date_range(start='2026-05-01', end=f'{req.target_year}-12-01', freq='MS')
         
         # Calcul de recettes théorique basé sur le ratio
-        mean_ratio = (df_ml['Total_Receipts_MDH'] / df_ml['Arrivals']).mean()
+        # Since df_history doesn't have Total_Receipts_MDH, we load the raw df quickly
+        df = loader.load_and_merge_tourism_data()
+        df = cleaner.reconstruct_historical_receipts(cleaner.integrate_covid_data(df))
+        df_ml = df.dropna(subset=[TARGET_COL])
+        mean_ratio = (df_ml['Total_Receipts_MDH'] / df_ml['Arrivals']).mean() if 'Total_Receipts_MDH' in df_ml.columns else 4.0
         
         def calculate_receipts(arrivals):
             receipts = []

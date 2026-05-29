@@ -367,32 +367,17 @@ def main():
     
     df_ml = df_featured.dropna(subset=[TARGET_COL]).copy()
     valid_features = [c for c in features_list if c in df_ml.columns]
+    # Utiliser les données séparées du dossier backend/data/separted
+    X_train_sep, X_test_sep, y_train_sep, y_test_sep = loader.get_separated_data(TARGET_COL)
     
-    train_end_date = f"{args.test_year - 1}-12-31"
-    test_start_date = f"{args.test_year}-01-01"
+    actual_features = [f for f in valid_features if f in X_train_sep.columns]
+    X_train = X_train_sep[actual_features].fillna(X_train_sep[actual_features].median())
+    X_test = X_test_sep[actual_features].fillna(X_test_sep[actual_features].median())
     
-    train_df = df_ml[df_ml['Date'] <= train_end_date]
-    test_df = df_ml[df_ml['Date'] >= test_start_date]
+    y_train = y_train_sep
+    y_test = y_test_sep
     
-    X_train = train_df[valid_features]
-    y_train = train_df[TARGET_COL]
-    X_test = test_df[valid_features]
-    y_test = test_df[TARGET_COL]
-    
-    # Imputation médiane pour éviter les NaNs dans les modèles classiques et deep learning
-    X_train_median = X_train.median()
-    X_train = X_train.fillna(X_train_median)
-    X_test = X_test.fillna(X_train_median)
-    
-    # Sauvegarde des splits
-    separated_dir = os.path.join(DATA_DIR, 'separted')
-    os.makedirs(separated_dir, exist_ok=True)
-    X_train.to_csv(os.path.join(separated_dir, 'X_train.csv'), index=False)
-    y_train.to_csv(os.path.join(separated_dir, 'y_train.csv'), index=False)
-    X_test.to_csv(os.path.join(separated_dir, 'X_test.csv'), index=False)
-    y_test.to_csv(os.path.join(separated_dir, 'y_test.csv'), index=False)
-    
-    logger.info(f"Splits sauvegardés dans separted/ pour l'année de test {args.test_year}")
+    logger.info("Données séparées chargées pour l'entraînement.")
     
     # 4. ENTRAÎNEMENT DES 3 MODÈLES
     predictions = {}

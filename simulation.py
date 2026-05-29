@@ -136,17 +136,21 @@ if sim_btn:
     if not selected_models or not selected_features:
         st.error("Sélectionnez au moins un modèle et une feature.")
     else:
-        # Preprocessing
-        df_featured = feat.build_features(df_clean)
-        df_ml = df_featured.dropna(subset=[active_target_col]).copy()
+        # Load pre-split data from backend/data/separted
+        from src.data_loader import get_separated_data
+        X_train_sep, X_test_sep, y_train_sep, y_test_sep = get_separated_data(active_target_col)
         
-        # Isoler l'historique jusqu'en 2025 pour l'évaluation et l'entraînement final
-        df_history = df_ml[df_ml['Date'].dt.year <= 2025].copy()
+        valid_sel = [f for f in selected_features if f in X_train_sep.columns]
         
-        valid_sel = [f for f in selected_features if f in df_history.columns]
-        X = df_history[valid_sel].fillna(df_history[valid_sel].median())
-        y = df_history[active_target_col]
+        X_train_df = X_train_sep[valid_sel].fillna(X_train_sep[valid_sel].median())
+        X_test_df = X_test_sep[valid_sel].fillna(X_test_sep[valid_sel].median())
         
+        # Combine for full history context (for walk-forward and projections)
+        X = pd.concat([X_train_df, X_test_df]).reset_index(drop=True)
+        y = pd.concat([y_train_sep, y_test_sep]).reset_index(drop=True)
+        
+        df_history = pd.concat([X_train_sep, X_test_sep]).reset_index(drop=True)
+        df_history[active_target_col] = y
         wf_metrics = {m: {'r2': 0, 'mae': 0, 'insights': '', 'val_type': ''} for m in selected_models}
         
         # Initialize AutoResearch Evaluator
@@ -173,7 +177,8 @@ if sim_btn:
                     X_seq = np.array(X_seq)
                     y_seq = np.array(y_seq)
                     
-                    split_idx = int(len(X_seq) * 0.8)
+                    # Split exactly at the end of X_train to match test set
+                    split_idx = len(X_train_df) - window_size
                     
                     from tensorflow.keras.models import Sequential
                     from tensorflow.keras.layers import LSTM, SimpleRNN, Dense
@@ -207,23 +212,19 @@ if sim_btn:
                         wf_metrics[model]['insights'] = res['Insights']
                 
                 else:
-                    # Traitement Normal (80% Train / 20% Test) pour Modèles ML Classiques
-                    split_idx = int(len(X) * 0.8)
-                    X_train, X_test = X.iloc[:split_idx], X.iloc[split_idx:]
-                    y_train, y_test = y.iloc[:split_idx], y.iloc[split_idx:]
-                    
+                    # Traitement Normal (En utilisant les ensembles séparés de backend)
                     if model in ml_class_map:
-                        fitted_model = ml_class_map[model]().fit(X_train, y_train)
-                        preds = fitted_model.predict(X_test)
+                        fitted_model = ml_class_map[model]().fit(X_train_df, y_train_sep)
+                        preds = fitted_model.predict(X_test_df)
                         preds = np.clip(preds, 0, None)
                     
                     if preds is not None:
-                        wf_metrics[model]['r2'] = r2_score(y_test, preds)
-                        wf_metrics[model]['mae'] = mean_absolute_error(y_test, preds)
-                        wf_metrics[model]['val_type'] = "Standard (Train/Test)"
+                        wf_metrics[model]['r2'] = r2_score(y_test_sep, preds)
+                        wf_metrics[model]['mae'] = mean_absolute_error(y_test_sep, preds)
+                        wf_metrics[model]['val_type'] = "Standard (Train/Test pre-split)"
                         
                         # Optionnel : Générer un insight basique même pour ML
-                        res = ar_evaluator.evaluate_model(target_name_str, model, y_test.values, preds, is_walk_forward=False)
+                        res = ar_evaluator.evaluate_model(target_name_str, model, y_test_sep.values, preds, is_walk_forward=False)
                         wf_metrics[model]['insights'] = res['Insights']
                         
         st.subheader("🧪 Résultats d'Évaluation & AutoResearch Insights")

@@ -118,3 +118,33 @@ def load_and_merge_tourism_data():
     merged_df = merged_df.drop('InterTourismeReceipts', axis=1, errors='ignore')
     
     return merged_df
+
+def get_separated_data(target_col='Arrivals'):
+    """
+    Loads pre-split data from backend/data/separted/ and returns X_train, X_test, y_train, y_test
+    along with their respective Dates assigned based on 1995-01-01 to 2022-12-01 (train) and 2023-01-01 to 2024-12-01 (test).
+    """
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "data", "separted"))
+    
+    X_train = pd.read_csv(os.path.join(base_dir, 'X_train.csv'))
+    X_test = pd.read_csv(os.path.join(base_dir, 'X_test.csv'))
+    
+    try:
+        y_train_df = pd.read_csv(os.path.join(base_dir, 'y_train.csv'))
+        y_test_df = pd.read_csv(os.path.join(base_dir, 'y_test.csv'))
+        
+        # Fallback to the first column if target_col doesn't exist
+        tgt = target_col if target_col in y_train_df.columns else y_train_df.columns[0]
+        y_train = y_train_df[tgt]
+        y_test = y_test_df[tgt]
+    except Exception as e:
+        y_train = None
+        y_test = None
+        
+    dates_train = pd.date_range(start='1995-01-01', periods=len(X_train), freq='MS')
+    dates_test = pd.date_range(start='2023-01-01', periods=len(X_test), freq='MS')
+    
+    X_train['Date'] = dates_train
+    X_test['Date'] = dates_test
+    
+    return X_train, X_test, y_train, y_test
