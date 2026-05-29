@@ -38,6 +38,13 @@ from src.models.svr import SvrModel
 from src.models.lstm import LstmModel
 from src.models.rnn import RnnModel
 
+ml_class_map = {
+    'Ridge': RidgeModel, 'Random Forest': RandomForestModel,
+    'Extra Trees': ExtraTreesModel, 'Gradient Boosting': GradientBoostingModel,
+    'AdaBoost': AdaBoostModel, 'XGBoost': XgboostModel,
+    'LightGBM': LightgbmModel, 'CatBoost': CatboostModel, 'SVR': SvrModel
+}
+
 st.set_page_config(page_title="Morocco Tourism Forecasting", page_icon="🇲🇦", layout="wide")
 
 st.markdown("""
@@ -88,12 +95,6 @@ def forecast_model(model_name, X_train, y_train, df_ml_train, test_dates, select
         return np.clip(preds, 0, None)
         
     else:
-        ml_class_map = {
-            'Ridge': RidgeModel, 'Random Forest': RandomForestModel,
-            'Extra Trees': ExtraTreesModel, 'Gradient Boosting': GradientBoostingModel,
-            'AdaBoost': AdaBoostModel, 'XGBoost': XgboostModel,
-            'LightGBM': LightgbmModel, 'CatBoost': CatboostModel, 'SVR': SvrModel
-        }
         if model_name in ml_class_map:
             model = ml_class_map[model_name]().fit(X_train, y_train)
             preds = forecast_recursive_ml(model, df_ml_train, test_dates, selected_features)
