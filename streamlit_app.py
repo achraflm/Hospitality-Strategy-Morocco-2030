@@ -64,6 +64,11 @@ TARGET_COL = target_variable
 
 split_year = st.sidebar.slider("Année de début du test split", min_value=2020, max_value=2025, value=2023)
 
+eval_method = st.sidebar.radio(
+    "Méthode d'évaluation",
+    options=["Walk-Forward", "Normal"]
+)
+
 st.sidebar.subheader("📋 Feature Engineering")
 if TARGET_COL == "Arrivals":
     default_features = feat.get_feature_list()
@@ -95,7 +100,7 @@ with tab_data:
     st.line_chart(df_clean.set_index('Date')[TARGET_COL])
 
 with tab_train:
-    st.header("Entraînement Dynamique Walk-Forward")
+    st.header(f"Entraînement Dynamique ({eval_method})")
     run_btn = st.button("🚀 Entraîner les Modèles")
     
     if run_btn and selected_models and selected_features:
@@ -134,40 +139,53 @@ with tab_train:
             predictions = {}
             for m_name in selected_models:
                 if m_name in ml_class_map:
-                    y_pred = []
-                    my_bar = st.progress(0, text=f"Walk-Forward {m_name}...")
-                    for idx, (train_index, test_index) in enumerate(tscv.split(X_all_raw)):
-                        if test_index[0] < train_size: continue
-                        X_tr, y_tr = X_all_raw.iloc[train_index], y_all_raw[train_index]
-                        X_te = X_all_raw.iloc[test_index]
-                        model = ml_class_map[m_name]().fit(X_tr, y_tr)
-                        pred = model.predict(X_te)
-                        y_pred.append(pred[0])
-                        my_bar.progress((idx + 1) / n_splits)
-                    my_bar.empty()
-                    predictions[m_name] = np.array(y_pred)
+                    if eval_method == "Walk-Forward":
+                        y_pred = []
+                        my_bar = st.progress(0, text=f"Walk-Forward {m_name}...")
+                        for idx, (train_index, test_index) in enumerate(tscv.split(X_all_raw)):
+                            if test_index[0] < train_size: continue
+                            X_tr, y_tr = X_all_raw.iloc[train_index], y_all_raw[train_index]
+                            X_te = X_all_raw.iloc[test_index]
+                            model = ml_class_map[m_name]().fit(X_tr, y_tr)
+                            pred = model.predict(X_te)
+                            y_pred.append(pred[0])
+                            my_bar.progress((idx + 1) / n_splits)
+                        my_bar.empty()
+                        predictions[m_name] = np.array(y_pred)
+                    else:
+                        with st.spinner(f"Normal Train {m_name}..."):
+                            model = ml_class_map[m_name]().fit(X_train, y_train)
+                            predictions[m_name] = np.array(model.predict(X_test))
+                            
                 elif m_name in dl_class_map:
-                    y_pred = []
-                    my_bar = st.progress(0, text=f"Walk-Forward {m_name}...")
-                    for idx, (train_index, test_index) in enumerate(tscv.split(X_all_raw)):
-                        if test_index[0] < train_size: continue
-                        X_tr, y_tr = X_all_raw.iloc[train_index], y_all_raw[train_index]
-                        X_te = X_all_raw.iloc[test_index]
-                        model = dl_class_map[m_name](epochs=dl_epochs).fit(X_tr, y_tr)
-                        pred = model.predict(X_te, X_train_history=X_tr)
-                        y_pred.append(pred[0])
-                        my_bar.progress((idx + 1) / n_splits)
-                    my_bar.empty()
-                    predictions[m_name] = np.array(y_pred)
+                    if eval_method == "Walk-Forward":
+                        y_pred = []
+                        my_bar = st.progress(0, text=f"Walk-Forward {m_name}...")
+                        for idx, (train_index, test_index) in enumerate(tscv.split(X_all_raw)):
+                            if test_index[0] < train_size: continue
+                            X_tr, y_tr = X_all_raw.iloc[train_index], y_all_raw[train_index]
+                            X_te = X_all_raw.iloc[test_index]
+                            model = dl_class_map[m_name](epochs=dl_epochs).fit(X_tr, y_tr)
+                            pred = model.predict(X_te, X_train_history=X_tr)
+                            y_pred.append(pred[0])
+                            my_bar.progress((idx + 1) / n_splits)
+                        my_bar.empty()
+                        predictions[m_name] = np.array(y_pred)
+                    else:
+                        with st.spinner(f"Normal Train {m_name}..."):
+                            model = dl_class_map[m_name](epochs=dl_epochs).fit(X_train, y_train)
+                            predictions[m_name] = np.array(model.predict(X_test, X_train_history=X_train))
             
             results_df = metrics_mod.compare_models(predictions, y_test)
             st.session_state['results_df'] = results_df
             st.session_state['predictions'] = predictions
             st.session_state['y_test'] = y_test
             st.session_state['test_dates'] = test_df['Date'].values
+            st.session_state['eval_method_used'] = eval_method
             
     if 'results_df' in st.session_state:
-        st.subheader("Performance sur Test (Walk-Forward)")
+        eval_used = st.session_state.get('eval_method_used', 'Walk-Forward')
+        st.subheader(f"Performance sur Test ({eval_used})")
         styled_df = st.session_state['results_df'].style.highlight_max(subset=['R2'], color='#115e59')
         st.dataframe(styled_df)
         

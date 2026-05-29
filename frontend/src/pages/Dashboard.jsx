@@ -38,7 +38,7 @@ function Dashboard() {
       body: JSON.stringify({
         target_year: 2030,
         selected_features: defaultFeatures,
-        selected_models: ['CatBoost'],
+        selected_models: ['XGBoost', 'LSTM', 'GRU'],
         dl_epochs: 5,
         inflation_rate: 0.015,
         wc_boost: 0.20
@@ -49,7 +49,7 @@ function Dashboard() {
         return res.json()
       })
       .then(data => {
-        // Recharts data format: { Date, Actual_Arrivals, CatBoost_Arrivals }
+        // Recharts data format: { Date, Actual_Arrivals, XGBoost_Arrivals, LSTM_Arrivals, GRU_Arrivals }
         setForecastData(data.projections || [])
         setLoadingForecast(false)
       })
@@ -67,8 +67,8 @@ function Dashboard() {
     const arrivals2030 = forecastData.filter(d => d.IsFuture && d.Date.startsWith('2030'))
     if (!arrivals2030.length) return '17.5M'
     
-    // Sum for the model CatBoost
-    const sum = arrivals2030.reduce((acc, curr) => acc + (curr.CatBoost_Arrivals || 0), 0)
+    // Sum for the model XGBoost
+    const sum = arrivals2030.reduce((acc, curr) => acc + (curr.XGBoost_Arrivals || 0), 0)
     if (sum === 0) return '17.5M'
     return `${(sum / 1e6).toFixed(2)}M`
   }
@@ -177,7 +177,7 @@ function Dashboard() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
               <h3 className="text-lg font-bold text-white">Trajectoire des Arrivées Touristiques (Mensuel)</h3>
-              <p className="text-xs text-slate-400">Arrivées historiques réelles et prévisionnelles récursives (modèle CatBoost)</p>
+              <p className="text-xs text-slate-400">Arrivées historiques réelles et prévisionnelles récursives (modèle XGBoost)</p>
             </div>
             <div className="flex items-center gap-4 text-xs font-semibold">
               <div className="flex items-center gap-1.5">
@@ -235,7 +235,9 @@ function Dashboard() {
                     formatter={(value, name) => {
                       const formatted = (value / 1e3).toFixed(0) + 'k'
                       if (name === 'Actual_Arrivals') return [formatted, 'Arrivées Réelles']
-                      if (name === 'CatBoost_Arrivals') return [formatted, 'Prévisions CatBoost']
+                      if (name === 'XGBoost_Arrivals') return [formatted, 'Prévisions XGBoost']
+                      if (name === 'LSTM_Arrivals') return [formatted, 'Prévisions LSTM']
+                      if (name === 'GRU_Arrivals') return [formatted, 'Prévisions GRU']
                       return [formatted, name]
                     }}
                   />
@@ -250,7 +252,7 @@ function Dashboard() {
                   />
                   <Area 
                     type="monotone" 
-                    dataKey="CatBoost_Arrivals" 
+                    dataKey="XGBoost_Arrivals" 
                     stroke="#00e676" 
                     strokeWidth={2} 
                     strokeDasharray="4 4"

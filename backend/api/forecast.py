@@ -19,6 +19,7 @@ from src.models.ridge import RidgeModel
 from src.models.lstm import LstmModel
 from src.models.xgboost import XgboostModel
 from src.models.lstm_cnn import LstmCnnModel
+from src.models.gru import GruModel
 
 router = APIRouter()
 
@@ -165,7 +166,8 @@ def run_forecasting_projections(req: PredictRequest):
         # Projections DL
         dl_class_map = {
             'LSTM': LstmModel,
-            'LSTM + CNN': LstmCnnModel
+            'LSTM + CNN': LstmCnnModel,
+            'GRU': GruModel
         }
         for dl_name in dl_class_map.keys():
             if dl_name in req.selected_models:
