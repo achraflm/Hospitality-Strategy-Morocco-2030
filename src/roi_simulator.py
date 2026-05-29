@@ -173,12 +173,12 @@ class HotelROISimulator:
             print(f"[ROI Plot] Graphique sauvegardé -> {save_path}")
         plt.close()
 
-    def simulate_with_forecast(self, annual_arrivals_dict, baseline_arrivals_2025, start_year=2026, wc_boost_2030=True):
+    def simulate_with_forecast(self, annual_arrivals_dict, baseline_arrivals_2025, start_year=2026, wc_boost_2030=True, duration_years=10):
         """
         Simule la performance financière sur 10 ans où le taux d'occupation de l'hôtel
         suit la croissance relative des arrivées touristiques nationales prédites par un modèle.
         """
-        years = list(range(start_year, start_year + 10))
+        years = list(range(start_year, start_year + duration_years))
         records = []
         
         for idx, year in enumerate(years):
@@ -213,7 +213,7 @@ class HotelROISimulator:
             
         return pd.DataFrame(records)
 
-    def simulate_with_nuitees_forecast(self, annual_nights_dict, start_year=2026, wc_boost_2030=True):
+    def simulate_with_nuitees_forecast(self, annual_nights_dict, start_year=2026, wc_boost_2030=True, duration_years=10):
         """
         Simule la performance financière sur 10 ans en utilisant directement les
         **nuitées annuelles prédites** (overnight stays) pour déduire le taux d'occupation.
@@ -231,12 +231,13 @@ class HotelROISimulator:
             annual_nights_dict (dict): Dictionnaire {année: nuitées_annuelles_prédites}.
             start_year (int): Première année de la simulation (défaut : 2026).
             wc_boost_2030 (bool): Activer le boost Coupe du Monde FIFA 2030 (défaut : True).
+            duration_years (int): Durée de la simulation en années (défaut : 10).
 
         Returns:
             pd.DataFrame: Table des cash flows annuels (ADR_USD, Occ, Revenue_USD, GOP_USD,
                           Nights_Predicted, RevPAR_USD).
         """
-        years = list(range(start_year, start_year + 10))
+        years = list(range(start_year, start_year + duration_years))
         total_room_nights = self.rooms * 365  # capacité annuelle totale de l'hôtel
         records = []
 

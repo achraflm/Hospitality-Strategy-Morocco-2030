@@ -11,7 +11,9 @@ from api import forecast, roi, monte_carlo
 
 app = FastAPI(
     title="Morocco Tourism Investment Intelligence Platform API",
-    description="API Python pour le forecasting touristique et la simulation financière",
+    description="API Python pour le forecasting touristique et la simulation financière. "
+                "Inclut désormais un environnement **Autoresearch** (inspiré par les recherches "
+                "de A. Karpathy) permettant à des Agents IA d'optimiser les modèles en continu.",
     version="1.0.0"
 )
 

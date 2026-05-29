@@ -16,7 +16,8 @@ from src.forecasting import forecast_recursive_ml, forecast_recursive_dl
 # Import des modèles
 from src.models.sarima import SarimaModel
 from src.models.ridge import RidgeModel
-from src.models.lstm import LstmModel\nfrom src.models.xgboost import XgboostModel
+from src.models.lstm import LstmModel
+from src.models.xgboost import XgboostModel
 
 router = APIRouter()
 

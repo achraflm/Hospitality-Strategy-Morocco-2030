@@ -192,3 +192,49 @@ Prévision des Nuitées Hôtelières (Meilleur Modèle : XGBoost Walk-Forward)
    Comparaison des prévisions du modèle **XGBoost (entraîné en Walk-Forward)** vs Nuitées réelles sur l'ensemble de test (2023-2026). Le modèle s'adapte à la volatilité structurelle post-COVID.
 
 
+Intégration d'AutoResearch
+--------------------------
+
+L'intégration d'**AutoResearch** dans notre workflow de Data Science représente une mise à niveau majeure de nos capacités d'expérimentation et d'analyse. Inspiré par les méthodologies d'évaluation autonomes de la recherche en IA, le module AutoResearch a été spécifiquement adapté pour notre projet de séries temporelles touristiques.
+
+Qu'est-ce qu'AutoResearch et pourquoi l'avoir ajouté ?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+AutoResearch est un module d'évaluation automatisé qui s'exécute directement à l'intérieur de nos notebooks (Deep Learning et Machine Learning). Il a été ajouté pour remplacer l'évaluation manuelle des modèles par une approche systématique, intelligente et reproductible.
+
+**Comment AutoResearch améliore notre workflow :**
+
+1. **Expérimentation et Reproductibilité** : Il génère automatiquement les métriques (RMSE, MAE, MAPE, SMAPE, R²) et standardise les sorties, garantissant que chaque entraînement de modèle est documenté avec rigueur et enregistré de façon pérenne (voir les fichiers ``autoresearch_report.md`` et les CSV).
+2. **Interprétation des Modèles** : Grâce à ses algorithmes heuristiques d'analyse des résidus et des scores R², il génère des *insights* textuels automatiques. Il détecte ainsi par lui-même les biais systémiques (sur/sous-estimation) et l'overfitting.
+3. **Évaluation des Séries Temporelles** : Spécifiquement pour l'approche *Walk-Forward*, AutoResearch analyse la dégradation de la performance au fil du temps (le *temporal generalization*) et valide la robustesse des modèles face à des chocs externes, comme l'impact post-COVID.
+
+Observations Automatisées et Insights Générés
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L'analyse générée par AutoResearch sur nos modèles XGBoost et Deep Learning (LSTM, GRU) a mis en évidence plusieurs constats cruciaux :
+
+* **Généralisation (Walk-Forward) vs Validation Standard** :
+  L'analyse AutoResearch confirme que les modèles de Boosting (XGBoost) entraînés en Walk-Forward conservent une grande stabilité prédictive sur de multiples fenêtres. En revanche, le Deep Learning montre une sensibilité structurelle importante : l'évaluation par AutoResearch indique que les réseaux LSTM performent nettement mieux sur les "Nuitées" que sur les "Arrivées", ces dernières ayant un ratio signal-sur-bruit (variance) beaucoup plus difficile à modéliser sans biais.
+
+* **Analyse des Résidus** :
+  Les graphiques générés de façon automatisée soulignent que certains modèles (comme le SVM) souffrent de biais systématiques (tendance à la sous-estimation), tandis que le Ridge et XGBoost ont des résidus parfaitement centrés sur 0, avec des erreurs de prévisions équilibrées.
+
+Avant / Après AutoResearch
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+* **Avant** : L'ingénieur Data devait examiner manuellement les arrays Numpy, générer manuellement les figures à chaque paramétrage, et deviner la raison d'un mauvais R².
+* **Après** : Les notebooks (04 et 05) produisent un rapport de recherche consolidé en fin d'exécution (``autoresearch_output``), listant des remarques qualitatives pour chaque algorithme, des métriques étendues (incluant le SMAPE) et générant automatiquement les figures de qualité publication (Résidus, Comparaison Prédictive).
+
+Visualisations Générées par AutoResearch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Voici quelques exemples des visualisations analytiques crées automatiquement par AutoResearch au sein des pipelines.
+
+*(Exemple d'analyse pour XGBoost)*
+
+.. figure:: _static/XGBoost_Nights_resid.png
+   :align: center
+   :alt: AutoResearch Analyse des Résidus (XGBoost sur Nuitées)
+   :width: 80%
+
+   Distribution des résidus calculée automatiquement par le module. Une moyenne proche de zéro valide l'absence de biais systématique.
+
+Limites et Conclusions
+~~~~~~~~~~~~~~~~~~~~~~
+Malgré ses capacités, AutoResearch dépend actuellement de règles heuristiques strictes pour générer ses insights textuels. De plus, il n'optimise pas (encore) directement les hyperparamètres. Néanmoins, il a permis de diagnostiquer avec certitude que la stratégie de Walk-Forward est indispensable pour assurer la fiabilité du modèle sur de longues périodes de prévisions touristiques post-COVID.
