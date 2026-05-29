@@ -127,6 +127,12 @@ def run_exploratory_plots(df, logger):
 
 def forecast_recursive_ml(model, df_historical, future_dates, valid_features, target_col='Arrivals'):
     """Prédiction récursive pas-à-pas pour les modèles de Machine Learning."""
+    
+    # Assurer que les colonnes existent
+    for col, default_val in zip(['Oil_price', 'FDI', 'Poverty_rate', 'REER'], [75.0, 2.0, 4.0, 100.0]):
+        if col not in df_historical.columns:
+            df_historical[col] = default_val
+
     history_df = df_historical[['Date', target_col, 'Oil_price', 'FDI', 'Poverty_rate', 'REER']].copy()
     history_df['Date'] = pd.to_datetime(history_df['Date'])
     
@@ -217,6 +223,12 @@ def forecast_recursive_ml(model, df_historical, future_dates, valid_features, ta
 
 def forecast_recursive_dl(model, df_historical, future_dates, valid_features, target_col='Arrivals'):
     """Prédiction récursive pas-à-pas pour les modèles Deep Learning (LSTM, RNN)."""
+    
+    # Assurer que les colonnes existent
+    for col, default_val in zip(['Oil_price', 'FDI', 'Poverty_rate', 'REER'], [75.0, 2.0, 4.0, 100.0]):
+        if col not in df_historical.columns:
+            df_historical[col] = default_val
+
     history_df = df_historical[['Date', target_col, 'Oil_price', 'FDI', 'Poverty_rate', 'REER']].copy()
     history_df['Date'] = pd.to_datetime(history_df['Date'])
     
@@ -409,7 +421,7 @@ def main():
     logger.info(f"Bilan complet des performances sauvegardé -> {metrics_path}")
     
     # 6. Graphique 04 : Comparaison des prédictions sur le test set
-    test_dates = df_ml[df_ml['Date'] >= test_start_date]['Date'].values[:len(y_test)]
+    test_dates = X_test_sep['Date'].values[:len(y_test)]
     viz.plot_predictions_comparison(y_test, predictions, test_dates, title="Comparaison des Modèles sur l'Ensemble de Test")
     
     # 7. Importance des caractéristiques (Ridge)

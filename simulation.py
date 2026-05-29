@@ -150,7 +150,8 @@ if sim_btn:
         X = pd.concat([X_train_df, X_test_df]).reset_index(drop=True)
         y = pd.concat([y_train_sep, y_test_sep]).reset_index(drop=True)
         
-        df_history = pd.concat([X_train_sep, X_test_sep]).reset_index(drop=True)
+        # Rebuild full history so it contains Date and raw columns needed for recursive ML projection
+        df_history = feat.build_features(df_clean).dropna().reset_index(drop=True)
         df_history[active_target_col] = y
         wf_metrics = {m: {'r2': 0, 'mae': 0, 'insights': '', 'val_type': ''} for m in selected_models}
         
