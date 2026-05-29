@@ -48,46 +48,47 @@ Les modeles sont compares sur la base de quatre metriques de regression standard
 * **MAE (Mean Absolute Error)** : Ecart moyen en valeur absolue.
 * **R2 (Coefficient de Determination)** : Indique la proportion de variance expliquee par le modele.
 
-9 Modeles ML Entraines (par cible)
-------------------------------------
+Évaluation des Modèles (Deep Learning & XGBoost)
+-------------------------------------------------
 
-Les 9 modeles suivants sont entraines sur chaque cible (Arrivees et Nuitees) :
+Les algorithmes classiques et avancés ont été entraînés et évalués sur la période post-COVID. 
 
-1. **Ridge** (R2 = 0.9147 sur Arrivees) — Meilleur modele ML lineaire.
-2. **XGBoost (Walk-Forward)** (R2 = 0.7923) — Robustesse temporelle prouvee par la nouvelle methode.
-3. **Prophet** (R2 = 0.8858)
-4. **Decision Tree** (R2 = 0.6823)
-5. **Random Forest** (R2 = 0.5488)
-6. **Gradient Boosting** (R2 = 0.3645)
-7. **LightGBM** (R2 = 0.0685)
-8. **Extra Trees** (R2 = -0.1064)
-9. **CatBoost** (R2 = -1.4071)
-*Note: Le LSTM a egalement ete evalue en Walk-Forward avec un R2 de 0.6606.*
+**Résultats pour la cible "Arrivals" :**
 
-Top 3 Modeles par Cible
+1. **Ridge** (R2 = 0.779, MAPE = 11.6%) — Meilleur modèle linéaire.
+2. **Decision Tree** (R2 = 0.693, MAPE = 10.3%)
+3. **XGBoost (Walk-Forward)** (R2 = 0.532, MAPE = 11.8%)
+4. **LSTM / GRU** (R2 = -0.126, MAPE = 19.4%)
+
+**Résultats pour la cible "Nights" :**
+
+1. **XGBoost (Walk-Forward)** (R2 = 0.489, MAPE = 12.1%)
+2. **LSTM / LSTM 2-Layers / GRU** (R2 = 0.352, MAPE = 14.3%)
+
+**Pourquoi le Deep Learning (LSTM, GRU) échoue-t-il sur ces données ?**
+Malgré la mise en place d'un entraînement *Walk-Forward* rigoureux pour simuler l'adaptation continue aux chocs, les réseaux récurrents purs comme le LSTM ou le GRU ne parviennent pas à offrir d'excellentes performances. La raison principale réside dans le **manque drastique de volume de données historiques**. 
+Les réseaux de neurones profonds nécessitent des dizaines de milliers d'observations pour extraire des *patterns* temporels. Ici (séries annuelles/mensuelles agrégées), le bruit massif lié à la rupture structurelle du COVID-19 écrase le signal. Les modèles plus simples avec forte régularisation (comme **Ridge**) ou les méthodes d'ensembles par arbres (comme **XGBoost**) se montrent beaucoup plus résilients face à la rareté de la donnée.
+
+Top 3 Modèles Globaux
 -------------------------
 
-L'application ``simulation.py`` lit automatiquement les fichiers de metriques pour identifier
-les 3 meilleurs modeles par R2 pour chaque cible :
+Les 3 meilleurs modèles finaux retenus pour les simulations sont :
 
-**Arrivees** (``data/model_performance_metrics.csv`` ou ``model_performance_metrics_ML.csv``) :
-  Ridge > XGBoost > LSTM
-
-**Nuitees** (``data/model_performance_metrics_nuitees.csv``) :
-  Genere par ``notebooks/08_nuitees_prediction.ipynb`` — a executer pour peupler ce fichier.
+1. **Régression Ridge (Arrivées)** : R2 = 0.779
+2. **Decision Tree (Arrivées)** : R2 = 0.693
+3. **XGBoost Walk-Forward (Nuitées)** : R2 = 0.489
 
 Bilan Comparatif des Performances
 ------------------------------------
-Le tableau comparatif contenant les resultats de l'evaluation de ces modeles est
-automatiquement enregistre dans les fichiers CSV :
+Le tableau comparatif contenant les résultats complets est
+automatiquement enregistré dans les fichiers CSV :
 
 .. code-block:: text
 
-   data/model_performance_metrics_ML.csv      (Arrivees — 9 modeles ML)
-   data/model_performance_metrics_nuitees.csv (Nuitees — 9 modeles ML)
+   notebooks/results/ml_results.csv (Modèles ML Classiques)
+   notebooks/results/dl_wf_results.csv (Modèles Walk-Forward : DL et XGBoost)
 
-Ces fichiers repertorient pour chaque modele le R2, le RMSE, le MAE et le MAPE,
-tries par ordre decroissant de performance.
+Ces fichiers répertorient pour chaque modèle le R2, le RMSE, le MAE et le MAPE.
 
 
 Courbes des Prévisions vs Données Réelles (Ensemble de Test)
