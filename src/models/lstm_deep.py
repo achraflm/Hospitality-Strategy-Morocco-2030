@@ -1,18 +1,14 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN, Dense, Dropout
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 from sklearn.preprocessing import MinMaxScaler
 
-class RnnModel:
-    def __init__(self, window_size=12, epochs=50, batch_size=16, rnn_units=32, dropout=0.1, learning_rate=0.001):
+class LstmDeepModel:
+    def __init__(self, window_size=12, epochs=5, batch_size=16):
         self.window_size = window_size
         self.epochs = epochs
         self.batch_size = batch_size
-        self.rnn_units = rnn_units
-        self.dropout = dropout
-        self.learning_rate = learning_rate
         self.model = None
         self.scaler_x = MinMaxScaler()
         self.scaler_y = MinMaxScaler()
@@ -36,22 +32,17 @@ class RnnModel:
             raise ValueError(f"Training dataset size {len(X_scaled)} is smaller than sequence window_size {self.window_size}.")
             
         self.model = Sequential([
-            SimpleRNN(self.rnn_units, input_shape=(self.window_size, X_train.shape[1]), activation='tanh', return_sequences=False),
-            Dropout(self.dropout),
+            LSTM(32, input_shape=(self.window_size, X_train.shape[1]), activation='relu', return_sequences=True),
+            LSTM(16, activation='relu'),
             Dense(1)
         ])
         
-        optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate, clipnorm=1.0)
-        self.model.compile(optimizer=optimizer, loss='mse')
-        
-        early_stop = EarlyStopping(monitor='val_loss', patience=8, restore_best_weights=True)
+        self.model.compile(optimizer='adam', loss='mse')
         
         self.model.fit(
             X_seq, y_seq,
             epochs=self.epochs,
             batch_size=self.batch_size,
-            validation_split=0.15,
-            callbacks=[early_stop],
             verbose=0
         )
         return self

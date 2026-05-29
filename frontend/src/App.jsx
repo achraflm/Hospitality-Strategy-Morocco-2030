@@ -3,8 +3,8 @@ import { LayoutDashboard, TrendingUp, BarChart3, LineChart, Target, CalendarCloc
 import { AnimatePresence, motion } from 'framer-motion'
 import Dashboard from './pages/Dashboard'
 import Forecasting from './pages/Forecasting'
-// Using Forecasting component for all pages to simulate the new UI, since we only have the Forecasting logic connected to the backend currently.
-// In a full application, these would be separate components.
+import RoiSimulator from './pages/RoiSimulator'
+import MonteCarlo from './pages/MonteCarlo'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('models')
@@ -17,7 +17,8 @@ function App() {
     { id: 'nights', name: 'Nights Analysis', icon: LineChart },
     { id: 'metrics', name: 'Metrics Comparison', icon: Target },
     { id: 'walkforward', name: 'Walk-forward Validation', icon: CalendarClock },
-    { id: 'reports', name: 'Reports', icon: FileText },
+    { id: 'roi', name: 'ROI Calculator', icon: FileText },
+    { id: 'montecarlo', name: 'Monte Carlo', icon: FileText },
   ]
 
   const renderPage = () => {
@@ -30,6 +31,10 @@ function App() {
       case 'metrics':
       case 'walkforward':
         return <Forecasting activeSection={currentPage} />
+      case 'roi':
+        return <RoiSimulator />
+      case 'montecarlo':
+        return <MonteCarlo />
       default:
         return <Dashboard />
     }

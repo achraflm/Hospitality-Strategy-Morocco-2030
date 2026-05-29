@@ -37,6 +37,8 @@ import src.metrics as metrics_mod
 from src.models.sarima import SarimaModel
 from src.models.ridge import RidgeModel
 from src.models.lstm import LstmModel
+from src.models.xgboost import XgboostModel
+from sklearn.model_selection import TimeSeriesSplit
 
 def setup_logging(output_dir):
     """Configuration du double logger (Console et Fichier log)."""
@@ -391,7 +393,7 @@ def main():
     
     logger.info("Données séparées chargées pour l'entraînement.")
     
-    # 4. ENTRAÎNEMENT DES 3 MODÈLES
+    # 4. ENTRAÎNEMENT DES 4 MODÈLES
     predictions = {}
     
     # --- Modèles Statistiques ---
@@ -405,11 +407,45 @@ def main():
     ridge = RidgeModel().fit(X_train, y_train)
     predictions['Ridge'] = ridge.predict(X_test)
     
+    # --- Préparation Walk-Forward pour modèles sensibles au Leakage ---
+    X_all_raw = pd.concat([X_train, X_test])
+    y_all_raw = pd.concat([y_train, y_test]).values
+    train_size = len(X_train)
+    n_splits = len(X_test)
+    tscv = TimeSeriesSplit(n_splits=n_splits, test_size=1)
+
+    logger.info("Entraînement XGBoost (Walk-Forward)...")
+    y_pred_xgb = []
+    for idx, (train_index, test_index) in enumerate(tscv.split(X_all_raw)):
+        if test_index[0] < train_size:
+            continue
+        X_tr, y_tr = X_all_raw.iloc[train_index], y_all_raw[train_index]
+        X_te = X_all_raw.iloc[test_index]
+        
+        xgb_model = XgboostModel().fit(X_tr, y_tr)
+        pred = xgb_model.predict(X_te)
+        y_pred_xgb.append(pred[0])
+    predictions['XGBoost'] = np.array(y_pred_xgb)
+
     # --- Modèles Deep Learning ---
-    logger.info("Entraînement LSTM...")
-    lstm = LstmModel(epochs=dl_epochs)
-    lstm.fit(X_train, y_train)
-    predictions['LSTM'] = lstm.predict(X_test, X_train_history=X_train)
+    logger.info("Entraînement LSTM (Walk-Forward)...")
+    y_pred_dl = []
+    # For projections, we still need the model fit on the whole training set (or full dataset)
+    # So we will keep a reference to a fully trained lstm at the end.
+    for idx, (train_index, test_index) in enumerate(tscv.split(X_all_raw)):
+        if test_index[0] < train_size:
+            continue
+        X_tr, y_tr = X_all_raw.iloc[train_index], y_all_raw[train_index]
+        X_te = X_all_raw.iloc[test_index]
+        
+        lstm = LstmModel(epochs=dl_epochs).fit(X_tr, y_tr)
+        pred = lstm.predict(X_te, X_train_history=X_tr)
+        y_pred_dl.append(pred[0])
+    predictions['LSTM'] = np.array(y_pred_dl)
+    
+    # Retrain LSTM and XGBoost on full X_train for projections
+    lstm = LstmModel(epochs=dl_epochs).fit(X_train, y_train)
+    xgb_model = XgboostModel().fit(X_train, y_train)
     
     # 5. Évaluation et enregistrement des métriques
     logger.info("Calcul des métriques pour l'ensemble des 3 modèles...")
@@ -443,7 +479,8 @@ def main():
     
     # Associer les instances
     ml_models_dict = {
-        'Ridge': ridge
+        'Ridge': ridge,
+        'XGBoost': xgb_model
     }
     dl_models_dict = {
         'LSTM': lstm
