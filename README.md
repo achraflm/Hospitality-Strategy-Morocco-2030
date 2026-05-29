@@ -31,10 +31,10 @@ Ce projet présente une solution décisionnelle et de prévision à long terme (
 * Détection d'anomalies non supervisée : Isolation Forest (`anomaly_iforest`), résidus Prophet (`anomaly_prophet`) et Z-Score sur différences (`anomaly_zscore`).
 
 ### 3. Modélisation Prédictive (Top 3 Modèles)
-* Sélection stricte des 3 modèles optimaux après évaluation sur split temporel (Train : 1995-2022 | Test : 2023-2026) :
-  * **SARIMA** : Modèle statistique de référence ($R^2 = 0.7095$, MAPE = $8.88\%$).
-  * **Régression Ridge** : Approche de Machine Learning linéaire régularisée ($R^2 = 0.7826$, MAPE = $8.17\%$).
-  * **LSTM (Deep Learning)** : Réseau récurrent à mémoire long-court terme ($R^2 = 0.9412$, MAPE = $5.80\%$).
+* Sélection stricte des 3 modèles optimaux après évaluation sur split temporel séparé (fichiers Train/Test rigoureusement isolés dans `backend/data/separted`) :
+  * **Ridge (Régression Linéaire Régularisée)** : Modèle de Machine Learning le plus stable et performant en apprentissage direct ($R^2 = 0.8673$, MAPE = $7.13\%$).
+  * **SARIMA** : Modèle statistique robuste de référence ($R^2 = 0.7687$, MAPE = $12.38\%$).
+  * **LSTM (Deep Learning - Walk-Forward)** : Entraînement séquentiel via Walk-Forward Training qui assure une adaptation continue ($R^2 \approx 0.82$). En évaluation standard statique, il affiche une plus faible robustesse.
 
 ---
 
