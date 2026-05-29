@@ -124,7 +124,7 @@ def get_separated_data(target_col='Arrivals'):
     Loads pre-split data from backend/data/separted/ and returns X_train, X_test, y_train, y_test
     along with their respective Dates assigned based on 1995-01-01 to 2022-12-01 (train) and 2023-01-01 to 2024-12-01 (test).
     """
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "data", "separted"))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "separted"))
     
     X_train = pd.read_csv(os.path.join(base_dir, 'X_train.csv'))
     X_test = pd.read_csv(os.path.join(base_dir, 'X_test.csv'))
