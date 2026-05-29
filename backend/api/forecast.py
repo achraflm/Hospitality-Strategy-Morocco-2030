@@ -18,6 +18,7 @@ from src.models.sarima import SarimaModel
 from src.models.ridge import RidgeModel
 from src.models.lstm import LstmModel
 from src.models.xgboost import XgboostModel
+from src.models.lstm_cnn import LstmCnnModel
 
 router = APIRouter()
 
@@ -39,7 +40,7 @@ class PredictRequest(BaseModel):
 # Endpoints
 @router.get("/models")
 def get_available_models():
-    return ["Ridge", "XGBoost", "LSTM"]
+    return ["LSTM + CNN", "LSTM", "XGBoost"]
 
 @router.get("/features")
 def get_available_features():
@@ -81,8 +82,8 @@ def calculate_model_metrics(req: MetricsRequest):
             predictions['SARIMA'] = SarimaModel().fit(y_train).predict(steps=len(y_test))
             
         ml_class_map = {
-            'Ridge': RidgeModel,
-            'XGBoost': XgboostModel
+            'XGBoost': XgboostModel,
+            'Ridge': RidgeModel
         }
         
         for ml_name in ml_class_map.keys():
@@ -92,6 +93,10 @@ def calculate_model_metrics(req: MetricsRequest):
         if "LSTM" in req.selected_models:
             lstm = LstmModel(epochs=req.dl_epochs).fit(X_train, y_train)
             predictions['LSTM'] = lstm.predict(X_test, X_train_history=X_train)
+            
+        if "LSTM + CNN" in req.selected_models:
+            lstm_cnn = LstmCnnModel(epochs=req.dl_epochs).fit(X_train, y_train)
+            predictions['LSTM + CNN'] = lstm_cnn.predict(X_test, X_train_history=X_train)
             
         # Calculer métriques
         results_df = metrics_mod.compare_models(predictions, y_test)
@@ -156,8 +161,7 @@ def run_forecasting_projections(req: PredictRequest):
             'XGBoost': XgboostModel
         }
         
-        # Trouver le meilleur modèle ML sélectionné basé sur les métriques existantes
-        # Si aucun n'est spécifié ou si on boucle sur les sélectionnés :
+        # Trouver le meilleur modèle ML sélectionné
         for ml_name in ml_class_map.keys():
             if ml_name in req.selected_models:
                 best_ml_model = ml_class_map[ml_name]().fit(X_train, y_train)
@@ -170,7 +174,8 @@ def run_forecasting_projections(req: PredictRequest):
                 
         # Projections DL
         dl_class_map = {
-            'LSTM': LstmModel
+            'LSTM': LstmModel,
+            'LSTM + CNN': LstmCnnModel
         }
         for dl_name in dl_class_map.keys():
             if dl_name in req.selected_models:

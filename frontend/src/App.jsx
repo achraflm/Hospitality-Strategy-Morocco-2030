@@ -1,60 +1,68 @@
 import React, { useState } from 'react'
-import { LayoutDashboard, TrendingUp, DollarSign, Dices, Menu, X } from 'lucide-react'
+import { LayoutDashboard, TrendingUp, BarChart3, LineChart, Target, CalendarClock, FileText, Menu, X, Download, Filter } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import Dashboard from './pages/Dashboard'
 import Forecasting from './pages/Forecasting'
-import RoiSimulator from './pages/RoiSimulator'
-import MonteCarlo from './pages/MonteCarlo'
-
+// Using Forecasting component for all pages to simulate the new UI, since we only have the Forecasting logic connected to the backend currently.
+// In a full application, these would be separate components.
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('dashboard')
+  const [currentPage, setCurrentPage] = useState('models')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  const navItems = [
+    { id: 'overview', name: 'Overview', icon: LayoutDashboard },
+    { id: 'models', name: 'Forecasting Models', icon: TrendingUp },
+    { id: 'arrivals', name: 'Arrivals Analysis', icon: BarChart3 },
+    { id: 'nights', name: 'Nights Analysis', icon: LineChart },
+    { id: 'metrics', name: 'Metrics Comparison', icon: Target },
+    { id: 'walkforward', name: 'Walk-forward Validation', icon: CalendarClock },
+    { id: 'reports', name: 'Reports', icon: FileText },
+  ]
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'dashboard':
+      case 'overview':
         return <Dashboard />
-      case 'forecasting':
-        return <Forecasting />
-      case 'roi':
-        return <RoiSimulator />
-      case 'montecarlo':
-        return <MonteCarlo />
-
+      case 'models':
+      case 'arrivals':
+      case 'nights':
+      case 'metrics':
+      case 'walkforward':
+        return <Forecasting activeSection={currentPage} />
       default:
         return <Dashboard />
     }
   }
 
-  const navItems = [
-    { id: 'dashboard', name: 'Tableau de Bord', icon: LayoutDashboard },
-    { id: 'forecasting', name: 'Prévisions IA', icon: TrendingUp },
-    { id: 'roi', name: 'Simulateur ROI', icon: DollarSign },
-    { id: 'montecarlo', name: 'Simulation Monte Carlo', icon: Dices },
-
-  ]
-
   return (
-    <div className="flex min-h-screen bg-[#090d16] text-slate-100 font-sans">
+    <div className="flex min-h-screen bg-[#020617] text-slate-100 font-sans selection:bg-indigo-500/30">
       {/* Sidebar overlay for mobile */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/60 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-[#121824] border-r border-[#1f293d] transition-transform duration-300 transform ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-[#0f172a]/95 backdrop-blur-xl border-r border-slate-800 transition-transform duration-300 ease-in-out transform ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
-        <div className="flex items-center justify-between h-20 px-6 border-b border-[#1f293d]">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl">🇲🇦</span>
-            <span className="font-bold text-lg tracking-wider bg-gradient-to-r from-accentCyan to-accentGreen bg-clip-text text-transparent">
-              MOROCCO 2030
+        <div className="flex items-center justify-between h-20 px-6 border-b border-slate-800/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <span className="text-sm font-bold text-white">AI</span>
+            </div>
+            <span className="font-bold text-lg tracking-wide bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              NEXUS
             </span>
           </div>
           <button 
@@ -65,7 +73,8 @@ function App() {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+          <div className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Analytics</div>
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = currentPage === item.id
@@ -76,25 +85,37 @@ function App() {
                   setCurrentPage(item.id)
                   if (window.innerWidth < 768) setSidebarOpen(false)
                 }}
-                className={`flex items-center w-full gap-4 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+                className={`group flex items-center w-full gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive 
-                    ? 'bg-accentCyan/10 text-accentCyan border-l-4 border-accentCyan shadow-[0_0_15px_rgba(0,242,254,0.06)]' 
-                    : 'text-slate-400 hover:bg-[#1a2233] hover:text-slate-100'
+                    ? 'bg-indigo-500/10 text-indigo-400' 
+                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
                 }`}
               >
-                <Icon size={18} />
+                <Icon size={18} className={isActive ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300 transition-colors'} />
                 <span>{item.name}</span>
+                {isActive && (
+                  <motion.div 
+                    layoutId="sidebar-active-indicator"
+                    className="absolute left-0 w-1 h-8 bg-indigo-500 rounded-r-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                )}
               </button>
             )
           })}
         </nav>
 
-        <div className="p-4 border-t border-[#1f293d] bg-[#090d16]/30">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-accentGreen animate-pulse pulse-glow"></div>
-            <div className="text-xs text-slate-400">
-              <p className="font-semibold text-slate-300">FIFA World Cup 2030</p>
-              <p>Moteur Financier Connecté</p>
+        <div className="p-4 border-t border-slate-800/50">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-800">
+            <div className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </div>
+            <div className="text-xs">
+              <p className="font-medium text-slate-200">System Status</p>
+              <p className="text-slate-500">All models online</p>
             </div>
           </div>
         </div>
@@ -103,36 +124,49 @@ function App() {
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarOpen ? 'md:pl-64' : ''}`}>
         {/* Top Header */}
-        <header className="flex items-center justify-between h-20 px-6 md:px-8 border-b border-[#1f293d] bg-[#121824]/60 backdrop-blur-md sticky top-0 z-40">
+        <header className="flex items-center justify-between h-20 px-6 lg:px-8 border-b border-slate-800/50 bg-[#020617]/80 backdrop-blur-xl sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button 
-              className="text-slate-400 hover:text-white transition-colors" 
+              className="text-slate-400 hover:text-white transition-colors md:hidden" 
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              <Menu size={22} />
+              <Menu size={20} />
             </button>
-            <h1 className="text-lg font-bold tracking-tight text-white truncate hidden sm:block">
-              Morocco Tourism Investment Intelligence Platform
-            </h1>
-            <h1 className="text-base font-bold tracking-tight text-white sm:hidden">
-              MTI Platform
+            <h1 className="text-xl font-semibold tracking-tight text-white hidden sm:block">
+              {navItems.find(i => i.id === currentPage)?.name || 'Dashboard'}
             </h1>
           </div>
           
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="hidden lg:flex items-center gap-2 bg-[#1a2233] border border-[#1f293d] rounded-xl px-3 py-1.5 text-xs text-slate-400">
-              <span className="font-semibold text-accentGreen">API Backend:</span>
-              <span>Online</span>
+          <div className="flex items-center gap-4 shrink-0">
+            {/* Top Navbar Actions */}
+            <div className="hidden lg:flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800/50 border border-slate-700/50 text-sm text-slate-300 cursor-pointer hover:bg-slate-800 transition-colors">
+                <Filter size={14} className="text-slate-400" />
+                <span>Tourism_Morocco_2026.csv</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-[#1a2233] border border-[#1f293d] rounded-xl px-3 py-1.5 text-xs font-semibold text-accentCyan">
-              <span>FIFA 2030 Engine</span>
-            </div>
+            <div className="h-6 w-px bg-slate-800 hidden lg:block"></div>
+            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+              <Download size={16} />
+              <span className="hidden sm:inline">Export Report</span>
+            </button>
           </div>
         </header>
 
         {/* Content Wrapper */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-          {renderPage()}
+        <main className="flex-1 p-6 lg:p-8 overflow-x-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPage}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="h-full"
+            >
+              {renderPage()}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>

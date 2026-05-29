@@ -44,41 +44,40 @@ Lancement des Serveurs en Local
 Structure des Pages de la Plateforme
 --------------------------------------
 
-Tableau de Bord (Dashboard)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tableau de Bord (SaaS Dashboard)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: _static/screenshot_2026_05_24_135136.png
+.. figure:: ../figures/screenshots/Screenshot 2026-05-29 133322.png
    :align: center
-   :alt: Capture d'écran du Tableau de Bord React
+   :alt: Capture d'écran du Tableau de Bord SaaS
    :width: 100%
 
-   Page **Tableau de Bord** de la plateforme React, affichant la trajectoire des arrivées touristiques et la vue d'ensemble analytique.
+   Nouvelle interface **SaaS Dashboard** de la plateforme React, affichant la trajectoire des arrivées touristiques et la vue d'ensemble analytique avec un design Glassmorphism et des animations Framer Motion.
 
-- Métriques de synthèse des flux touristiques et financiers par ville hôte.
-- Graphiques historiques interactifs combinant arrivées et recettes réelles.
-- Référentiel hôtelier par défaut pour 6 villes stratégiques marocaines.
+- Interface modernisée de type produit IA avec panneau "Model Intelligence" latéral.
+- Métriques de synthèse des flux touristiques et financiers.
+- Graphiques historiques interactifs combinant arrivées et recettes réelles propulsés par Recharts.
 
-Previsions IA (Forecasting)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Previsions IA (Forecasting avec AutoResearch)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: _static/screenshot_2026_05_24_135210.png
+.. figure:: ../figures/screenshots/Screenshot 2026-05-29 133329.png
    :align: center
    :alt: Capture d'écran de la page Prévisions IA React
    :width: 100%
 
-   Page **Prévisions IA** de la plateforme React, montrant les courbes comparatives sur le split de test et le tableau des métriques de performance.
+   Page **Prévisions IA** de la plateforme SaaS, montrant les courbes comparatives sur le split de test et le panneau d'Insights intelligents.
 
-- Choix de la **cible de prediction** : Arrivees touristiques (``Arrivals``) ou Nuitees (``Nights``).
-- Identification automatique du **Top 3 modeles** par cible, lu depuis le fichier de metriques CSV
-  correspondant (``model_performance_metrics.csv`` ou ``model_performance_metrics_nuitees.csv``).
-- Evaluation historique comparative sur l'ensemble de test (2023-2026).
+- Choix de la **cible de prediction** : Arrivees touristiques ou Nuitees.
+- Identification automatique du **Top 3 modeles** par cible (LSTM + CNN, LSTM, XGBoost).
+- Évaluation incrémentale de type **Walk-Forward** (seq=12) pour les réseaux de neurones complexes.
+- **Model Intelligence** : un panneau latéral animé générant automatiquement des interprétations de la performance et des biais.
 - Projections futures personnalisables jusqu'en 2035 avec inflation et boost FIFA 2030.
-- Exportation des resultats de prevision au format CSV.
 
 Simulateur ROI Hotelier (RoiSimulator)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: _static/screenshot_2026_05_24_135216.png
+.. figure:: ../figures/screenshots/Screenshot 2026-05-29 133332.png
    :align: center
    :alt: Capture d'écran du Simulateur ROI React
    :width: 100%
