@@ -47,7 +47,7 @@ Structure des Pages de la Plateforme
 Tableau de Bord (SaaS Dashboard)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: ../figures/screenshots/Screenshot_2026-05-29_133322.png
+.. figure:: ../figures/screenshots/Screenshot_2026-05-30_013051.png
    :align: center
    :alt: Capture d'écran du Tableau de Bord SaaS
    :width: 100%
@@ -61,7 +61,7 @@ Tableau de Bord (SaaS Dashboard)
 Previsions IA (Forecasting avec AutoResearch)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: ../figures/screenshots/Screenshot_2026-05-29_133329.png
+.. figure:: ../figures/screenshots/Screenshot_2026-05-30_013104.png
    :align: center
    :alt: Capture d'écran de la page Prévisions IA React
    :width: 100%
@@ -77,7 +77,7 @@ Previsions IA (Forecasting avec AutoResearch)
 Simulateur ROI Hotelier (RoiSimulator)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. figure:: ../figures/screenshots/Screenshot_2026-05-29_133332.png
+.. figure:: ../figures/screenshots/Screenshot_2026-05-30_013109.png
    :align: center
    :alt: Capture d'écran du Simulateur ROI React
    :width: 100%
