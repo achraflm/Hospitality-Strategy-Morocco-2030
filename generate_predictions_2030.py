@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import xgboost as xgb
 from src.features import build_features, get_nights_feature_list, get_feature_list
 from src.models.xgboost import XgboostModel
 
@@ -24,17 +23,23 @@ model_arr = XgboostModel()
 model_arr.fit(X_arr, y_arr)
 
 # Recursive projection for arrivals
-history_arr = df_ml_arr.copy()
+# Keep only RAW columns to avoid build_features conflicts
+raw_cols_arr = ['Date', 'Arrivals', 'Oil_price', 'FDI', 'Poverty_rate', 'REER']
+history_arr_raw = df_clean[raw_cols_arr].dropna(subset=['Arrivals']).copy()
 proj_arr = []
 for date in future_dates:
     new_row = pd.DataFrame({'Date': [date], 'Arrivals': [np.nan]})
     for var in ['Oil_price', 'FDI', 'Poverty_rate', 'REER']:
-        new_row[var] = history_arr[var].iloc[-1]
-    history_arr = pd.concat([history_arr, new_row], ignore_index=True)
-    history_arr = build_features(history_arr)
-    feat_vec = history_arr[valid_features_arr].iloc[[-1]].fillna(0)
+        if var in history_arr_raw.columns:
+            new_row[var] = history_arr_raw[var].iloc[-1]
+    history_arr_raw = pd.concat([history_arr_raw, new_row], ignore_index=True)
+    
+    # Build features from scratch on the raw history
+    current_featured = build_features(history_arr_raw)
+    feat_vec = current_featured[valid_features_arr].iloc[[-1]].fillna(0)
     pred = max(0, model_arr.predict(feat_vec)[0])
-    history_arr.loc[history_arr.index[-1], 'Arrivals'] = pred
+    
+    history_arr_raw.loc[history_arr_raw.index[-1], 'Arrivals'] = pred
     proj_arr.append(pred)
 
 fig, ax = plt.subplots(figsize=(14, 6))
@@ -61,17 +66,22 @@ model_nights = XgboostModel()
 model_nights.fit(X_nights, y_nights)
 
 # Recursive projection for nights
-history_nights = df_ml_nights.copy()
+raw_cols_nights = ['Date', 'Nights', 'Arrivals', 'Oil_price', 'FDI', 'Poverty_rate', 'REER']
+history_nights_raw = df_clean[raw_cols_nights].dropna(subset=['Nights']).copy()
 proj_nights = []
 for date in future_dates:
-    new_row = pd.DataFrame({'Date': [date], 'Nights': [np.nan], 'Arrivals': [history_arr[history_arr['Date']==date]['Arrivals'].values[0]]})
+    arr_pred = history_arr_raw[history_arr_raw['Date'] == date]['Arrivals'].values[0]
+    new_row = pd.DataFrame({'Date': [date], 'Nights': [np.nan], 'Arrivals': [arr_pred]})
     for var in ['Oil_price', 'FDI', 'Poverty_rate', 'REER']:
-        new_row[var] = history_nights[var].iloc[-1]
-    history_nights = pd.concat([history_nights, new_row], ignore_index=True)
-    history_nights = build_features(history_nights)
-    feat_vec = history_nights[valid_features_nights].iloc[[-1]].fillna(0)
+        if var in history_nights_raw.columns:
+            new_row[var] = history_nights_raw[var].iloc[-1]
+    history_nights_raw = pd.concat([history_nights_raw, new_row], ignore_index=True)
+    
+    current_featured_nights = build_features(history_nights_raw)
+    feat_vec = current_featured_nights[valid_features_nights].iloc[[-1]].fillna(0)
     pred = max(0, model_nights.predict(feat_vec)[0])
-    history_nights.loc[history_nights.index[-1], 'Nights'] = pred
+    
+    history_nights_raw.loc[history_nights_raw.index[-1], 'Nights'] = pred
     proj_nights.append(pred)
 
 fig, ax = plt.subplots(figsize=(14, 6))
