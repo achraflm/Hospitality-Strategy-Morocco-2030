@@ -1,0 +1,158 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\title[Morocco Tourism Strategy 2030]{Morocco Tourism Strategy 2030}
+\subtitle{Plateforme IA de Prévision \& Simulateur ROI Hôtelier}
+\author{Data Science \& Engineering Team}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}{Plan de la Présentation}
+    \tableofcontents
+\end{frame}
+
+\section{Contexte \& Objectifs}
+\begin{frame}{Contexte \& Objectifs}
+    \begin{itemize}
+        \item \textbf{Vision 2030} : La co-organisation de la Coupe du Monde de la FIFA 2030 place le Maroc face à des défis et opportunités touristiques sans précédent.
+        \item \textbf{Objectif de la plateforme NEXUS} : 
+        \begin{itemize}
+            \item Prédire la demande touristique (arrivées et nuitées) jusqu'en 2035.
+            \item Modéliser l'impact économique et les recettes prévisionnelles.
+            \item Simuler la rentabilité des investissements hôteliers via des méthodes probabilistes (Monte Carlo).
+        \end{itemize}
+        \item \textbf{Technologie} : Application Web React + Backend FastAPI (Python).
+    \end{itemize}
+\end{frame}
+
+\section{Pipeline de Données}
+\begin{frame}{Exploration et Structuration des Données}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item \textbf{Sources} : Données macroéconomiques et statistiques touristiques officielles du Maroc (1995-2023).
+                \item \textbf{Gestion COVID-19} : Imputation intelligente des données aberrantes et création d'un booléen \texttt{is\_covid}.
+                \item \textbf{Ingénierie} : Variables temporelles retardées (lags), statistiques glissantes, encodage cyclique.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{../figures/01_arrivals_evolution.png}
+                \caption{Évolution Historique des Arrivées}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Modélisation Prédictive}
+\begin{frame}{Sélection des Meilleurs Modèles Prédictifs}
+    Suite à une validation croisée rigoureuse (Walk-Forward Validation) pour simuler la production réelle, 3 modèles se démarquent et sont conservés :
+    \vspace{0.5cm}
+    \begin{enumerate}
+        \item \textbf{XGBoost} : Excellent pour capturer les non-linéarités complexes et les ruptures soudaines (crises).
+        \item \textbf{LSTM (Long Short-Term Memory)} : Réseau de neurones récurrent, imbattable sur la mémorisation des tendances saisonnières profondes.
+        \item \textbf{GRU (Gated Recurrent Unit)} : Alternative efficace et robuste au LSTM, particulièrement adapté aux séries bruitées.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Prévisions à Long Terme (Horizon 2030-2035)}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{../figures/06_arrivals_forecast_2030.png}
+                \caption{Prévisions des Arrivées 2030}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{../figures/07_receipts_forecast_2030.png}
+                \caption{Prévisions des Recettes 2030}
+            \end{figure}
+        \end{column}
+    \end{columns}
+    \vspace{0.3cm}
+    \textit{Note : Les pics observés correspondent à l'impact modélisé de la Coupe du Monde FIFA 2030.}
+\end{frame}
+
+\section{Simulateur ROI \& Monte Carlo}
+\begin{frame}{Moteur de Simulation Stochastique (Monte Carlo)}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item Modélisation probabiliste des risques d'investissement hôtelier.
+                \item Distribution aléatoire sur : 
+                \begin{itemize}
+                    \item Taux d'inflation
+                    \item Facteur multiplicateur FIFA 2030
+                    \item Occupation moyenne (ADR)
+                \end{itemize}
+                \item Calcul de la Valeur Actuelle Nette (VAN/NPV) sur 500 à 1000 scénarios.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=\textwidth]{../figures/08_hotel_roi_simulation.png}
+                \caption{Distribution Probabiliste du ROI}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Plateforme Web SaaS}
+\begin{frame}{Architecture de l'Application Web}
+    \begin{itemize}
+        \item \textbf{Backend} : Python avec FastAPI. Gère les inférences des modèles IA et les milliers d'itérations Monte Carlo en temps réel.
+        \item \textbf{Frontend} : React propulsé par Vite et TailwindCSS. 
+        \item \textbf{Design System} : Glassmorphism premium, dark mode natif, et animations fluides.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Aperçu : Dashboard Principal}
+    \begin{figure}
+        \centering
+        \includegraphics[height=0.7\textheight]{../figures/screenshots/Screenshot_2026-05-30_013051.png}
+        \caption{Tableau de bord SaaS - Vue d'ensemble}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Aperçu : Module de Prévisions IA}
+    \begin{figure}
+        \centering
+        \includegraphics[height=0.7\textheight]{../figures/screenshots/Screenshot_2026-05-30_013104.png}
+        \caption{Module d'Intelligence Artificielle et Insights Automatiques}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Aperçu : Simulateur Financier Dynamique}
+    \begin{figure}
+        \centering
+        \includegraphics[height=0.7\textheight]{../figures/screenshots/Screenshot_2026-05-30_013109.png}
+        \caption{Calculateur de rentabilité hôtelière interactive}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Conclusion}
+    \begin{center}
+        \LARGE \textbf{Merci de votre attention.} \\
+        \vspace{1cm}
+        \normalsize La plateforme \textbf{Morocco Tourism Strategy 2030} est prête à accompagner les décideurs publics et investisseurs privés pour faire de la Coupe du Monde 2030 un succès économique durable.
+    \end{center}
+\end{frame}
+
+\end{document}
