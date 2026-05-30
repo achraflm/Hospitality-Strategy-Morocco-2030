@@ -16,8 +16,6 @@ La documentation est structurée comme suit :
    modeling
    amelioration_methodologique
    results_roi
-   streamlit_dashboard
-   simulation
    conclusion
 
 Indices and tables
