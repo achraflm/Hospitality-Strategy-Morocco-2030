@@ -399,8 +399,8 @@ def main():
     # --- Modèles Statistiques ---
     logger.info("Entraînement SARIMA...")
     sarima = SarimaModel()
-    sarima.fit(y_train)
-    predictions['SARIMA'] = sarima.predict(steps=len(y_test))
+    sarima.fit(y_train, exog_train=X_train)
+    predictions['SARIMA'] = sarima.predict(X_test)
     
     # --- Modèles de Machine Learning ---
     logger.info("Entraînement Ridge...")
@@ -499,7 +499,7 @@ def main():
     logger.info("Projection avec SARIMA...")
     # Re-fit sur le dataset complet
     sarima_full = SarimaModel().fit(df_ml[TARGET_COL])
-    arrivals_proj_sarima = sarima_full.predict(steps=steps)
+    arrivals_proj_sarima = sarima_full.predict(np.zeros(steps))
     
     # Invalidation de valeurs négatives
     arrivals_proj_ml = np.clip(arrivals_proj_ml, 0, None)

@@ -13,6 +13,7 @@ function MonteCarlo() {
   const [opexMargin, setOpexMargin] = useState(65)
   const [wcAdrBoost, setWcAdrBoost] = useState(40)
   const [inflationRate, setInflationRate] = useState(2.5)
+  const [wcOpexInflation, setWcOpexInflation] = useState(6.3)
   const [enableWc, setEnableWc] = useState(true)
 
   // Outputs state
@@ -36,6 +37,7 @@ function MonteCarlo() {
         opex_margin: Number(opexMargin) / 100,
         wc_adr_boost: Number(wcAdrBoost) / 100,
         inflation_rate: Number(inflationRate) / 100,
+        wc_opex_inflation: Number(wcOpexInflation) / 100,
         simulations_count: Number(simCount),
         enable_wc: enableWc
       })
@@ -193,21 +195,41 @@ function MonteCarlo() {
             </div>
 
             {enableWc && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs text-slate-400">
-                  <span className="font-bold text-accentGreen uppercase">Boost ADR Target</span>
-                  <span className="text-accentGreen font-semibold">+{wcAdrBoost}%</span>
+              <>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-slate-400">
+                    <span className="font-bold text-accentGreen uppercase">Boost ADR Target</span>
+                    <span className="text-accentGreen font-semibold">+{wcAdrBoost}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="80"
+                    step="5"
+                    value={wcAdrBoost}
+                    onChange={(e) => setWcAdrBoost(Number(e.target.value))}
+                    className="w-full accent-accentGreen"
+                  />
                 </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="80"
-                  step="5"
-                  value={wcAdrBoost}
-                  onChange={(e) => setWcAdrBoost(Number(e.target.value))}
-                  className="w-full accent-accentGreen"
-                />
-              </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-slate-400">
+                    <span className="font-bold text-accentRose uppercase">Choc OPEX (2030)</span>
+                    <span className="text-accentRose font-semibold">+{wcOpexInflation}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    step="0.1"
+                    value={wcOpexInflation}
+                    onChange={(e) => setWcOpexInflation(Number(e.target.value))}
+                    className="w-full accent-accentRose"
+                  />
+                  <div className="text-[10px] text-slate-500 mt-1">
+                    Recommandé: 6.3% (Moyenne historique 2014, 2018, 2022)
+                  </div>
+                </div>
+              </>
             )}
           </div>
 

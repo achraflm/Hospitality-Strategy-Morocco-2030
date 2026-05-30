@@ -180,7 +180,7 @@ En analysant les données historiques d'inflation des pays hôtes des précéden
    :align: center
    :alt: Impact Historique de la Coupe du Monde sur l'Inflation des Pays Hôtes
 
-*Implications pour le Maroc 2030* : Ce profil d'inflation historique indique que le Maroc connaîtra probablement des hausses de prix intenses dans le secteur des services et de l'hôtellerie en juin-juillet 2030. Bien que cela augmente l'ADR nominal et les revenus d'exploitation à court terme, cela impactera également les coûts opérationnels directs. Une planification budgétaire rigoureuse est donc recommandée pour les investisseurs hôteliers.
+*Implications pour le Maroc 2030* : En calculant la moyenne des pics d'inflation observés lors de ces événements par rapport à l'année précédente, on constate un choc moyen d'environ **+6,3%**. Ce profil d'inflation historique indique que le Maroc connaîtra probablement des hausses de prix intenses dans le secteur des services et de l'hôtellerie en juin-juillet 2030. Bien que cela augmente l'ADR nominal et les revenus d'exploitation à court terme, cela impactera également les coûts opérationnels directs. Une planification budgétaire rigoureuse est donc recommandée pour les investisseurs hôteliers, en intégrant cette moyenne recommandée de **6,3%** comme pénalité sur la marge OPEX dans les simulations du dashboard.
 
 Modèle de Simulation ROI Dynamique et Dual-Target
 --------------------------------------------------

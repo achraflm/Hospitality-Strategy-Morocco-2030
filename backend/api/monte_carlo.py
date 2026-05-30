@@ -16,6 +16,7 @@ class MonteCarloRequest(BaseModel):
     opex_margin: float = 0.65
     wc_adr_boost: float = 0.40
     inflation_rate: float = 0.025
+    wc_opex_inflation: float = 0.05
     simulations_count: int = 500
     enable_wc: bool = True
 
@@ -60,7 +61,8 @@ def run_monte_carlo(req: MonteCarloRequest):
                 discount_rate=req.discount_rate,
                 base_occupancy=occ,
                 wc_adr_boost_pct=adr_boost,
-                inflation_rate=inf
+                inflation_rate=inf,
+                wc_opex_inflation=req.wc_opex_inflation
             )
             
             df_sim = sim.simulate_10years(start_year=2026)

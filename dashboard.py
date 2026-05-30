@@ -218,6 +218,16 @@ with tab_forecast:
             
         st.info(f"Modèles retenus pour projection : {' | '.join(status)}")
         
+        st.markdown("### ⚙️ Paramètres d'Inflation et Coupe du Monde 2030")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            inflation_rate = st.slider("Taux d'inflation annuel moyen (%)", 0.0, 5.0, 2.5, 0.5) / 100
+        with col2:
+            wc_boost = st.slider("Boost d'attractivité/Prix Coupe du Monde (%)", 0, 80, 20, 5) / 100
+        with col3:
+            wc_opex_inflation = st.slider("Choc Inflation OPEX (2030) (%)", 0.0, 20.0, 6.3, 0.1) / 100
+            st.caption("💡 *Recommandation : 6.3% (Moyenne historique des chocs d'inflation lors des Coupes du Monde 2014, 2018, 2022)*")
+        
         if st.button("Lancer la Projection"):
             with st.spinner("Projection récursive..."):
                 df_featured = feat.build_features(df_clean)
@@ -250,5 +260,30 @@ with tab_forecast:
                 for name, proj in proj_results.items():
                     ax.plot(future_dates, proj, label=f"Proj {name}", linestyle='--')
                 ax.axvspan('2030-06-01', '2030-07-31', color='teal', alpha=0.15, label='Coupe du Monde')
+                plt.title(f"Projection des {TARGET_COL} jusqu'en 2030")
                 plt.legend()
                 st.pyplot(fig)
+                
+                # Si on prédit les arrivées, on peut estimer les recettes (avec inflation)
+                if TARGET_COL == 'Arrivals' and 'Total_Receipts_MDH' in df_clean.columns:
+                    st.subheader("💰 Projection des Recettes Touristiques (MDH) avec Inflation")
+                    mean_ratio = (df_clean['Total_Receipts_MDH'] / df_clean['Arrivals']).mean()
+                    
+                    fig_rec, ax_rec = plt.subplots(figsize=(14, 6))
+                    ax_rec.plot(df_ml['Date'], df_ml['Total_Receipts_MDH'], label='Recettes Historiques', color='green')
+                    
+                    for name, proj in proj_results.items():
+                        receipts = []
+                        for arr, date in zip(proj, future_dates):
+                            years_since_2026 = date.year - 2026
+                            ratio = mean_ratio * ((1 + inflation_rate) ** years_since_2026)
+                            if date.year == 2030:
+                                ratio = ratio * (1 + wc_boost)
+                            # Remarque: l'inflation OPEX (wc_opex_inflation) impacte le ROI, pas directement les recettes macro.
+                            receipts.append(arr * ratio)
+                        ax_rec.plot(future_dates, receipts, label=f"Recettes Proj {name}", linestyle='--')
+                        
+                    ax_rec.axvspan('2030-06-01', '2030-07-31', color='teal', alpha=0.15, label='Coupe du Monde')
+                    plt.title("Projection des Recettes Touristiques Globales (Effet Prix + Inflation)")
+                    plt.legend()
+                    st.pyplot(fig_rec)

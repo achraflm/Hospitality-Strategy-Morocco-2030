@@ -15,20 +15,22 @@ import matplotlib.pyplot as plt
 class HotelROISimulator:
     def __init__(self, rooms=200, investment_usd=40000000.0, opex_margin=0.65, 
                  discount_rate=0.08, base_occupancy=0.68, wc_occupancy_2030=0.75,
-                 base_adr=250.0, wc_adr_boost_pct=0.40, inflation_rate=0.025):
+                 base_adr=250.0, wc_adr_boost_pct=0.40, inflation_rate=0.025,
+                 wc_opex_inflation=0.05):
         """
-        Initialise le simulateur avec les paramètres du projet.
+        Initialise le simulateur avec les paramètres de l'investissement et du marché.
         
         Args:
-            rooms (int): Nombre de chambres de l'hôtel.
-            investment_usd (float): Coût d'acquisition / construction initial en USD.
-            opex_margin (float): Ratio des coûts opérationnels (ex: 0.65 pour 65% opex, 35% GOP).
-            discount_rate (float): Taux d'actualisation (WACC) pour le calcul de la NPV (ex: 0.08).
-            base_occupancy (float): Taux d'occupation annuel moyen hors Coupe du Monde (ex: 0.68).
-            wc_occupancy_2030 (float): Taux d'occupation en 2030 avec Coupe du Monde (ex: 0.75).
-            base_adr (float): Tarif journalier moyen initial en USD (ADR).
-            wc_adr_boost_pct (float): Boost sur l'ADR en 2030 dû à la Coupe du Monde (ex: 0.40 pour +40%).
+            rooms (int): Nombre de chambres.
+            investment_usd (float): Coût total d'investissement (Capex) en USD.
+            opex_margin (float): Marge des dépenses d'exploitation (ex: 0.65 = 65% des revenus).
+            discount_rate (float): Taux d'actualisation pour NPV.
+            base_occupancy (float): Taux d'occupation de départ (ex: 0.65).
+            wc_occupancy_2030 (float): Taux d'occupation pendant l'année de la Coupe du Monde.
+            base_adr (float): Tarif journalier moyen de départ (en USD).
+            wc_adr_boost_pct (float): Pourcentage d'augmentation du tarif (ADR) lors de la Coupe du Monde (ex: 0.40 = +40%).
             inflation_rate (float): Taux d'inflation annuel moyen appliqué à l'ADR (ex: 0.025).
+            wc_opex_inflation (float): Choc d'inflation ajouté à l'OPEX durant la Coupe du Monde (ex: 0.05 = +5% de charges).
         """
         self.rooms = rooms
         self.investment_usd = investment_usd
@@ -39,6 +41,7 @@ class HotelROISimulator:
         self.base_adr = base_adr
         self.wc_adr_boost_pct = wc_adr_boost_pct
         self.inflation_rate = inflation_rate
+        self.wc_opex_inflation = wc_opex_inflation
 
     def simulate_10years(self, start_year=2026):
         """
@@ -65,12 +68,14 @@ class HotelROISimulator:
             if year == 2030:
                 occ_wc = self.wc_occupancy_2030
                 adr_wc = adr_base * (1 + self.wc_adr_boost_pct)
+                opex_wc = min(0.95, self.opex_margin + self.wc_opex_inflation)
             else:
                 occ_wc = self.base_occupancy
                 adr_wc = adr_base
+                opex_wc = self.opex_margin
                 
             rev_wc = self.rooms * occ_wc * 365 * adr_wc
-            gop_wc = rev_wc * (1 - self.opex_margin)
+            gop_wc = rev_wc * (1 - opex_wc)
             
             records.append({
                 'Year': year,
@@ -195,12 +200,14 @@ class HotelROISimulator:
             occ = min(0.95, self.base_occupancy * g_t)
             
             # Application du boost supplémentaire en 2030 s'il est activé
+            opex_current = self.opex_margin
             if year == 2030 and wc_boost_2030:
                 occ = min(0.95, occ * 1.15)  # +15% de boost d'occupation relatif
                 adr = adr * (1 + self.wc_adr_boost_pct)  # boost ADR de la Coupe du Monde
+                opex_current = min(0.95, self.opex_margin + self.wc_opex_inflation)  # choc inflation opex
                 
             rev = self.rooms * occ * 365 * adr
-            gop = rev * (1 - self.opex_margin)
+            gop = rev * (1 - opex_current)
             
             records.append({
                 'Year': year,

@@ -19,6 +19,7 @@ class RoiRequest(BaseModel):
     wc_adr_boost: float = 0.40
     wc_occ_boost: float = 0.15
     inflation_rate: float = 0.025
+    wc_opex_inflation: float = 0.05
     enable_wc: bool = True
 
 @router.get("/cities")
@@ -42,8 +43,11 @@ def simulate_roi(req: RoiRequest):
             opex_margin=req.opex_margin,
             discount_rate=req.discount_rate,
             base_occupancy=req.base_occupancy,
+            wc_occupancy_2030=min(0.95, req.base_occupancy * (1 + req.wc_occ_boost)),
+            base_adr=req.base_adr,
             wc_adr_boost_pct=req.wc_adr_boost,
-            inflation_rate=req.inflation_rate
+            inflation_rate=req.inflation_rate,
+            wc_opex_inflation=req.wc_opex_inflation
         )
         
         # Simuler 10 ans

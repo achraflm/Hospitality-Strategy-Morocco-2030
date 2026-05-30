@@ -14,6 +14,7 @@ function RoiSimulator() {
   const [opexMargin, setOpexMargin] = useState(65) // percent
   const [wcAdrBoost, setWcAdrBoost] = useState(40) // percent
   const [inflationRate, setInflationRate] = useState(2.5) // percent
+  const [wcOpexInflation, setWcOpexInflation] = useState(6.3) // percent
   const [enableWc, setEnableWc] = useState(true)
 
   const [loading, setLoading] = useState(false)
@@ -65,6 +66,7 @@ function RoiSimulator() {
           wc_adr_boost: Number(wcAdrBoost) / 100,
           wc_occ_boost: 0.15, // Constante dans l'API par défaut
           inflation_rate: Number(inflationRate) / 100,
+          wc_opex_inflation: Number(wcOpexInflation) / 100,
           enable_wc: enableWc
         })
       })
@@ -87,7 +89,7 @@ function RoiSimulator() {
     }, 300) // Debounce API calls
 
     return () => clearTimeout(timer)
-  }, [selectedCity, rooms, capexM, baseAdr, baseOccupancy, discountRate, opexMargin, wcAdrBoost, inflationRate, enableWc])
+  }, [selectedCity, rooms, capexM, baseAdr, baseOccupancy, discountRate, opexMargin, wcAdrBoost, inflationRate, wcOpexInflation, enableWc])
 
   const exportCashFlows = () => {
     if (!result || !result.cashFlows) return
@@ -290,6 +292,25 @@ function RoiSimulator() {
                 onChange={(e) => setInflationRate(Number(e.target.value))}
                 className="w-full accent-accentCyan"
               />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-slate-400">
+                <span className="font-bold uppercase">Choc Inflation OPEX (2030)</span>
+                <span className="text-white font-semibold">+{wcOpexInflation}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="20"
+                step="0.1"
+                value={wcOpexInflation}
+                onChange={(e) => setWcOpexInflation(Number(e.target.value))}
+                className="w-full accent-accentRose"
+              />
+              <div className="text-[10px] text-slate-500 mt-1">
+                Recommandé: 6.3% (Moyenne historique 2014, 2018, 2022)
+              </div>
             </div>
           </div>
         </div>
