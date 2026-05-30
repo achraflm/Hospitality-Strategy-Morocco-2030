@@ -286,11 +286,12 @@ Bilan Comparatif des Performances
 Voici le tableau récapitulatif complet des métriques d'évaluation pour chaque modèle et chaque cible (trié par R² décroissant).
 
 .. list-table:: 
-   :widths: 15 25 20 15 15 10
+   :widths: 10 20 25 15 15 15
    :header-rows: 1
 
    * - Cible
-- Type / Validation
+     - Modèle
+     - Type / Validation
      - R²
      - RMSE
      - MAPE

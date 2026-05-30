@@ -31,10 +31,10 @@ Ce projet présente une solution décisionnelle et de prévision à long terme (
 * Détection d'anomalies non supervisée : Isolation Forest (`anomaly_iforest`), résidus Prophet (`anomaly_prophet`) et Z-Score sur différences (`anomaly_zscore`).
 
 ### 3. Modélisation Prédictive (Top 3 Modèles)
-* Sélection stricte des 3 modèles optimaux après évaluation sur split temporel séparé (fichiers Train/Test rigoureusement isolés dans `backend/data/separted`) :
-  * **Ridge (Régression Linéaire Régularisée)** : Modèle de Machine Learning le plus stable et performant en apprentissage direct ($R^2 = 0.8673$, MAPE = $7.13\%$).
-  * **SARIMA** : Modèle statistique robuste de référence ($R^2 = 0.7687$, MAPE = $12.38\%$).
-  * **LSTM (Deep Learning - Walk-Forward)** : Entraînement séquentiel via Walk-Forward Training qui assure une adaptation continue ($R^2 \approx 0.82$). En évaluation standard statique, il affiche une plus faible robustesse.
+* Sélection stricte des 3 modèles optimaux après évaluation sur split temporel séparé et stratégies de Walk-Forward :
+  * **XGBoost** : Modèle basé sur des arbres de décision, extrêmement performant sur les caractéristiques structurées et la gestion des non-linéarités.
+  * **LSTM (Deep Learning)** : Réseau de neurones récurrent capable de mémoriser les dépendances temporelles longues, idéal pour capturer les tendances macro-économiques.
+  * **GRU (Deep Learning)** : Alternative optimisée au LSTM, plus rapide à entraîner tout en offrant une excellente robustesse face aux variations saisonnières.
 
 ---
 
