@@ -16,6 +16,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx_rtd_theme',
+    'myst_parser',
+    'sphinxcontrib.mermaid',
 ]
 
 templates_path = ['_templates']

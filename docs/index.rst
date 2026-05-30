@@ -16,6 +16,9 @@ La documentation est structurée comme suit :
    modeling
    amelioration_methodologique
    results_roi
+   web_platform
+   dashboard
+   frontend_app
    conclusion
 
 Indices and tables
