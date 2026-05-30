@@ -19,8 +19,8 @@ Ce projet présente une solution décisionnelle et de prévision à long terme (
 ## ✨ Fonctionnalités Clés
 
 ### 1. Ingestion et Nettoyage de Données
-* **Fusion automatique** du jeu de données macroéconomique marocain (`Morocco_cleaned.csv`) et des arrivées touristiques réelles (`maroc_tourism_2030_all_arrival_sources.csv`).
-* **Imputation des données COVID-19** : Intégration des chiffres réels mensuels de 2020-2021 de la pandémie et activation d'un indicateur booléen `is_covid` pour les modèles.
+* **Fusion automatique** du jeu de données macroéconomique marocain (**Morocco_cleaned.csv**) et des arrivées touristiques réelles (**maroc_tourism_2030_all_arrival_sources.csv**).
+* **Imputation des données COVID-19** : Intégration des chiffres réels mensuels de 2020-2021 de la pandémie et activation d'un indicateur booléen **is_covid** pour les modèles.
 * **Reconstruction Historique (1996-2019)** : Application d'un algorithme de **désagrégation temporelle** basé sur la décomposition saisonnière (STL) de la période récente (2022-2026) avec injection d'un bruit gaussien contrôlé.
 
 ### 2. Ingénierie des Caractéristiques (Feature Engineering)
@@ -28,7 +28,7 @@ Ce projet présente une solution décisionnelle et de prévision à long terme (
 * Statistiques glissantes (moyenne et écart-type sur 3, 6, et 12 mois).
 * Taux de croissance annuel (YoY) et encodage cyclique trigonométrique du mois.
 * Indicateurs d'événements spéciaux (Coupe du Monde 2030, crises COVID).
-* Détection d'anomalies non supervisée : Isolation Forest (`anomaly_iforest`), résidus Prophet (`anomaly_prophet`) et Z-Score sur différences (`anomaly_zscore`).
+* Détection d'anomalies non supervisée : Isolation Forest (**anomaly_iforest**), résidus Prophet (**anomaly_prophet**) et Z-Score sur différences (**anomaly_zscore**).
 
 ### 3. Modélisation Prédictive (Top 3 Modèles)
 * Sélection stricte des 3 modèles optimaux après évaluation sur split temporel séparé et stratégies de Walk-Forward :
@@ -108,10 +108,10 @@ Développé avec **React 18** et **Vite** pour des performances de build optimal
 Un serveur asynchrone ultra-rapide propulsé par **FastAPI** et **Uvicorn** :
 * **Validation des Données** : Utilisation de **Pydantic** pour typer et valider strictement les requêtes entrantes (par exemple, les paramètres économiques de la projection).
 * **Parallélisme & Asynchronisme** : Traitement des calculs de simulations stochastiques lourdes de manière efficace.
-* **Auto-documentation** : Swagger UI disponible nativement sous `/docs` permettant de tester les points d'accès de l'API en direct.
+* **Auto-documentation** : Swagger UI disponible nativement sous **/docs** permettant de tester les points d'accès de l'API en direct.
 
 ### 3. Proxy de communication en développement
-Toutes les requêtes faites du frontend vers `/api/*` sont automatiquement redirigées vers le serveur FastAPI local (`http://127.0.0.1:8000`) via le proxy configuré dans `vite.config.js`, éliminant ainsi les problèmes de CORS en phase de développement.
+Toutes les requêtes faites du frontend vers **/api/*** sont automatiquement redirigées vers le serveur FastAPI local (**http://127.0.0.1:8000**) via le proxy configuré dans **vite.config.js**, éliminant ainsi les problèmes de CORS en phase de développement.
 
 ---
 
@@ -132,34 +132,34 @@ Contrairement à un simple split Train/Test (qui réduit drastiquement les donn�
 Voici les performances obtenues sur l'ensemble de test (post-Covid) avec la stratégie Walk-Forward :
 
 ### Cible : Arrivées (Arrivals)
-* **XGBoost** : $R^2 = 0.532$, MAPE = $11.86\%$
-* **LSTM (Standard)** : $R^2 = -0.126$, MAPE = $19.43\%$
-* **LSTM (2-Layers)** : $R^2 = -0.126$, MAPE = $19.43\%$
-* **GRU** : $R^2 = -0.126$, MAPE = $19.43\%$
+* **XGBoost** : R2 = 0.532, MAPE = 11.86%
+* **LSTM (Standard)** : R2 = -0.126, MAPE = 19.43%
+* **LSTM (2-Layers)** : R2 = -0.126, MAPE = 19.43%
+* **GRU** : R2 = -0.126, MAPE = 19.43%
 
 ### Cible : Nuitées (Nights)
-* **XGBoost** : $R^2 = 0.489$, MAPE = $12.10\%$
-* **LSTM (Standard)** : $R^2 = 0.352$, MAPE = $14.37\%$
-* **LSTM (2-Layers)** : $R^2 = 0.352$, MAPE = $14.37\%$
-* **GRU** : $R^2 = 0.352$, MAPE = $14.37\%$
+* **XGBoost** : R2 = 0.489, MAPE = 12.10%
+* **LSTM (Standard)** : R2 = 0.352, MAPE = 14.37%
+* **LSTM (2-Layers)** : R2 = 0.352, MAPE = 14.37%
+* **GRU** : R2 = 0.352, MAPE = 14.37%
 
-> **Note** : Le manque profond de données historiques a fortement pénalisé les modèles de Deep Learning purs (LSTM/GRU) sur la cible "Arrivals" face à des algorithmes de Machine Learning traditionnels. En revanche, sur la cible "Nights", la logique séquentielle des réseaux et l'amplification des arbres (XGBoost) ont réussi à extraire des tendances valides ($R^2 > 0.35$).
+> **Note** : Le manque profond de données historiques a fortement pénalisé les modèles de Deep Learning purs (LSTM/GRU) sur la cible "Arrivals" face à des algorithmes de Machine Learning traditionnels. En revanche, sur la cible "Nights", la logique séquentielle des réseaux et l'amplification des arbres (XGBoost) ont réussi à extraire des tendances valides (R2 > 0.35).
 
 ---
 
 ## 🏆 Top 3 des Meilleurs Modèles par Cible (Toutes méthodes confondues)
 
 ### 🥇 Top 3 pour la Cible "Arrivées" (Arrivals)
-1. **Régression Ridge** : $R^2 = 0.779$ | MAPE = $11.60\%$
+1. **Régression Ridge** : R2 = 0.779 | MAPE = 11.60%
    *(Le modèle linéaire régularisé reste le plus robuste face au faible volume de données et au bruit macroéconomique de la pandémie).*
-2. **Decision Tree** : $R^2 = 0.693$ | MAPE = $10.38\%$
-3. **Linear Regression** : $R^2 = 0.636$ | MAPE = $15.34\%$
+2. **Decision Tree** : R2 = 0.693 | MAPE = 10.38%
+3. **Linear Regression** : R2 = 0.636 | MAPE = 15.34%
 
 ### 🥇 Top 3 pour la Cible "Nuitées" (Nights)
-1. **XGBoost (Walk-Forward)** : $R^2 = 0.489$ | MAPE = $12.10\%$
+1. **XGBoost (Walk-Forward)** : R2 = 0.489 | MAPE = 12.10%
    *(Le meilleur compromis non-linéaire sur les Nuitées, gérant mieux la variance post-COVID grâce à l'entraînement continu).*
-2. **LSTM (Walk-Forward)** : $R^2 = 0.352$ | MAPE = $14.37\%$
-3. **GRU (Walk-Forward)** : $R^2 = 0.352$ | MAPE = $14.37\%$
+2. **LSTM (Walk-Forward)** : R2 = 0.352 | MAPE = 14.37%
+3. **GRU (Walk-Forward)** : R2 = 0.352 | MAPE = 14.37%
 
 ---
 
@@ -170,9 +170,9 @@ Le simulateur financier projette sur une période de 10 ans les flux de trésore
 * **Scénario Coupe du Monde 2030** : Intègre un pic exceptionnel lors de l'Année 6 (2030) avec une hausse de 15% à 40% du tarif journalier moyen (ADR) et une occupation saturée à 85%.
 
 Les indicateurs calculés en temps réel sont :
-* **Cash Flow Net Annuel** : $\text{Revenus} - \text{OpEx} - \text{Amortissements}$.
+* **Cash Flow Net Annuel** : Revenus - OpEx - Amortissements.
 * **Valeur Actuelle Nette (VAN / NPV)** au taux d'actualisation (WACC) choisi :
-  $$\text{VAN} = \sum_{t=1}^{10} \frac{\text{Cash Flow}_t}{(1 + \text{WACC})^t} - \text{Investissement Initial}$$
+  VAN = \sum_{t=1^{10 \frac{Cash Flow_t{(1 + WACC)^t - Investissement Initial
 * **Taux de Retour Interne (TRI / IRR)** et **Période de Récupération (Payback Period)**.
 
 ---
@@ -182,11 +182,11 @@ Les indicateurs calculés en temps réel sont :
 Pour prendre en compte l'incertitude économique, la plateforme embarque un générateur stochastique exécutant jusqu'à 1000 tirages aléatoires :
 
 1. **Échantillonnage des Variables d'Entrée** :
-   * **Inflation et Taux d'Occupation de Base** : Échantillonnés suivant une distribution normale $\mathcal{N}(\mu, \sigma)$.
+   * **Inflation et Taux d'Occupation de Base** : Échantillonnés suivant une distribution normale N(moyenne, ecart-type).
    * **Marge d'OpEx** : Modélisée de manière gaussienne pour refléter l'instabilité des coûts opérationnels.
-   * **Boost Coupe du Monde** : Modélisé suivant une distribution triangulaire $\text{Triangular}(min, mode, max)$ pour capturer l'asymétrie positive de l'effet FIFA 2030.
+   * **Boost Coupe du Monde** : Modélisé suivant une distribution triangulaire Triangular(min, mode, max) pour capturer l'asymétrie positive de l'effet FIFA 2030.
 2. **Indicateurs de Risque Clés calculés** :
-   * **Probabilité de Perte** : Proportion de tirages où la VAN actualisée finale est négative : $P(\text{VAN} < 0)$.
+   * **Probabilité de Perte** : Proportion de tirages où la VAN actualisée finale est négative : P(VAN < 0).
    * **Value at Risk (VaR 95%)** : Le 5ème percentile de la VAN. Elle indique la perte minimale ou le gain minimal garanti avec un niveau de confiance de 95% dans le pire des scénarios.
    * **Intervalles de Confiance à 90%** : Détermination des percentiles 5% et 95% pour encadrer précisément le rendement futur.
 
@@ -208,7 +208,7 @@ pip install -r requirements.txt
 ```bash
 python backend/main.py
 ```
-Le serveur démarre sur `http://127.0.0.1:8000`.
+Le serveur démarre sur **http://127.0.0.1:8000**.
 
 ### 3. Démarrage du Client React (Frontend)
 Ouvrez un nouveau terminal, puis :
@@ -217,14 +217,14 @@ cd frontend
 npm install
 npm run dev
 ```
-L'application est accessible sur `http://localhost:5173`.
+L'application est accessible sur **http://localhost:5173**.
 
 ### 4. Exécution du Pipeline Principal (CLI)
 Pour ré-entraîner les modèles et générer les courbes de prédiction globales :
 ```bash
 python main.py
 ```
-*(Utilisez l'option `--quick_run` pour un entraînement accéléré des époques LSTM à des fins de test)*.
+*(Utilisez l'option **--quick_run** pour un entraînement accéléré des époques LSTM à des fins de test)*.
 
 ---
 
@@ -236,4 +236,4 @@ cd docs
 pip install -r requirements.txt
 make html
 ```
-Les fichiers HTML générés sont consultables dans `docs/_build/html/index.html`.
+Les fichiers HTML générés sont consultables dans **docs/_build/html/index.html**.
