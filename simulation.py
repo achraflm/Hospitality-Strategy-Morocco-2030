@@ -1,20 +1,10 @@
-"""
-Application Web Interactive de Prévisions Touristiques (Sans ROI)
-================================================================
-
-Ce tableau de bord se concentre exclusivement sur les prévisions des arrivées
-et des nuitées touristiques, avec une validation différenciée selon les modèles
-(Normale pour le ML classique, Walk-Forward + AutoResearch pour le Deep Learning).
-"""
-
-import os
-import sys
+import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import streamlit as st
-from sklearn.model_selection import TimeSeriesSplit
-from sklearn.metrics import r2_score, mean_absolute_error
+import os
+import sys
+from scipy.optimize import root_scalar
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -22,251 +12,285 @@ from src.config import TARGET_COL, NIGHTS_COL
 import src.data_loader as loader
 import src.cleaning as cleaner
 import src.features as feat
-from src.autoresearch import AutoResearchEvaluator
 
-from src.models.sarima import SarimaModel
-from src.models.prophet import ProphetModel
 from src.models.ridge import RidgeModel
 from src.models.random_forest import RandomForestModel
-from src.models.extra_trees import ExtraTreesModel
-from src.models.gradient_boosting import GradientBoostingModel
-from src.models.adaboost import AdaBoostModel
 from src.models.xgboost import XgboostModel
 from src.models.lightgbm import LightgbmModel
 from src.models.catboost import CatboostModel
-from src.models.svr import SvrModel
 from src.models.lstm import LstmModel
 from src.models.rnn import RnnModel
+from src.models.sarima import SarimaModel
 
-ml_class_map = {
-    'Ridge': RidgeModel, 'Random Forest': RandomForestModel,
-    'Extra Trees': ExtraTreesModel, 'Gradient Boosting': GradientBoostingModel,
-    'AdaBoost': AdaBoostModel, 'XGBoost': XgboostModel,
-    'LightGBM': LightgbmModel, 'CatBoost': CatboostModel, 'SVR': SvrModel
+model_registry = {
+    'Ridge': RidgeModel,
+    'Random Forest': RandomForestModel,
+    'XGBoost': XgboostModel,
+    'LightGBM': LightgbmModel,
+    'CatBoost': CatboostModel,
+    'LSTM': LstmModel,
+    'SimpleRNN': RnnModel,
+    'SARIMA': SarimaModel
 }
 
-st.set_page_config(page_title="Morocco Tourism Forecasting", page_icon="🇲🇦", layout="wide")
+st.set_page_config(page_title="Simulateur ROI Hôtelier", page_icon="🏨", layout="wide")
 
 st.markdown("""
 <style>
     .metric-card {
         background-color: white; padding: 15px; border-radius: 10px;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-top: 4px solid #0d9488;
+        color: #0f172a !important; margin-bottom: 10px;
+    }
+    .metric-card h4, .metric-card p, .metric-card b {
         color: #0f172a !important;
     }
-    .metric-card h4, .metric-card p, .metric-card b, .metric-card i {
-        color: #0f172a !important;
-    }
+    .favorable { border-top: 4px solid #22c55e; }
+    .study { border-top: 4px solid #f59e0b; }
+    .unfavorable { border-top: 4px solid #ef4444; }
 </style>
 """, unsafe_allow_html=True)
 
+def calculate_npv(rate, cash_flows):
+    return sum(cf / (1 + rate)**i for i, cf in enumerate(cash_flows))
+
+def calculate_irr(cash_flows):
+    def npv_func(r):
+        return calculate_npv(r, cash_flows)
+    try:
+        res = root_scalar(npv_func, bracket=[-0.99, 1.0], method='brentq')
+        return res.root
+    except ValueError:
+        return np.nan
+
 @st.cache_data
-def get_clean_tourism_data():
+def load_and_prep_data():
     df = loader.load_and_merge_tourism_data()
     df = cleaner.integrate_covid_data(df)
     df = cleaner.reconstruct_historical_arrivals(df)
     df = cleaner.reconstruct_historical_receipts(df)
     return df
 
-df_clean = get_clean_tourism_data()
+df_clean = load_and_prep_data()
 
-def forecast_model(model_name, X_train, y_train, df_ml_train, test_dates, selected_features, dl_epochs=10):
-    """ Entraîne et prédit en mode récursif pour la période de test / futur """
+def get_top_3_models(use_nights=False):
+    file_path = 'data/model_performance_metrics_nuitees.csv' if use_nights else 'data/model_performance_metrics.csv'
+    if not os.path.exists(file_path):
+        return ['XGBoost', 'Ridge', 'LSTM']
+    
+    df_metrics = pd.read_csv(file_path)
+    df_metrics = df_metrics.sort_values(by='R2', ascending=False)
+    
+    models = df_metrics['Model'].tolist()
+    valid_models = [m for m in models if m in model_registry]
+    
+    return valid_models[:3]
+
+def generate_future_features(start_date, end_date, use_nights):
+    future_dates = pd.date_range(start=start_date, end=end_date, freq='MS')
+    future_df = pd.DataFrame({'Date': future_dates})
+    future_df['month_sin'] = np.sin(2 * np.pi * future_df['Date'].dt.month / 12)
+    future_df['month_cos'] = np.cos(2 * np.pi * future_df['Date'].dt.month / 12)
+    future_df['year'] = future_df['Date'].dt.year
+    future_df['is_covid'] = 0
+    
+    future_df['cdm_event'] = 0
+    future_df.loc[(future_df['Date'].dt.year == 2030) & (future_df['Date'].dt.month.isin([6, 7])), 'cdm_event'] = 1
+    
+    future_df['lags_1'] = 0
+    future_df['lags_12'] = 0
+    if use_nights:
+        future_df['nights_lag_1'] = 0
+        
+    return future_df
+
+def forecast_model_10y(model_name, X_train, y_train, df_history, future_df, target_col):
+    if model_name not in model_registry:
+        return np.zeros(len(future_df))
+        
+    features = [c for c in X_train.columns if c != 'Date']
+    
+    model_instance = model_registry[model_name]()
+    if hasattr(model_instance, 'epochs'):
+        model_instance = model_registry[model_name](epochs=10)
+        
+    model_instance.fit(X_train[features], y_train)
+    
     from main import forecast_recursive_ml, forecast_recursive_dl
     
-    if model_name == 'SARIMA':
-        model = SarimaModel().fit(y_train)
-        preds = model.predict(steps=len(test_dates))
-        return np.clip(preds, 0, None)
-    
-    elif model_name == 'Prophet':
-        exog_cols = [c for c in selected_features if c in df_ml_train.columns and c not in [y_train.name, 'Date']]
-        model = ProphetModel().fit(df_ml_train, target_col=y_train.name, exog_cols=exog_cols)
-        future_df = pd.DataFrame({'Date': test_dates})
-        for col in exog_cols:
-            future_df[col] = df_ml_train[col].iloc[-1]
-        preds = model.predict(future_df)
-        return np.clip(preds, 0, None)
-        
-    elif model_name in ['LSTM', 'SimpleRNN']:
-        dl_class_map = {'LSTM': LstmModel, 'SimpleRNN': RnnModel}
-        model = dl_class_map[model_name](epochs=dl_epochs).fit(X_train, y_train)
-        preds = forecast_recursive_dl(model, df_ml_train, test_dates, selected_features)
-        return np.clip(preds, 0, None)
-        
+    if model_name in ['LSTM', 'SimpleRNN']:
+        preds = forecast_recursive_dl(model_instance, df_history, future_df['Date'], features)
     else:
-        if model_name in ml_class_map:
-            model = ml_class_map[model_name]().fit(X_train, y_train)
-            preds = forecast_recursive_ml(model, df_ml_train, test_dates, selected_features)
-            return np.clip(preds, 0, None)
-    return None
+        preds = forecast_recursive_ml(model_instance, df_history, future_df['Date'], features)
+        
+    return np.clip(preds, 0, None)
+
 
 # ---- SIDEBAR ----
-st.sidebar.header("🛠️ Configuration des Prévisions")
+st.sidebar.header("🛠️ Configuration d'Investissement")
 
-st.sidebar.info(
-    "🤖 **Mode Autoresearch**\n\n"
-    "Le module d'IA autonome analyse automatiquement les modèles de Deep Learning "
-    "(Walk-Forward) pour générer des insights textuels sur leur performance."
-)
+target_mode = st.sidebar.radio("Cible de Prédiction", ["Arrivées (Arrivals)", "Nuitées (Nights)"])
+use_nights = target_mode.startswith("Nuitées")
 
-pred_target = st.sidebar.radio("Cible de Prédiction", ["Arrivées touristiques", "Nuitées hôtelières"])
-use_nights = pred_target.startswith("Nuitées")
-active_target_col = NIGHTS_COL if use_nights else TARGET_COL
+city = st.sidebar.selectbox("Ville Cible", ["Marrakech", "Casablanca", "Agadir", "Tanger", "Rabat", "Fès"])
 
-st.sidebar.subheader("🤖 Modélisation")
-available_models = ['Ridge', 'XGBoost', 'LSTM', 'SARIMA', 'Prophet', 'Random Forest', 'Gradient Boosting', 'LightGBM']
-selected_models = st.sidebar.multiselect("Modèles à comparer", available_models, default=['Ridge', 'XGBoost', 'LSTM'])
-
-dl_epochs = st.sidebar.slider("Époques Deep Learning", 1, 50, 10, 5)
-
-st.sidebar.subheader("🔮 Horizon de Projection")
-proj_end_year = st.sidebar.slider("Année de fin de prévision", 2028, 2040, 2030)
-
-# Features
-default_features = feat.get_nights_feature_list() if use_nights else feat.get_feature_list()
-selected_features = st.sidebar.multiselect("Variables d'entrée (Features)", default_features, default=[f for f in default_features if f in ['month_sin', 'month_cos', 'year', 'cdm_event', 'is_covid', 'lags_1', 'lags_12', 'nights_lag_1']])
+capex = st.sidebar.number_input("Investissement (CapEx) [M USD]", min_value=1.0, value=25.0, step=1.0)
+adr_initial = st.sidebar.number_input("ADR Initial [$]", min_value=10.0, value=120.0, step=10.0)
+rooms = st.sidebar.number_input("Nombre de Chambres", min_value=10, value=150, step=10)
+base_occ = st.sidebar.slider("Taux d'Occupation de Base", 0.1, 1.0, 0.65)
+wacc = st.sidebar.slider("WACC (Taux d'Actualisation)", 0.01, 0.20, 0.08)
+opex_margin = st.sidebar.slider("Marge OpEx", 0.1, 0.9, 0.6)
+inflation = st.sidebar.slider("Taux d'Inflation Annuel", 0.0, 0.15, 0.03)
+boost_adr_2030 = st.sidebar.slider("Boost ADR 2030 (Coupe du Monde)", 0.0, 1.0, 0.40)
 
 # ---- MAIN PAGE ----
-st.title("🇲🇦 Morocco Tourism Forecasting Dashboard")
-st.markdown("Ce tableau de bord permet de tester les modèles normaux et Deep Learning. Les modèles de Deep Learning bénéficient d'un traitement spécial : le **Walk-Forward Training** et l'analyse **AutoResearch**.")
+st.title("🏨 Simulateur ROI Hôtelier Autonome (2026-2035)")
+st.markdown("Ce simulateur interactif projette la rentabilité d'un investissement hôtelier sur 10 ans. Il s'appuie automatiquement sur les **Top 3 modèles** issus des entraînements précédents.")
 
-sim_btn = st.button("🚀 Lancer l'Évaluation & Projections")
+sim_btn = st.button("🚀 Lancer la Simulation d'Investissement")
 
 if sim_btn:
-    if not selected_models or not selected_features:
-        st.error("Sélectionnez au moins un modèle et une feature.")
+    top_models = get_top_3_models(use_nights)
+    st.info(f"🏆 Top 3 modèles identifiés automatiquement : **{', '.join(top_models)}**")
+    
+    target_col = NIGHTS_COL if use_nights else TARGET_COL
+    df_history = feat.build_features(df_clean).dropna().reset_index(drop=True)
+    
+    X_train = df_history.drop(columns=[TARGET_COL, NIGHTS_COL, 'receipts', 'Date'], errors='ignore')
+    X_train['Date'] = df_history['Date']
+    y_train = df_history[target_col]
+    
+    future_df = generate_future_features('2026-01-01', '2035-12-01', use_nights)
+    
+    base_val_2025 = df_history[df_history['Date'].dt.year == 2025][target_col].mean()
+    if pd.isna(base_val_2025) or base_val_2025 == 0:
+        base_val_2025 = df_history.iloc[-12:][target_col].mean()
+        
+    predictions_dict = {}
+    
+    with st.spinner("⏳ Génération des prévisions sur 10 ans pour les modèles Top 3..."):
+        for m in top_models:
+            preds = forecast_model_10y(m, X_train, y_train, df_history, future_df, target_col)
+            predictions_dict[m] = preds
+
+    st.subheader("📊 Résultats de la Simulation Financière")
+    
+    cols = st.columns(3)
+    
+    fig_cf, ax_cf = plt.subplots(figsize=(10, 5))
+    fig_occ, ax_occ = plt.subplots(figsize=(10, 5))
+    if use_nights:
+        fig_revpar, ax_revpar = plt.subplots(figsize=(10, 5))
+    
+    model_results = {}
+    max_roi = -999
+    best_model = ""
+    
+    for idx, m in enumerate(top_models):
+        preds = predictions_dict[m]
+        
+        yearly_cf = []
+        yearly_occ = []
+        yearly_revpar = []
+        
+        for year in range(2026, 2036):
+            mask = future_df['Date'].dt.year == year
+            year_preds = preds[mask]
+            avg_pred = np.mean(year_preds)
+            
+            if use_nights:
+                # Nuitees_predites(t) / (Chambres x 365)
+                # To make it realistic we need to assume national nights reflect hotel demand or scale it
+                # For the exact documentation formula:
+                occ = min(0.95, avg_pred / (rooms * 365))
+                # However, since avg_pred is national nights (in millions), dividing by (rooms * 365)
+                # will yield a gigantic number capped at 0.95. Let's scale it based on base occupancy
+                occ = min(0.95, base_occ * (avg_pred / base_val_2025))
+            else:
+                occ = min(0.95, base_occ * (avg_pred / base_val_2025))
+                
+            yearly_occ.append(occ)
+            
+            current_adr = adr_initial * ((1 + inflation) ** (year - 2026))
+            if year == 2030:
+                current_adr *= (1 + boost_adr_2030)
+                
+            revenue = rooms * occ * 365 * current_adr
+            gop = revenue * (1 - opex_margin)
+            
+            yearly_cf.append(gop / 1e6)
+            yearly_revpar.append(occ * current_adr)
+            
+        cash_flows = [-capex] + yearly_cf
+        
+        npv = calculate_npv(wacc, cash_flows)
+        irr = calculate_irr(cash_flows)
+        
+        cum_cf = np.cumsum(cash_flows)
+        payback = -1
+        for y, c in enumerate(cum_cf):
+            if c >= 0 and payback == -1:
+                payback = y
+                break
+                
+        roi = (cum_cf[-1] / capex) * 100
+        
+        if roi > max_roi:
+            max_roi = roi
+            best_model = m
+            
+        model_results[m] = {
+            'NPV': npv, 'IRR': irr * 100 if not pd.isna(irr) else 0,
+            'Payback': payback if payback > 0 else ">10",
+            'ROI': roi
+        }
+        
+        ax_cf.plot(range(2026, 2036), cum_cf[1:], label=m, marker='o')
+        ax_occ.plot(range(2026, 2036), yearly_occ, label=m, marker='x')
+        if use_nights:
+            ax_revpar.plot(range(2026, 2036), yearly_revpar, label=m, marker='d')
+        
+        with cols[idx % 3]:
+            st.markdown(f"<div class='metric-card'>"
+                        f"<h4>Scénario : {m}</h4>"
+                        f"<b>NPV (VAN) :</b> {npv:.2f} M $<br>"
+                        f"<b>IRR (TRI) :</b> {model_results[m]['IRR']:.1f}%<br>"
+                        f"<b>Payback :</b> {model_results[m]['Payback']} ans<br>"
+                        f"<b>ROI Cumulé :</b> {roi:.1f}%"
+                        f"</div>", unsafe_allow_html=True)
+                        
+    ax_cf.axhline(y=capex, color='r', linestyle='--', label='CapEx (Break-even brut)')
+    ax_cf.set_title("Cash Flow Cumulé sur 10 ans (M $)")
+    ax_cf.legend()
+    
+    ax_occ.set_title("Évolution du Taux d'Occupation Estimé")
+    ax_occ.legend()
+    
+    if use_nights:
+        col_plot1, col_plot2, col_plot3 = st.columns(3)
+        col_plot1.pyplot(fig_cf)
+        col_plot2.pyplot(fig_occ)
+        ax_revpar.set_title("Évolution du RevPAR Annuel ($)")
+        ax_revpar.legend()
+        col_plot3.pyplot(fig_revpar)
     else:
-        # Load pre-split data from backend/data/separted
-        from src.data_loader import get_separated_data
-        X_train_sep, X_test_sep, y_train_sep, y_test_sep = get_separated_data(active_target_col)
+        col_plot1, col_plot2 = st.columns(2)
+        col_plot1.pyplot(fig_cf)
+        col_plot2.pyplot(fig_occ)
+    
+    st.subheader("💡 Recommandation d'Expert")
+    if max_roi >= 80:
+        rec_class = "favorable"
+        rec_text = "FAVORABLE (L'investissement est fortement recommandé)."
+    elif 40 <= max_roi < 80:
+        rec_class = "study"
+        rec_text = "À ÉTUDIER (Acceptable, mais une analyse de sensibilité complémentaire est conseillée)."
+    else:
+        rec_class = "unfavorable"
+        rec_text = "DÉFAVORABLE (Le projet ne justifie pas le niveau de risque)."
         
-        valid_sel = [f for f in selected_features if f in X_train_sep.columns]
-        
-        X_train_df = X_train_sep[valid_sel].fillna(X_train_sep[valid_sel].median())
-        X_test_df = X_test_sep[valid_sel].fillna(X_test_sep[valid_sel].median())
-        
-        # Combine for full history context (for walk-forward and projections)
-        X = pd.concat([X_train_df, X_test_df]).reset_index(drop=True)
-        y = pd.concat([y_train_sep, y_test_sep]).reset_index(drop=True)
-        
-        # Rebuild full history so it contains Date and raw columns needed for recursive ML projection
-        df_history = feat.build_features(df_clean).dropna().reset_index(drop=True)
-        df_history[active_target_col] = y
-        wf_metrics = {m: {'r2': 0, 'mae': 0, 'insights': '', 'val_type': ''} for m in selected_models}
-        
-        # Initialize AutoResearch Evaluator
-        ar_evaluator = AutoResearchEvaluator(output_dir="notebooks/results/autoresearch_output")
-        target_name_str = "Nuitées" if use_nights else "Arrivées"
-        
-        with st.spinner("⏳ Évaluation des modèles en cours (Standard pour ML, Walk-Forward pour Deep Learning)..."):
-            for model in selected_models:
-                is_dl = model in ['LSTM', 'SimpleRNN']
-                
-                if is_dl:
-                    # Traitement Walk-Forward Incremental pour Keras avec window_size=12
-                    from sklearn.preprocessing import MinMaxScaler
-                    scaler = MinMaxScaler()
-                    data = X.values
-                    scaled = scaler.fit_transform(data)
-                    
-                    window_size = 12
-                    X_seq, y_seq = [], []
-                    for i in range(len(scaled) - window_size):
-                        X_seq.append(scaled[i:i+window_size, :])
-                        y_seq.append(y.values[i+window_size]) # Keep y in original scale to compute correct R2/MAE
-                        
-                    X_seq = np.array(X_seq)
-                    y_seq = np.array(y_seq)
-                    
-                    # Split exactly at the end of X_train to match test set
-                    split_idx = len(X_train_df) - window_size
-                    
-                    from tensorflow.keras.models import Sequential
-                    from tensorflow.keras.layers import LSTM, SimpleRNN, Dense
-                    
-                    dl_model = Sequential()
-                    if model == 'LSTM':
-                        dl_model.add(LSTM(121, input_shape=(window_size, X_seq.shape[2])))
-                    else:
-                        dl_model.add(SimpleRNN(121, input_shape=(window_size, X_seq.shape[2])))
-                    dl_model.add(Dense(1))
-                    dl_model.compile(optimizer='adam', loss='mse')
-                    
-                    all_y_true = []
-                    all_y_pred = []
-                    
-                    for i in range(split_idx, len(X_seq)):
-                        X_train_i, y_train_i = X_seq[:i], y_seq[:i]
-                        X_test_i, y_test_i = X_seq[i:i+1], y_seq[i:i+1]
-                        dl_model.fit(X_train_i, y_train_i, epochs=5, batch_size=16, verbose=0)
-                        pred = dl_model.predict(X_test_i, verbose=0)
-                        all_y_true.append(y_test_i[0])
-                        all_y_pred.append(pred[0][0])
-                        
-                    if all_y_true:
-                        wf_metrics[model]['r2'] = r2_score(all_y_true, all_y_pred)
-                        wf_metrics[model]['mae'] = mean_absolute_error(all_y_true, all_y_pred)
-                        wf_metrics[model]['val_type'] = "Walk-Forward (Incremental 12-m)"
-                        
-                        # Apply AutoResearch
-                        res = ar_evaluator.evaluate_model(target_name_str, model, all_y_true, all_y_pred, is_walk_forward=True)
-                        wf_metrics[model]['insights'] = res['Insights']
-                
-                else:
-                    # Traitement Normal (En utilisant les ensembles séparés de backend)
-                    if model in ml_class_map:
-                        fitted_model = ml_class_map[model]().fit(X_train_df, y_train_sep)
-                        preds = fitted_model.predict(X_test_df)
-                        preds = np.clip(preds, 0, None)
-                    
-                    if preds is not None:
-                        wf_metrics[model]['r2'] = r2_score(y_test_sep, preds)
-                        wf_metrics[model]['mae'] = mean_absolute_error(y_test_sep, preds)
-                        wf_metrics[model]['val_type'] = "Standard (Train/Test pre-split)"
-                        
-                        # Optionnel : Générer un insight basique même pour ML
-                        res = ar_evaluator.evaluate_model(target_name_str, model, y_test_sep.values, preds, is_walk_forward=False)
-                        wf_metrics[model]['insights'] = res['Insights']
-                        
-        st.subheader("🧪 Résultats d'Évaluation & AutoResearch Insights")
-        cols = st.columns(len(selected_models))
-        for idx, model in enumerate(selected_models):
-            with cols[idx % len(cols)]:
-                m_r2 = wf_metrics[model]['r2']
-                m_mae = wf_metrics[model]['mae']
-                m_val = wf_metrics[model]['val_type']
-                m_ins = wf_metrics[model]['insights']
-                
-                st.markdown(f"<div class='metric-card'><h4>{model}</h4>"
-                            f"<p style='color: gray; font-size: 0.9em;'>Évaluation: {m_val}</p>"
-                            f"<b>R²:</b> {m_r2:.3f}<br>"
-                            f"<b>MAE:</b> {m_mae:,.0f}<br><hr>"
-                            f"<i>💡 Insights (AutoResearch): {m_ins}</i></div>", unsafe_allow_html=True)
-                            
-        with st.spinner(f"🔮 Entraînement final et Projections jusqu'en {proj_end_year}..."):
-            future_dates = pd.date_range(start='2026-01-01', end=f'{proj_end_year}-12-01', freq='MS')
-            projections = {}
-            
-            for model in selected_models:
-                preds = forecast_model(model, X, y, df_history, future_dates, valid_sel, dl_epochs)
-                projections[model] = preds
-                
-            st.subheader("📈 Projections Futures")
-            fig, ax = plt.subplots(figsize=(14, 6))
-            
-            # Historique
-            ax.plot(df_history['Date'], df_history[active_target_col], color='black', linewidth=2, label='Historique (Réel)')
-            
-            # Projections
-            colors = ['#0d9488', '#d97706', '#2563eb', '#db2777', '#7c3aed', '#10b981']
-            for idx, model in enumerate(selected_models):
-                if projections[model] is not None:
-                    ax.plot(future_dates, projections[model], color=colors[idx % len(colors)], linestyle='--', linewidth=2, label=f"Prévision {model}")
-            
-            target_name = "Nuitées Hôtelières" if use_nights else "Arrivées Touristiques"
-            ax.set_title(f"Historique et Projections des {target_name} (Horizon {proj_end_year})", fontsize=14, fontweight='bold')
-            ax.set_ylabel(target_name)
-            ax.legend(loc="upper left")
-            ax.grid(True, alpha=0.3)
-            st.pyplot(fig)
+    st.markdown(f"<div class='metric-card {rec_class}'>"
+                f"<h4>Avis Synthétique (Basé sur le modèle {best_model} avec ROI de {max_roi:.1f}%)</h4>"
+                f"<p style='font-size: 1.1em; font-weight: bold;'>{rec_text}</p>"
+                f"<p>Cette recommandation est générée automatiquement en croisant la rentabilité de votre structure (Capex={capex}M, WACC={wacc*100}%) avec les projections des meilleurs algorithmes.</p>"
+                f"</div>", unsafe_allow_html=True)
