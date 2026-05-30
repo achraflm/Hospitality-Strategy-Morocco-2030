@@ -3,11 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import xgboost as xgb
-from src.features import build_features, get_nights_feature_list
+from src.features import build_features, get_nights_feature_list, get_feature_list
 from main import forecast_recursive_ml
 from src.models.xgboost import XgboostModel
 
-# Prepare data
 df = pd.read_csv('data/merged_tourism_data_final.csv')
 df['Date'] = pd.to_datetime(df['Date'])
 df_clean = df.copy()
@@ -18,17 +17,14 @@ future_dates = pd.date_range(start='2026-05-01', end=f'{target_year}-12-01', fre
 
 # --- Arrivals ---
 df_ml_arr = df_featured.dropna(subset=['Arrivals']).copy()
-selected_features_arr = ['Arrivals_lag_1', 'Arrivals_lag_2', 'Arrivals_lag_3', 'Arrivals_lag_12',
-                     'Arrivals_rolling_mean_3', 'Arrivals_rolling_std_3',
-                     'Month', 'Quarter', 'Year',
-                     'is_summer', 'is_ramadan', 'covid_shock', 'cdm_event',
-                     'world_gdp_growth', 'jet_fuel_price']
-X_arr = df_ml_arr[selected_features_arr].fillna(df_ml_arr[selected_features_arr].median())
+selected_features_arr = get_feature_list()
+valid_features_arr = [f for f in selected_features_arr if f in df_ml_arr.columns]
+X_arr = df_ml_arr[valid_features_arr].fillna(df_ml_arr[valid_features_arr].median())
 y_arr = df_ml_arr['Arrivals']
 model_arr = XgboostModel()
 model_arr.fit(X_arr, y_arr)
 
-proj_arr = forecast_recursive_ml(model_arr, df_ml_arr, future_dates, selected_features_arr, target_col='Arrivals')
+proj_arr = forecast_recursive_ml(model_arr, df_ml_arr, future_dates, valid_features_arr, target_col='Arrivals')
 fig, ax = plt.subplots(figsize=(14, 6))
 ax.plot(df_ml_arr['Date'], df_ml_arr['Arrivals'], label='Historique', color='black')
 ax.plot(future_dates, np.clip(proj_arr, 0, None), label='Prediction XGBoost 2030', color='blue', linestyle='--')
