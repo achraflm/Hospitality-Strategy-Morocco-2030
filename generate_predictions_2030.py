@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import os
 import xgboost as xgb
 from src.features import build_features, get_nights_feature_list, get_feature_list
-from main import forecast_recursive_ml
 from src.models.xgboost import XgboostModel
 
 df = pd.read_csv('data/merged_tourism_data_final.csv')
@@ -24,17 +23,31 @@ y_arr = df_ml_arr['Arrivals']
 model_arr = XgboostModel()
 model_arr.fit(X_arr, y_arr)
 
-proj_arr = forecast_recursive_ml(model_arr, df_ml_arr, future_dates, valid_features_arr, target_col='Arrivals')
+# Recursive projection for arrivals
+history_arr = df_ml_arr.copy()
+proj_arr = []
+for date in future_dates:
+    new_row = pd.DataFrame({'Date': [date], 'Arrivals': [np.nan]})
+    for var in ['Oil_price', 'FDI', 'Poverty_rate', 'REER']:
+        new_row[var] = history_arr[var].iloc[-1]
+    history_arr = pd.concat([history_arr, new_row], ignore_index=True)
+    history_arr = build_features(history_arr)
+    feat_vec = history_arr[valid_features_arr].iloc[[-1]].fillna(0)
+    pred = max(0, model_arr.predict(feat_vec)[0])
+    history_arr.loc[history_arr.index[-1], 'Arrivals'] = pred
+    proj_arr.append(pred)
+
 fig, ax = plt.subplots(figsize=(14, 6))
 ax.plot(df_ml_arr['Date'], df_ml_arr['Arrivals'], label='Historique', color='black')
-ax.plot(future_dates, np.clip(proj_arr, 0, None), label='Prediction XGBoost 2030', color='blue', linestyle='--')
+ax.plot(future_dates, proj_arr, label='Prediction XGBoost 2030', color='blue', linestyle='--')
 ax.axvspan('2030-06-01', '2030-07-31', color='teal', alpha=0.15, label='Coupe du Monde')
 plt.title("Prediction des Arrivees jusqu'a 2030")
 plt.legend()
-plt.savefig('figures/prediction_2030_arrivees.png', dpi=150)
+os.makedirs('figures', exist_ok=True)
 os.makedirs('presentation/figures', exist_ok=True)
-plt.savefig('presentation/figures/prediction_2030_arrivees.png', dpi=150)
 os.makedirs('backend/figures', exist_ok=True)
+plt.savefig('figures/prediction_2030_arrivees.png', dpi=150)
+plt.savefig('presentation/figures/prediction_2030_arrivees.png', dpi=150)
 plt.savefig('backend/figures/prediction_2030_arrivees.png', dpi=150)
 plt.close()
 
@@ -47,10 +60,23 @@ y_nights = df_ml_nights['Nights']
 model_nights = XgboostModel()
 model_nights.fit(X_nights, y_nights)
 
-proj_nights = forecast_recursive_ml(model_nights, df_ml_nights, future_dates, valid_features_nights, target_col='Nights')
+# Recursive projection for nights
+history_nights = df_ml_nights.copy()
+proj_nights = []
+for date in future_dates:
+    new_row = pd.DataFrame({'Date': [date], 'Nights': [np.nan], 'Arrivals': [history_arr[history_arr['Date']==date]['Arrivals'].values[0]]})
+    for var in ['Oil_price', 'FDI', 'Poverty_rate', 'REER']:
+        new_row[var] = history_nights[var].iloc[-1]
+    history_nights = pd.concat([history_nights, new_row], ignore_index=True)
+    history_nights = build_features(history_nights)
+    feat_vec = history_nights[valid_features_nights].iloc[[-1]].fillna(0)
+    pred = max(0, model_nights.predict(feat_vec)[0])
+    history_nights.loc[history_nights.index[-1], 'Nights'] = pred
+    proj_nights.append(pred)
+
 fig, ax = plt.subplots(figsize=(14, 6))
 ax.plot(df_ml_nights['Date'], df_ml_nights['Nights'], label='Historique', color='black')
-ax.plot(future_dates, np.clip(proj_nights, 0, None), label='Prediction XGBoost 2030', color='red', linestyle='--')
+ax.plot(future_dates, proj_nights, label='Prediction XGBoost 2030', color='red', linestyle='--')
 ax.axvspan('2030-06-01', '2030-07-31', color='teal', alpha=0.15, label='Coupe du Monde')
 plt.title("Prediction des Nuitees jusqu'a 2030")
 plt.legend()
