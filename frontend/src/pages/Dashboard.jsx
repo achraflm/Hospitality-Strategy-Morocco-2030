@@ -76,7 +76,7 @@ function Dashboard() {
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-fade-in-up">
         <div>
           <h2 className="text-2xl font-extrabold text-white tracking-tight">Vue d'ensemble analytique</h2>
           <p className="text-slate-400 mt-1">Données touristiques marocaines, projections d'investissements et préparation à la Coupe du Monde FIFA 2030.</p>
@@ -100,7 +100,7 @@ function Dashboard() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* KPI 1 */}
-        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group">
+        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group opacity-0 animate-fade-in-up delay-100">
           <div className="absolute top-0 right-0 w-24 h-24 bg-accentCyan/5 rounded-full blur-2xl group-hover:bg-accentCyan/10 transition-all duration-500"></div>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-400">Objectif Arrivées 2030</span>
@@ -119,7 +119,7 @@ function Dashboard() {
         </div>
 
         {/* KPI 2 */}
-        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group">
+        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group opacity-0 animate-fade-in-up delay-200">
           <div className="absolute top-0 right-0 w-24 h-24 bg-accentGreen/5 rounded-full blur-2xl group-hover:bg-accentGreen/10 transition-all duration-500"></div>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-400">Ville Prioritaire</span>
@@ -136,7 +136,7 @@ function Dashboard() {
         </div>
 
         {/* KPI 3 */}
-        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group">
+        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group opacity-0 animate-fade-in-up delay-300">
           <div className="absolute top-0 right-0 w-24 h-24 bg-accentAmber/5 rounded-full blur-2xl group-hover:bg-accentAmber/10 transition-all duration-500"></div>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-400">Coupe du Monde Boost</span>
@@ -153,7 +153,7 @@ function Dashboard() {
         </div>
 
         {/* KPI 4 */}
-        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group">
+        <div className="glass-panel glass-panel-hover p-6 rounded-2xl relative overflow-hidden group opacity-0 animate-fade-in-up delay-400">
           <div className="absolute top-0 right-0 w-24 h-24 bg-accentRose/5 rounded-full blur-2xl group-hover:bg-accentRose/10 transition-all duration-500"></div>
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-slate-400">WACC Moyen National</span>
@@ -173,7 +173,7 @@ function Dashboard() {
       {/* Main Charts & Highlights */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Forecast Chart Panel */}
-        <div className="glass-panel p-6 rounded-2xl lg:col-span-2 space-y-6">
+        <div className="glass-panel p-6 rounded-2xl lg:col-span-2 space-y-6 opacity-0 animate-fade-in-up delay-200">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div>
               <h3 className="text-lg font-bold text-white">Trajectoire des Arrivées Touristiques (Mensuel)</h3>
@@ -322,7 +322,7 @@ function Dashboard() {
       </div>
 
       {/* City Investment Table Panel */}
-      <div className="glass-panel p-6 rounded-2xl space-y-6">
+      <div className="glass-panel p-6 rounded-2xl space-y-6 opacity-0 animate-fade-in-up delay-400">
         <div>
           <h3 className="text-lg font-bold text-white">Référentiel & Baselines par Ville</h3>
           <p className="text-xs text-slate-400 mt-0.5">Hypothèses par défaut pour les investissements hôteliers 4 et 5 étoiles au Maroc</p>

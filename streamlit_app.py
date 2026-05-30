@@ -26,6 +26,7 @@ from src.models.gru import GruModel
 from src.models.lstm_deep import LstmDeepModel
 from src.models.lstm_cnn import LstmCnnModel
 from src.models.sarima import SarimaModel
+from src.models.ridge import RidgeModel
 from src.roi_simulator import HotelROISimulator
 
 from main import forecast_recursive_ml, forecast_recursive_dl
@@ -83,8 +84,8 @@ selected_features = st.sidebar.multiselect(
 st.sidebar.subheader("🤖 Modèles Prédictifs")
 selected_models = st.sidebar.multiselect(
     "Modèles à évaluer", 
-    ["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU", "SARIMA"],
-    default=["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU", "SARIMA"]
+    ["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU", "SARIMA", "Ridge"],
+    default=["XGBoost", "LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU", "SARIMA", "Ridge"]
 )
 
 dl_epochs = st.sidebar.number_input("Époques DL", min_value=1, max_value=100, value=5, step=5)
@@ -127,7 +128,8 @@ with tab_train:
             
             ml_class_map = {
                 'XGBoost': XgboostModel,
-                'SARIMA': SarimaModel
+                'SARIMA': SarimaModel,
+                'Ridge': RidgeModel
             }
             dl_class_map = {
                 'LSTM': LstmModel,
@@ -201,7 +203,7 @@ with tab_forecast:
     if 'results_df' in st.session_state:
         results_df = st.session_state['results_df']
         
-        ml_names = ["XGBoost"]
+        ml_names = ["XGBoost", "Ridge"]
         dl_names = ["LSTM", "LSTM 2 Layers", "LSTM + CNN", "GRU"]
         
         avail_ml = results_df[results_df['Model'].isin(ml_names)]
@@ -229,7 +231,8 @@ with tab_forecast:
                 
                 ml_class_map = {
                     'XGBoost': XgboostModel,
-                    'SARIMA': SarimaModel
+                    'SARIMA': SarimaModel,
+                    'Ridge': RidgeModel
                 }
                 if best_ml_name in ml_class_map:
                     model = ml_class_map[best_ml_name]().fit(X_train_full, y_train_full)

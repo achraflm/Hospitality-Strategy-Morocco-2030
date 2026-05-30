@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, AreaChart, Area } from 'recharts'
-import { Play, Activity, Target, AlertTriangle, TrendingUp, Cpu, Maximize2, Zap, Brain, X, ChevronRight, Check } from 'lucide-react'
+import { Play, Activity, Target, AlertTriangle, TrendingUp, Cpu, Maximize2, Zap, Brain, X, ChevronRight, Check, BarChart3 } from 'lucide-react'
 
 // --- MOCK COMPONENTS FOR SKELETONS ---
 const SkeletonCard = () => (
@@ -20,7 +20,7 @@ const SkeletonChart = () => (
 
 export default function Forecasting({ activeSection }) {
   const [availableModels, setAvailableModels] = useState([])
-  const [selectedModels, setSelectedModels] = useState(['LSTM + CNN', 'XGBoost'])
+  const [selectedModels, setSelectedModels] = useState(['XGBoost', 'LSTM', 'GRU'])
   const [loading, setLoading] = useState(false)
   const [metrics, setMetrics] = useState(null)
   const [chartData, setChartData] = useState([])
@@ -34,7 +34,7 @@ export default function Forecasting({ activeSection }) {
       .catch(err => {
         console.error(err)
         // Fallback
-        setAvailableModels(['LSTM + CNN', 'LSTM', 'XGBoost'])
+        setAvailableModels(['XGBoost', 'LSTM', 'GRU'])
       })
       
     // Auto-run once to show data

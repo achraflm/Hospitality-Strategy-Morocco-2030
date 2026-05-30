@@ -499,3 +499,7 @@ Les réseaux de neurones complexes (LSTMs, LSTM+CNN) entraînés avec la méthod
 Limites et Conclusions
 ~~~~~~~~~~~~~~~~~~~~~~
 Malgré ses capacités, AutoResearch dépend actuellement de règles heuristiques strictes pour générer ses insights textuels. De plus, il n'optimise pas (encore) directement les hyperparamètres. Néanmoins, il a permis de diagnostiquer avec certitude que la stratégie de Walk-Forward est indispensable pour assurer la fiabilité du modèle sur de longues périodes de prévisions touristiques post-COVID.
+
+Décision Finale: Sélection des 3 Meilleurs Modèles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Suite aux multiples expérimentations et évaluations rigoureuses (y compris via AutoResearch), **XGBoost**, **LSTM**, et **GRU** ont été identifiés comme les trois meilleurs modèles prédictifs absolus de la plateforme NEXUS. Par conséquent, afin d'optimiser les ressources de calcul et d'assurer une stabilité maximale lors des projections (jusqu'en 2030+), l'application web et le backend ont été configurés de manière à ce que **seuls ces 3 modèles soient utilisés pour la prédiction finale**. Les autres modèles de base ont été retirés de l'interface principale afin de se concentrer exclusivement sur les performances robustes offertes par ces architectures avancées.
