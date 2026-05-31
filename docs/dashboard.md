@@ -1,106 +1,156 @@
-# Documentation de dashboard.py
+# Documentation Analytique et Stratégique : `dashboard.py`
 
-## Présentation
+## Présentation générale
 
-**Objectif du dashboard**  
-Le fichier `dashboard.py` constitue l'interface utilisateur interactive développée avec le framework Streamlit. Son objectif principal est de permettre aux utilisateurs (data scientists, analystes financiers et décideurs) d'explorer les données historiques du tourisme au Maroc, de configurer et d'entraîner divers modèles prédictifs (Machine Learning et Deep Learning) et de générer des projections jusqu'en 2030 sous divers scénarios économiques.
+**Rôle du dashboard dans le projet**  
+Le module `dashboard.py` constitue l'application interactive centrale (développée via Streamlit) du projet "Stratégie Hôtelière Maroc 2030". Il encapsule l'ensemble du pipeline de modélisation prédictive des séries temporelles (Data Science) sous la forme d'un outil visuel "No-Code" à destination des analystes et décideurs métier.
 
-**Rôle dans le projet**  
-Il sert de point de rassemblement visuel et interactif pour l'ensemble du pipeline de données. Au lieu de manipuler des scripts Python isolés, l'utilisateur final interagit avec des widgets (sliders, menus déroulants) pour déclencher dynamiquement des tâches d'ingénierie des caractéristiques (Feature Engineering), d'entraînement de modèles et de prévisions financières.
+**Importance dans le système de prise de décision**  
+Dans un secteur hautement saisonnier et exposé aux chocs exogènes (comme le tourisme), la prise de décision (construction d'hôtels, allocation de budgets promotionnels) repose sur la capacité à anticiper la demande. Le dashboard traduit des modèles mathématiques complexes en insights actionnables, permettant d'évaluer la faisabilité financière des projets d'infrastructures.
 
-**Position dans l'architecture globale**  
-Le dashboard se situe dans la couche "Présentation" (Front-end analytique) de l'architecture. Il importe directement les modules du cœur de l'application (`src.data_loader`, `src.features`, `src.models`, `src.metrics`) et agit comme un orchestrateur qui consomme ces services locaux pour restituer l'information sous forme de graphiques et de métriques de performance.
+**Lien avec les modèles de Machine Learning et Deep Learning**  
+Le dashboard agit comme un orchestrateur. Il n'implémente pas la logique mathématique pure, mais instancie dynamiquement les classes encapsulées dans le backend (`XGBoost`, `LSTM`, `SARIMAX`, `Ridge`). Il permet aux utilisateurs de mettre en compétition ces modèles en temps réel sur des données mises à jour et d'observer leurs performances relatives.
+
+**Rôle dans la simulation du ROI hôtelier**  
+L'analyse financière dépend de la fiabilité des prévisions de la "Top Line" (Chiffre d'Affaires). En générant des prévisions robustes des "Arrivées" et "Nuitées", le dashboard estime les recettes globales du marché. Ces métriques macro-économiques sont ensuite dérivées pour estimer les taux d'occupation locaux, qui alimentent directement les calculs de Valeur Actuelle Nette (VAN) et de Retour sur Investissement (ROI).
+
+**Utilisation dans le contexte de la Coupe du Monde FIFA 2030**  
+L'événement "Coupe du Monde" crée une rupture structurelle temporaire dans la série temporelle. Le dashboard offre la possibilité aux décideurs de modéliser l'intensité de ce choc : ils peuvent injecter des taux d'inflation spécifiques (OPEX) et un "boost" d'attractivité via des paramètres ajustables, simulant ainsi l'impact d'un afflux massif de touristes sur l'écosystème hôtelier.
 
 ---
 
-## Architecture
+## Architecture globale
 
-L'architecture du fichier s'articule autour d'un flux de traitement de données linéaire, optimisé par le système de cache de Streamlit :
+Le système suit un flux de données (Data Flow) asynchrone et modulaire :
 
-1. **Chargement des modèles** : Les algorithmes sont encapsulés sous forme de classes (ex: `XgboostModel`, `LstmModel`, `SarimaModel`) importées depuis le répertoire `src.models`. Cela permet une instanciation standardisée possédant les méthodes `.fit()` et `.predict()`.
-2. **Chargement des données** : Les sources de données brutes sont consolidées via la fonction `get_clean_tourism_data()`, qui intègre les données historiques, les impacts COVID-19 et gère les valeurs manquantes.
-3. **Prétraitement** : Selon les sélections de l'utilisateur dans la barre latérale, la fonction `feat.build_features()` génère les variables explicatives (lags, moyennes mobiles, événements conjoncturels).
-4. **Génération des prévisions** : Le processus d'évaluation s'appuie sur une validation croisée dynamique (Walk-Forward) ou statique (Normal). Le module `TimeSeriesSplit` de `scikit-learn` est utilisé pour préserver la chronologie des données.
-5. **Simulation Monte Carlo et Calcul du ROI** : Lors de la phase de projection vers 2030, des hypothèses économiques (inflation, choc OPEX, effet Coupe du Monde) sont injectées pour ajuster les prévisions volumétriques et estimer les recettes financières. Ces recettes servent ensuite de socle aux simulations de ROI.
-6. **Visualisation** : Les métriques de performance (R², RMSE, MAPE) sont synthétisées via Pandas (`st.dataframe`), tandis que les séries temporelles historiques et prédictives sont affichées via `matplotlib.pyplot` et `st.pyplot`.
+* **Chargement des données** : Extraction des données historiques fusionnées (Arrivées, Recettes) via les modules `data_loader` et `cleaning`. Utilisation du cache pour garantir une réactivité optimale de l'interface utilisateur.
+* **Prétraitement (Feature Engineering)** : Application dynamique de variables temporelles (lags, moyennes mobiles, variables binaires COVID/Saisons) via le module `features.py`. L'utilisateur sélectionne interactivement les variables à conserver.
+* **Chargement des modèles** : Mapping dynamique des algorithmes (dictionnaires `ml_class_map` et `dl_class_map`) permettant d'exécuter de multiples algorithmes en parallèle.
+* **Génération des prévisions** : Application stricte de la validation hors-échantillon (Out-of-sample) pour évaluer la capacité de généralisation des modèles (ex: `TimeSeriesSplit`).
+* **Scénarios Coupe du Monde 2030** : Interface de contrôle permettant d'ajouter des chocs exogènes sur la période 2026-2030 (inflation tarifaire, effet événementiel).
+* **Simulation de la dynamique récursive** : Pour les projections jusqu'en 2030, les modèles réinjectent leurs propres prévisions en tant que nouvelles variables "lag" (Autoregressive step) pour prédire le mois suivant.
+* **Interaction utilisateur** : Interface structurée en 3 piliers (Exploration de l'existant, Entraînement des modèles, Projection du futur).
 
 ```mermaid
 flowchart TD
 
-A[Chargement des données]
-B[Prétraitement]
-C[Prédictions ML/DL]
-D[Simulation Monte Carlo]
-E[Calcul ROI]
-F[Visualisation Dashboard]
+A((Sources de données)) --> B[Prétraitement & Feature Engineering]
+B --> C{Sélection Utilisateur}
+C --> D[Entraînement Walk-Forward ML/DL]
+D --> E[Comparaison et Sélection du Meilleur Modèle]
+E --> F[Projection Récursive 2026-2030]
+F --> G[Injection Chocs Macro : CDM 2030 & Inflation]
+G --> H[Analyse de l'Impact Macro-économique]
+H --> I(((Simulation ROI & Monte Carlo)))
 
-A --> B
-B --> C
-C --> D
-D --> E
-E --> F
+style I fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ---
 
-## Description détaillée des fonctions
+## Analyse détaillée du code
 
-### `get_clean_tourism_data()`
+### 1. `get_clean_tourism_data()`
+* **Objectif** : Initialiser le socle de données fiables, purifié des valeurs aberrantes et harmonisé temporellement.
+* **Paramètres** : Aucun.
+* **Valeurs retournées** : `pandas.DataFrame`.
+* **Description technique** : Invoque séquentiellement le chargement brut, l'intégration des flags pandémiques (`integrate_covid_data`), et l'imputation des données manquantes historiques via des techniques de lissage et d'interpolation. Elle est décorée par `@st.cache_data`.
+* **Rôle dans le pipeline global** : Point de départ critique. Si les données sont bruitées, les modèles propageront l'erreur de manière exponentielle lors de la prévision récursive.
 
-* **Paramètres** : Aucun paramètre en entrée.
-* **Valeurs retournées** : `pandas.DataFrame` contenant le dataset consolidé et nettoyé (arrivées, recettes, indicateurs macroéconomiques).
-* **Description détaillée** : Cette fonction, décorée avec `@st.cache_data` pour éviter de recharger le dataset à chaque interaction de l'utilisateur, orchestre le pipeline de données initial. Elle fusionne les différentes sources, intègre les anomalies historiques (comme la pandémie de COVID-19 via `cleaner.integrate_covid_data`), et procède à la reconstruction algorithmique des séries historiques manquantes pour garantir la continuité du signal temporel.
-* **Exemple d'utilisation** : 
-  ```python
-  df_clean = get_clean_tourism_data()
-  ```
+### 2. Le moteur de Validation `Walk-Forward` (Logique intégrée au Script)
+* **Objectif** : Mesurer la véritable capacité prédictive des modèles sans fuite de données temporelles.
+* **Description technique** : Contrairement au "Normal Train" qui divise aléatoirement le dataset, le "Walk-Forward" utilise `TimeSeriesSplit` pour entraîner le modèle jusqu'au mois $t$, prédire le mois $t+1$, intégrer la vérité terrain du mois $t+1$, réentraîner, et prédire $t+2$.
+* **Rôle dans le pipeline global** : Il garantit aux investisseurs que le R² et le RMSE affichés ne sont pas sur-optimistes, assurant ainsi une estimation prudente (conservative) du risque financier.
 
----
-
-## Pipeline d'exécution
-
-Lorsqu'un utilisateur initie l'application, le pipeline d'exécution suit séquentiellement ces étapes :
-
-1. **Initialisation de l'interface** : Configuration globale de la page via `st.set_page_config` et injection de styles CSS personnalisés pour garantir une interface ergonomique.
-2. **Configuration Globale (Sidebar)** : L'utilisateur définit les paramètres expérimentaux : cible (Arrivées ou Nuitées), année de split de test, méthode de validation, features, et algorithmes à comparer.
-3. **Onglet Exploration** : Visualisation instantanée des séries temporelles brutes pour analyser les tendances structurelles et la saisonnalité des données marocaines.
-4. **Onglet Entraînement** : Déclenchement conditionnel (`run_btn`). Les données sont segmentées temporellement (Train/Test). Une boucle parcourt les modèles sélectionnés, les entraîne (avec barre de progression pour la méthode Walk-Forward), et génère les prédictions sur le jeu de test. Les résultats sont sauvegardés dans le `session_state` de Streamlit.
-5. **Onglet Projections 2030** : Les meilleurs modèles ML et DL identifiés lors de l'entraînement sont exploités de manière récursive pour générer des prévisions futures jusqu'en 2030. L'utilisateur peut y appliquer des chocs économiques dynamiques (Inflation, boost Coupe du Monde 2030) afin de modéliser des scénarios de recettes.
+### 3. Fonction externe invoquée : `forecast_recursive_ml` et `forecast_recursive_dl`
+* **Objectif** : Projeter la variable cible à long terme (jusqu'en 2030) là où les données réelles n'existent pas.
+* **Description technique** : La fonction prend le dernier vecteur de caractéristiques connu, prédit $t+1$, décale l'historique d'un cran (recalcul des lags et des rollings means) en incluant sa propre prédiction, et boucle jusqu'à la date de fin.
+* **Rôle dans le pipeline global** : Elle est le cœur de la projection stratégique. Elle permet de simuler la croissance endogène du marché avant d'y appliquer les chocs exogènes (inflation).
 
 ---
 
-## Visualisations
+## Pipeline complet d'exécution
 
-### Analyse Historique des Séries (Onglet Exploration)
-* **Source des données** : Dataframe nettoyé `df_clean`.
-* **Méthode de calcul** : Représentation graphique directe via `st.line_chart` de la colonne cible en fonction de l'index temporel.
-* **Signification métier** : Permet aux experts métiers d'identifier la dynamique globale de la demande touristique et de repérer les chocs structurels (ex: COVID-19 en 2020).
-* **Interprétation** : L'observation visuelle confirme les cycles de haute et basse saisons essentiels pour la gestion capacitaire hôtelière.
-
-### Comparaison des Performances Modèles (Onglet Entraînement)
-* **Source des données** : Vecteur `y_test` réel et dictionnaire des prédictions générées par chaque modèle évalué.
-* **Méthode de calcul** : `matplotlib.pyplot` superposant le signal réel et les différentes signaux prédits. Un tableau `pandas` récapitule les métriques (RMSE, R², etc.) colorisé par performance (`style.highlight_max`).
-* **Signification métier** : Aide à la sélection du modèle le plus performant et le plus stable pour réaliser les projections à long terme.
-* **Interprétation** : L'utilisateur peut juger du sur-apprentissage (overfitting) ou de la capacité du modèle à capter les retournements de tendance.
-
-### Projection des Arrivées et Recettes Touristiques (Onglet Projections 2030)
-* **Source des données** : Séries temporelles générées récursivement (`forecast_recursive_ml` et `dl`) combinées aux inputs de croissance définis par l'utilisateur.
-* **Méthode de calcul** : Application de taux de croissance composés (CAGR) relatifs à l'inflation et ajout d'un pourcentage d'impact spécifique pour l'événement "Coupe du Monde 2030".
-* **Signification métier** : Modélisation des flux de trésorerie macroéconomiques (Recettes Globales en MDH).
-* **Interprétation** : Permet de quantifier les opportunités d'investissement, le besoin en infrastructures supplémentaires et de valider la faisabilité des objectifs stratégiques nationaux.
+1. **Chargement de l'application** : Le serveur Streamlit s'initialise. L'interface graphique est rendue avec les configurations par défaut.
+2. **Chargement des données** : Le dataset consolidé est monté en mémoire RAM (mise en cache).
+3. **Chargement des modèles** : Les librairies mathématiques (`xgboost`, `tensorflow`/`keras`, `statsmodels`) sont chargées.
+4. **Saisie des paramètres utilisateur** : Le décideur choisit la cible ("Arrivées" ou "Nuitées"), la date de coupure Test/Train (ex: 2023), et les variables environnementales (Covid, Saisons).
+5. **Génération des prévisions (Backtesting)** : Lors du clic sur "Entraîner", l'algorithme génère les prédictions sur la période de test historique pour évaluer la fiabilité.
+6. **Évaluation des performances** : Le système détermine le meilleur modèle (ex: LSTM vs XGBoost).
+7. **Projection Stratégique** : L'utilisateur définit l'inflation attendue et le boost Coupe du Monde. Le système exécute la projection récursive jusqu'en 2030.
+8. **Analyse Financière (Recettes)** : Conversion des volumes physiques (Arrivées) en flux financiers (MDH) pondérés par les effets de prix.
+9. **Visualisation des résultats et Analyse des scénarios** : L'utilisateur compare visuellement les courbes projetées et identifie les points de tension sur la capacité d'accueil hôtelière.
 
 ---
 
-## Captures d'écran
+## Documentation des visualisations
 
-### Dashboard principal
+Le script `dashboard.py` génère plusieurs graphiques cruciaux. Voici leur analyse détaillée :
 
-![Dashboard](images/dashboard_main.png)
+### 1. Analyse Historique (Exploration)
+* **Objectif** : Permettre un audit visuel immédiat de la qualité de la donnée.
+* **Données utilisées** : Le DataFrame nettoyé.
+* **Calculs effectués** : Tracé brut temporel.
+* **Interprétation métier** : Le décideur observe instantanément la saisonnalité intra-annuelle stricte du Maroc (pics estivaux) et la sévérité du choc systémique lié au COVID-19 en 2020.
+* **Aide à la décision** : Valider l'hypothèse que la reprise post-covid est complète et que la croissance fondamentale a repris son cours historique.
 
-Le tableau de bord principal permet d'accéder aux différentes analyses prédictives. Sur la gauche, la barre latérale offre une granularité fine sur le paramétrage des expériences (algorithmes, dates de split, méthodes d'évaluation). La zone principale présente les données historiques essentielles à la compréhension des flux touristiques.
+### 2. Comparaison des Modèles sur le Jeu de Test
+* **Objectif** : Démontrer la fiabilité des IA prédictives.
+* **Données utilisées** : Historique `y_test` confronté aux prédictions `y_pred` des divers modèles (ML et DL).
+* **Calculs effectués** : Superposition de séries temporelles avec calcul sous-jacent de l'erreur quadratique.
+* **Interprétation métier** : Permet de vérifier quel algorithme parvient à anticiper non seulement la tendance globale, mais aussi l'amplitude des pics de haute saison, vitaux pour le dimensionnement hôtelier.
+* **Aide à la décision** : Instaurer un climat de confiance chez les investisseurs envers les projections d'Intelligence Artificielle proposées.
 
-### Interface de Projection 2030
+### 3. Projections à Horizon 2030 et Impact Coupe du Monde
+* **Objectif** : Modéliser le volume d'affaires futur.
+* **Données utilisées** : Données générées de manière autorégressive via les modèles récursifs.
+* **Calculs effectués** : Intégration algorithmique du choc Coupe du Monde (multiplicateur appliqué sur la fenêtre Juin-Juillet 2030).
+* **Interprétation métier** : Offre une vision chiffrée de "l'anormalité" positive attendue. 
+* **Aide à la décision** : Détermine le calendrier de lancement de nouveaux projets hôteliers : un hôtel doit être opérationnel début 2030 pour capter ce pic historique, dictant ainsi la date de début des travaux (généralement 3 ans en amont).
 
-![Projections](images/projections_2030.png)
+---
 
-L'onglet de projection expose les résultats des prédictions jusqu'à l'horizon de la Coupe du Monde 2030. L'utilisateur observe la croissance des flux ainsi que l'impact paramétrable de l'inflation et de l'événement sportif majeur sur les recettes touristiques globales.
+## Documentation des captures d'écran et Analyse Métier
+
+*(Les images suivantes sont générées dynamiquement par les modèles et l'interface du projet, illustrant la pertinence métier du développement.)*
+
+### Comparaison des Modèles sur l'Ensemble de Test
+
+![Comparaison des prévisions ML vs DL](../figures/predictions_comparaison_des_modeles_sur_lensemble_de_test.png)
+
+* **Ce que montre la capture** : La confrontation directe entre les données réelles d'arrivées touristiques (la courbe de référence, souvent en noir) et les prédictions des divers algorithmes (LSTM, XGBoost, SARIMAX) sur une période hors échantillon d'entraînement.
+* **Fonctionnalités visibles** : Le système de rendu visuel permettant de discriminer visuellement le phénomène de "lissage" de certains modèles linéaires face à l'hyper-réactivité des modèles de Deep Learning (LSTM) capables de capter l'amplitude exacte des pics estivaux.
+* **Interaction utilisateur** : L'utilisateur peut isoler certains modèles via la légende interactive.
+* **Valeur ajoutée stratégique** : Ce graphique prouve à l'investisseur que le modèle retenu ne "devine" pas au hasard, mais maîtrise la structure comportementale du tourisme marocain, ce qui sécurise les hypothèses du business plan financier.
+
+---
+
+### Projections Stratégiques des Arrivées - Horizon 2030
+
+![Prévisions des Arrivées 2030](../figures/06_arrivals_forecast_2030.png)
+
+* **Ce que montre la capture** : La continuité entre les données historiques réelles et le fuseau de projection généré par le meilleur modèle jusqu'à la fin de l'année 2030. La zone en surbrillance représente l'événement de la Coupe du Monde.
+* **Fonctionnalités visibles** : Projection long terme, mise en évidence des événements structurels (marquage temporel).
+* **Interaction utilisateur** : L'utilisateur utilise l'interface (dashboard) pour modifier dynamiquement les hypothèses de "boost" d'attractivité, rafraîchissant ce graphique en temps réel.
+* **Valeur ajoutée stratégique** : C'est la cartographie du marché futur. Un promoteur hôtelier utilise ce graphique pour quantifier le taux de saturation du marché existant en 2030, justifiant le développement de nouvelles capacités d'hébergement.
+
+---
+
+### Simulation des Recettes et Impact de l'Inflation
+
+![Impact Mondial et Recettes](../figures/07_receipts_forecast_2030.png)
+
+* **Ce que montre la capture** : La traduction des flux physiques (touristes) en flux monétaires (milliards de Dirhams). La courbe intègre l'effet volume, l'inflation modélisée, et le choc tarifaire exclusif de la Coupe du Monde.
+* **Fonctionnalités visibles** : Le graphique montre une décorrélation positive en 2030 : les revenus croissent proportionnellement plus vite que les arrivées grâce à l'effet de levier des prix durant la compétition.
+* **Interaction utilisateur** : L'utilisateur a paramétré les curseurs de "Choc Inflation" et de "Boost de Prix" depuis la barre latérale pour stress-tester la capacité d'absorption du marché.
+* **Valeur ajoutée stratégique** : C'est le lien direct avec le calcul du Retour sur Investissement (ROI). L'investisseur n'investit pas sur des arrivées, mais sur des flux de trésorerie. Ce graphique fournit le "Top Line" macro-économique indispensable pour alimenter les matrices de simulation financière (Monte Carlo) afin de statuer sur le "Go / No-Go" d'un projet immobilier hôtelier.
+
+---
+
+### Analyse de l'Impact de la Coupe du Monde et de l'Inflation
+
+![Analyse de l'Impact Économique](../figures/world_cup_inflation_impact.png)
+
+* **Ce que montre la capture** : L'effet de ciseaux entre la croissance des revenus et les hypothèses de chocs inflationnistes (notamment sur les OpEx hôteliers).
+* **Fonctionnalités visibles** : Modélisation macro-économique avancée permettant de visualiser des scénarios "Pessimistes" vs "Optimistes".
+* **Valeur ajoutée stratégique** : Permet au décideur de réaliser un stress-test de la résilience du secteur. Si l'inflation des coûts opérationnels (énergie, salaires) durant l'événement sportif majeur dépasse la croissance des revenus tarifaires, les marges hôtelières se contractent. Cette simulation protège l'investisseur d'un excès d'optimisme.
