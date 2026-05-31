@@ -114,54 +114,26 @@ Le script `dashboard.py` génère plusieurs graphiques cruciaux. Voici leur anal
 
 *(Les images suivantes illustrent concrètement l'interface de notre tableau de bord et son interactivité pour le décideur.)*
 
-### Aperçu Général et Exploration
+### 1. Aperçu Général et Exploration
 
-![Exploration des données](../figures/screenshots/Screenshot_2026-05-29_133322.png)
+![Exploration des données](../figures/dashboard.png)
 
 * **Ce que montre la capture** : Une vue de l'interface principale permettant l'exploration de la dynamique des séries temporelles.
-* **Fonctionnalités visibles** : Panneau de contrôle latéral pour choisir la cible (arrivées/nuitées), la méthode d'évaluation et l'affichage interactif de la tendance historique.
-* **Valeur ajoutée stratégique** : Offre une lisibilité immédiate sur les cycles de marché et les points de bascule économiques, éléments essentiels avant toute modélisation financière.
+* **Fonctionnalités visibles** : Panneau de contrôle latéral pour choisir la cible (arrivées/nuitées), ajuster les paramètres de modélisation et visualiser instantanément l'historique de la demande touristique.
+* **Valeur ajoutée stratégique** : L'outil de pilotage central qui offre une lisibilité immédiate sur les cycles de marché (saisonnalité estivale) et la structure des données réelles avant d'y appliquer des algorithmes prédictifs.
 
-### Configuration du Feature Engineering
+### 2. Entraînement et Évaluation des Modèles
 
-![Feature Engineering](../figures/screenshots/Screenshot_2026-05-29_133329.png)
+![Comparaison des Modèles](../figures/entrainement.png)
 
-* **Ce que montre la capture** : Le paramétrage fin des modèles et de l'ingénierie des caractéristiques depuis la barre latérale.
-* **Fonctionnalités visibles** : Sélection des modèles (XGBoost, LSTM, etc.), ajustement des hyperparamètres (Époques DL) et sélection des "Features" (variables temporelles, événements comme la Coupe du Monde).
-* **Valeur ajoutée stratégique** : Permet aux équipes de Data Science et aux analystes financiers de collaborer en ajustant directement les variables explicatives sans avoir à reprogrammer les modèles.
+* **Ce que montre la capture** : La présentation des résultats de l'onglet "Entraînement", confrontant la réalité (`y_test`) aux projections des algorithmes sur la période hors-échantillon.
+* **Fonctionnalités visibles** : Le système d'audit des performances permettant de comparer visuellement plusieurs modèles (Machine Learning classique vs Deep Learning).
+* **Valeur ajoutée stratégique** : Cet écran "audite" les prévisions de l'IA. Pour un comité d'investissement, vérifier l'historique de précision des modèles (Backtesting) rassure sur la pertinence du business plan futur.
 
-### Comparaison des Modèles et Validation
+### 3. Projections 2030 et Simulations Stratégiques
 
-![Comparaison des Modèles](../figures/screenshots/Screenshot_2026-05-30_013251.png)
+![Projections et Simulation](../figures/prediction%20.png)
 
-* **Ce que montre la capture** : La présentation des résultats de l'onglet "Entraînement", confrontant la réalité (`y_test`) aux projections des algorithmes.
-* **Fonctionnalités visibles** : Le tableau comparatif des métriques (R², RMSE, MAPE) avec surbrillance des meilleurs scores, et le tracé de prédiction interactif.
-* **Valeur ajoutée stratégique** : Cet écran "audite" les prévisions de l'IA. Pour un comité d'investissement, valider l'historique d'erreur des modèles rassure sur la pertinence du business plan futur.
-
-### Synthèse des Hyper-Paramètres et Validation Croisée
-
-![Validation Walk-Forward](../figures/screenshots/Screenshot_2026-05-29_133332.png)
-
-* **Ce que montre la capture** : Le suivi en temps réel de l'entraînement des algorithmes avec le système de "Walk-Forward Validation".
-* **Fonctionnalités visibles** : Barres de progression dynamiques lors des boucles d'entraînement séquentiel (Split temporel) pour évaluer la stabilité des algorithmes hors-échantillon.
-* **Valeur ajoutée stratégique** : Atteste de la robustesse méthodologique du projet. L'utilisateur a la preuve que le système ne souffre d'aucun "Data Leakage" (fuite de données du futur).
-
-### Projections 2030 et Simulations Stratégiques
-
-![Projections et Simulation Coupe du Monde](../figures/screenshots/Screenshot_2026-05-30_013051.png)
-
-* **Ce que montre la capture** : L'onglet de projection permettant d'injecter des chocs macro-économiques jusqu'à l'horizon 2030.
-* **Fonctionnalités visibles** : Curseurs permettant de simuler le "Boost d'attractivité Coupe du Monde", l'inflation annuelle moyenne, et le choc d'inflation opérationnelle (OPEX).
-* **Valeur ajoutée stratégique** : C'est le cœur de la valeur pour le dirigeant ou l'investisseur. En faisant glisser ces curseurs, il simule instantanément des scénarios de crise ou d'opportunité extrême pour stress-tester la capacité d'hébergement hôtelière marocaine de demain.
-
-### Visualisations Économiques Complémentaires
-
-![Impact Macro-Économique](../figures/screenshots/Screenshot_2026-05-30_013104.png)
-
-* **Ce que montre la capture** : Une vue approfondie sur les flux financiers et analytiques générés par la plateforme.
-* **Valeur ajoutée stratégique** : L'outil permet de transformer une prévision brute (le nombre de touristes) en trajectoires financières intelligibles par les banques ou les fonds d'investissements.
-
-![Outils Avancés de ROI](../figures/screenshots/Screenshot_2026-05-30_013109.png)
-
-* **Ce que montre la capture** : La consolidation finale pour la prise de décision hôtelière.
-* **Valeur ajoutée stratégique** : C'est la synthèse du travail accompli. L'utilisateur voit l'impact réel de chaque choix algorithmique et économique de départ sur la ligne de rentabilité (Top-line) du secteur.
+* **Ce que montre la capture** : L'onglet de projection permettant d'extrapoler les flux touristiques jusqu'à l'horizon 2030.
+* **Fonctionnalités visibles** : La trajectoire future des arrivées incluant l'impact des chocs macro-économiques tels que la Coupe du Monde FIFA 2030.
+* **Valeur ajoutée stratégique** : C'est le cœur de la valeur pour le dirigeant ou l'investisseur. La prédiction générée alimente directement les modèles financiers pour statuer sur les opportunités de construction hôtelière à moyen terme.
