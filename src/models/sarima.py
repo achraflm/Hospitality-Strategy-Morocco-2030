@@ -8,7 +8,7 @@ class SarimaModel:
         self.seasonal_order = seasonal_order
         self.model_fit = None
         
-    def fit(self, y_train, exog_train=None):
+    def fit(self, X_train, y_train):
         """
         Fits the SARIMAX model on historical target data and exogenous variables.
         """
@@ -19,11 +19,11 @@ class SarimaModel:
             y_data = y_train
             
         exog_data = None
-        if exog_train is not None:
-            if isinstance(exog_train, pd.DataFrame) or isinstance(exog_train, pd.Series):
-                exog_data = exog_train.values
+        if X_train is not None:
+            if isinstance(X_train, pd.DataFrame) or isinstance(X_train, pd.Series):
+                exog_data = X_train.values
             else:
-                exog_data = exog_train
+                exog_data = X_train
                 
         model = SARIMAX(
             y_data,
