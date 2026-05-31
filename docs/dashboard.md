@@ -112,45 +112,56 @@ Le script `dashboard.py` génère plusieurs graphiques cruciaux. Voici leur anal
 
 ## Documentation des captures d'écran et Analyse Métier
 
-*(Les images suivantes sont générées dynamiquement par les modèles et l'interface du projet, illustrant la pertinence métier du développement.)*
+*(Les images suivantes illustrent concrètement l'interface de notre tableau de bord et son interactivité pour le décideur.)*
 
-### Comparaison des Modèles sur l'Ensemble de Test
+### Aperçu Général et Exploration
 
-![Comparaison des prévisions ML vs DL](../figures/predictions_comparaison_des_modeles_sur_lensemble_de_test.png)
+![Exploration des données](../figures/screenshots/Screenshot_2026-05-29_133322.png)
 
-* **Ce que montre la capture** : La confrontation directe entre les données réelles d'arrivées touristiques (la courbe de référence, souvent en noir) et les prédictions des divers algorithmes (LSTM, XGBoost, SARIMAX) sur une période hors échantillon d'entraînement.
-* **Fonctionnalités visibles** : Le système de rendu visuel permettant de discriminer visuellement le phénomène de "lissage" de certains modèles linéaires face à l'hyper-réactivité des modèles de Deep Learning (LSTM) capables de capter l'amplitude exacte des pics estivaux.
-* **Interaction utilisateur** : L'utilisateur peut isoler certains modèles via la légende interactive.
-* **Valeur ajoutée stratégique** : Ce graphique prouve à l'investisseur que le modèle retenu ne "devine" pas au hasard, mais maîtrise la structure comportementale du tourisme marocain, ce qui sécurise les hypothèses du business plan financier.
+* **Ce que montre la capture** : Une vue de l'interface principale permettant l'exploration de la dynamique des séries temporelles.
+* **Fonctionnalités visibles** : Panneau de contrôle latéral pour choisir la cible (arrivées/nuitées), la méthode d'évaluation et l'affichage interactif de la tendance historique.
+* **Valeur ajoutée stratégique** : Offre une lisibilité immédiate sur les cycles de marché et les points de bascule économiques, éléments essentiels avant toute modélisation financière.
 
----
+### Configuration du Feature Engineering
 
-### Projections Stratégiques des Arrivées - Horizon 2030
+![Feature Engineering](../figures/screenshots/Screenshot_2026-05-29_133329.png)
 
-![Prévisions des Arrivées 2030](../figures/06_arrivals_forecast_2030.png)
+* **Ce que montre la capture** : Le paramétrage fin des modèles et de l'ingénierie des caractéristiques depuis la barre latérale.
+* **Fonctionnalités visibles** : Sélection des modèles (XGBoost, LSTM, etc.), ajustement des hyperparamètres (Époques DL) et sélection des "Features" (variables temporelles, événements comme la Coupe du Monde).
+* **Valeur ajoutée stratégique** : Permet aux équipes de Data Science et aux analystes financiers de collaborer en ajustant directement les variables explicatives sans avoir à reprogrammer les modèles.
 
-* **Ce que montre la capture** : La continuité entre les données historiques réelles et le fuseau de projection généré par le meilleur modèle jusqu'à la fin de l'année 2030. La zone en surbrillance représente l'événement de la Coupe du Monde.
-* **Fonctionnalités visibles** : Projection long terme, mise en évidence des événements structurels (marquage temporel).
-* **Interaction utilisateur** : L'utilisateur utilise l'interface (dashboard) pour modifier dynamiquement les hypothèses de "boost" d'attractivité, rafraîchissant ce graphique en temps réel.
-* **Valeur ajoutée stratégique** : C'est la cartographie du marché futur. Un promoteur hôtelier utilise ce graphique pour quantifier le taux de saturation du marché existant en 2030, justifiant le développement de nouvelles capacités d'hébergement.
+### Comparaison des Modèles et Validation
 
----
+![Comparaison des Modèles](../figures/screenshots/Screenshot_2026-05-30_013251.png)
 
-### Simulation des Recettes et Impact de l'Inflation
+* **Ce que montre la capture** : La présentation des résultats de l'onglet "Entraînement", confrontant la réalité (`y_test`) aux projections des algorithmes.
+* **Fonctionnalités visibles** : Le tableau comparatif des métriques (R², RMSE, MAPE) avec surbrillance des meilleurs scores, et le tracé de prédiction interactif.
+* **Valeur ajoutée stratégique** : Cet écran "audite" les prévisions de l'IA. Pour un comité d'investissement, valider l'historique d'erreur des modèles rassure sur la pertinence du business plan futur.
 
-![Impact Mondial et Recettes](../figures/07_receipts_forecast_2030.png)
+### Synthèse des Hyper-Paramètres et Validation Croisée
 
-* **Ce que montre la capture** : La traduction des flux physiques (touristes) en flux monétaires (milliards de Dirhams). La courbe intègre l'effet volume, l'inflation modélisée, et le choc tarifaire exclusif de la Coupe du Monde.
-* **Fonctionnalités visibles** : Le graphique montre une décorrélation positive en 2030 : les revenus croissent proportionnellement plus vite que les arrivées grâce à l'effet de levier des prix durant la compétition.
-* **Interaction utilisateur** : L'utilisateur a paramétré les curseurs de "Choc Inflation" et de "Boost de Prix" depuis la barre latérale pour stress-tester la capacité d'absorption du marché.
-* **Valeur ajoutée stratégique** : C'est le lien direct avec le calcul du Retour sur Investissement (ROI). L'investisseur n'investit pas sur des arrivées, mais sur des flux de trésorerie. Ce graphique fournit le "Top Line" macro-économique indispensable pour alimenter les matrices de simulation financière (Monte Carlo) afin de statuer sur le "Go / No-Go" d'un projet immobilier hôtelier.
+![Validation Walk-Forward](../figures/screenshots/Screenshot_2026-05-29_133332.png)
 
----
+* **Ce que montre la capture** : Le suivi en temps réel de l'entraînement des algorithmes avec le système de "Walk-Forward Validation".
+* **Fonctionnalités visibles** : Barres de progression dynamiques lors des boucles d'entraînement séquentiel (Split temporel) pour évaluer la stabilité des algorithmes hors-échantillon.
+* **Valeur ajoutée stratégique** : Atteste de la robustesse méthodologique du projet. L'utilisateur a la preuve que le système ne souffre d'aucun "Data Leakage" (fuite de données du futur).
 
-### Analyse de l'Impact de la Coupe du Monde et de l'Inflation
+### Projections 2030 et Simulations Stratégiques
 
-![Analyse de l'Impact Économique](../figures/world_cup_inflation_impact.png)
+![Projections et Simulation Coupe du Monde](../figures/screenshots/Screenshot_2026-05-30_013051.png)
 
-* **Ce que montre la capture** : L'effet de ciseaux entre la croissance des revenus et les hypothèses de chocs inflationnistes (notamment sur les OpEx hôteliers).
-* **Fonctionnalités visibles** : Modélisation macro-économique avancée permettant de visualiser des scénarios "Pessimistes" vs "Optimistes".
-* **Valeur ajoutée stratégique** : Permet au décideur de réaliser un stress-test de la résilience du secteur. Si l'inflation des coûts opérationnels (énergie, salaires) durant l'événement sportif majeur dépasse la croissance des revenus tarifaires, les marges hôtelières se contractent. Cette simulation protège l'investisseur d'un excès d'optimisme.
+* **Ce que montre la capture** : L'onglet de projection permettant d'injecter des chocs macro-économiques jusqu'à l'horizon 2030.
+* **Fonctionnalités visibles** : Curseurs permettant de simuler le "Boost d'attractivité Coupe du Monde", l'inflation annuelle moyenne, et le choc d'inflation opérationnelle (OPEX).
+* **Valeur ajoutée stratégique** : C'est le cœur de la valeur pour le dirigeant ou l'investisseur. En faisant glisser ces curseurs, il simule instantanément des scénarios de crise ou d'opportunité extrême pour stress-tester la capacité d'hébergement hôtelière marocaine de demain.
+
+### Visualisations Économiques Complémentaires
+
+![Impact Macro-Économique](../figures/screenshots/Screenshot_2026-05-30_013104.png)
+
+* **Ce que montre la capture** : Une vue approfondie sur les flux financiers et analytiques générés par la plateforme.
+* **Valeur ajoutée stratégique** : L'outil permet de transformer une prévision brute (le nombre de touristes) en trajectoires financières intelligibles par les banques ou les fonds d'investissements.
+
+![Outils Avancés de ROI](../figures/screenshots/Screenshot_2026-05-30_013109.png)
+
+* **Ce que montre la capture** : La consolidation finale pour la prise de décision hôtelière.
+* **Valeur ajoutée stratégique** : C'est la synthèse du travail accompli. L'utilisateur voit l'impact réel de chaque choix algorithmique et économique de départ sur la ligne de rentabilité (Top-line) du secteur.
