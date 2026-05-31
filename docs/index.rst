@@ -18,7 +18,6 @@ La documentation est structurée comme suit :
    results_roi
    web_platform
    dashboard
-   frontend_app
    conclusion
 
 Indices and tables

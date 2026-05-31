@@ -78,7 +78,7 @@ else:
 
 selected_features = st.sidebar.multiselect(
     "Choisir les colonnes", options=default_features,
-    default=[f for f in default_features if f in ['lags_1', 'lags_12', 'roll_mean_3', 'year', 'is_covid', 'is_summer', 'is_high_season', 'cdm_event']]
+    default=[f for f in default_features if f in ['lags_1', 'lags_2', 'lags_12', 'growth_yoy', 'month_sin', 'month_cos', 'year', 'is_high_season', 'cdm_event']]
 )
 
 st.sidebar.subheader("🤖 Modèles Prédictifs")
